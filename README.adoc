@@ -1,0 +1,32 @@
+= PatALLM Gallery
+
+*LLM tools gallery - unified verification and antidote systems*
+
+== Components
+
+|===
+| Repo | Description
+
+| link:llm-unify-core[llm-unify-core]
+| Core unified LLM interface
+
+| link:llm-unify[llm-unify]
+| LLM unification layer
+
+| link:llm-verify[llm-verify]
+| LLM output verification
+
+| link:llm-antidote[llm-antidote]
+| LLM hallucination antidote
+
+|===
+
+== Quick Start
+
+```bash
+git clone --recursive https://github.com/hyperpolymath/patallm-gallery.git
+```
+
+== License
+
+MIT OR Palimpsest-0.8

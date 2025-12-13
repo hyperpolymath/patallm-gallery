@@ -1,0 +1,12 @@
+[submodule "llm-unify-core"]
+	path = llm-unify-core
+	url = git@github.com:hyperpolymath/llm-unify-core.git
+[submodule "llm-verify"]
+	path = llm-verify
+	url = git@github.com:hyperpolymath/llm-verify.git
+[submodule "llm-unify"]
+	path = llm-unify
+	url = git@github.com:hyperpolymath/llm-unify.git
+[submodule "llm-antidote"]
+	path = llm-antidote
+	url = git@github.com:hyperpolymath/llm-antidote.git
