@@ -1,21 +1,49 @@
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
 # Security Policy
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+The following versions of PatALLM Gallery are currently supported with security updates:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| 0.1.x   | :white_check_mark: |
+
+> **Note:** This project is in early development (v0.1). All released versions receive security updates.
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+We take security seriously. If you discover a security vulnerability, please report it responsibly:
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+### Preferred Method: Private Disclosure
+
+1. **GitHub Security Advisories** (Recommended): Use [GitHub's private vulnerability reporting](https://github.com/hyperpolymath/patallm-gallery/security/advisories/new)
+2. **Email**: Contact the maintainer directly (see repository profile)
+
+### What to Include
+
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact assessment
+- Suggested fix (if available)
+
+### Response Timeline
+
+- **Initial Response**: Within 48 hours
+- **Status Update**: Within 7 days
+- **Resolution Target**: Within 30 days for critical issues
+
+### What to Expect
+
+- **Accepted**: We'll work with you on a fix and coordinate disclosure
+- **Declined**: We'll explain why and suggest alternatives if applicable
+
+### Security Measures in Place
+
+This repository follows [RSR (Rhodium Standard Repository)](https://github.com/hyperpolymath/rhodium-standard-repositories) guidelines:
+
+- SHA-pinned GitHub Actions
+- Automated dependency scanning (Dependabot)
+- SAST scanning (Semgrep)
+- Workflow security linting
+- SPDX-compliant licensing
