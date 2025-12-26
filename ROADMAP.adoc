@@ -1,0 +1,315 @@
+// SPDX-License-Identifier: MIT OR AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2025 Hyperpolymath
+
+= PatALLM Gallery Roadmap
+:toc: macro
+:toclevels: 2
+:icons: font
+
+Development roadmap for the PatALLM suite of LLM tools.
+
+toc::[]
+
+== Current State
+
+[cols="1,1,3"]
+|===
+| Area | Status | Notes
+
+| Infrastructure
+| ✅ Complete
+| CI/CD, security scanning, multi-forge mirroring, governance files
+
+| Language Policy
+| ✅ Complete
+| Hyperpolymath Standard defined in CLAUDE.md
+
+| Monorepo Structure
+| ✅ Complete
+| Git submodules configured for four satellite projects
+
+| Implementation
+| 🔲 Not Started
+| All satellite projects awaiting development
+
+|===
+
+== Phase 1: Core Foundation
+
+=== llm-unify-core
+
+The foundational library defining shared abstractions.
+
+==== Deliverables
+
+[cols="1,3,1"]
+|===
+| Item | Description | Priority
+
+| Core Types
+| Message, Role, CompletionRequest, CompletionResponse, TokenUsage
+| P0
+
+| Provider Trait
+| Unified interface for LLM providers (complete, stream, embed)
+| P0
+
+| Error Types
+| Structured errors: RateLimited, AuthFailed, InvalidRequest, ProviderError
+| P0
+
+| Configuration
+| Provider config, retry policies, timeout settings
+| P1
+
+| Streaming
+| Async stream types for chunked responses
+| P1
+
+|===
+
+==== Technology
+
+* **Language**: Rust (core library)
+* **ReScript bindings**: Generated via wasm-bindgen or FFI
+* **Testing**: Rust unit tests + integration test harness
+
+== Phase 2: Provider Unification
+
+=== llm-unify
+
+Provider adapters building on llm-unify-core.
+
+==== Deliverables
+
+[cols="1,3,1"]
+|===
+| Item | Description | Priority
+
+| OpenAI Adapter
+| GPT-4, GPT-4o, o1 family support
+| P0
+
+| Anthropic Adapter
+| Claude 3.5, Claude 4 support
+| P0
+
+| Router
+| Multi-provider routing with fallback chains
+| P0
+
+| Local Model Support
+| Ollama, llama.cpp integration
+| P1
+
+| Cost Tracking
+| Token usage and cost estimation per provider
+| P1
+
+| Caching Layer
+| Response caching with TTL and invalidation
+| P2
+
+|===
+
+==== Technology
+
+* **Language**: Rust + ReScript (API layer)
+* **Runtime**: Deno for HTTP client and async I/O
+* **Config**: Environment variables + config files (Nickel)
+
+== Phase 3: Verification Engine
+
+=== llm-verify
+
+Output verification against source material.
+
+==== Deliverables
+
+[cols="1,3,1"]
+|===
+| Item | Description | Priority
+
+| Source Ingestion
+| Parse documents (PDF, HTML, Markdown, plain text)
+| P0
+
+| Chunk Indexing
+| Vector embeddings for semantic search
+| P0
+
+| Claim Extraction
+| Identify verifiable claims in LLM output
+| P0
+
+| Source Matching
+| Match claims to source passages with confidence scores
+| P0
+
+| Verification Report
+| Structured report: verified, unverified, contradicted claims
+| P1
+
+| Citation Injection
+| Automatically add citations to verified claims
+| P2
+
+|===
+
+==== Technology
+
+* **Language**: Rust (core) + ReScript (API)
+* **Embeddings**: Via llm-unify (OpenAI, local models)
+* **Vector Store**: SQLite with vector extension or dedicated store
+
+== Phase 4: Hallucination Antidote
+
+=== llm-antidote
+
+Detection and mitigation of LLM hallucinations.
+
+==== Deliverables
+
+[cols="1,3,1"]
+|===
+| Item | Description | Priority
+
+| Confidence Scoring
+| Estimate response reliability (self-consistency, source coverage)
+| P0
+
+| Hallucination Detection
+| Flag unsupported or contradictory claims
+| P0
+
+| Re-prompting Strategy
+| Automatic retry with source context injection
+| P1
+
+| Response Filtering
+| Remove or flag low-confidence segments
+| P1
+
+| Uncertainty Markers
+| Insert hedging language for uncertain claims
+| P2
+
+| Audit Trail
+| Log detection events for analysis
+| P2
+
+|===
+
+==== Technology
+
+* **Language**: Rust (core) + ReScript (orchestration)
+* **Integration**: Wraps llm-unify and llm-verify
+
+== Phase 5: Integration & Tooling
+
+=== CLI Tools
+
+[cols="1,3"]
+|===
+| Tool | Purpose
+
+| `patallm`
+| Unified CLI for all components
+
+| `patallm verify`
+| Verify a document against sources
+
+| `patallm chat`
+| Interactive chat with verification enabled
+
+| `patallm config`
+| Manage provider credentials and settings
+
+|===
+
+=== API Server
+
+* REST/GraphQL API wrapping all components
+* Deno-based server (Hono or Oak framework)
+* OpenAPI specification
+
+=== Editor Integration
+
+* LSP server for real-time verification
+* VS Code extension (via Deno)
+
+== Milestones
+
+[cols="1,2,3"]
+|===
+| Milestone | Components | Definition of Done
+
+| M1: Core Ready
+| llm-unify-core
+| Types defined, provider trait implemented, tests passing
+
+| M2: Unification Live
+| llm-unify
+| OpenAI + Anthropic adapters working, router functional
+
+| M3: Verification MVP
+| llm-verify
+| Source ingestion, claim extraction, basic verification
+
+| M4: Antidote Alpha
+| llm-antidote
+| Confidence scoring, hallucination flags
+
+| M5: CLI Release
+| patallm CLI
+| Unified CLI with verify and chat commands
+
+| M6: API Server
+| Server component
+| REST API with all features exposed
+
+|===
+
+== Technical Debt & Maintenance
+
+=== Ongoing Tasks
+
+* Dependency updates via Dependabot
+* Security scanning via Semgrep
+* Workflow compliance via RSR linter
+* Multi-forge synchronization
+
+=== Documentation
+
+* API reference (generated from code)
+* User guides per component
+* Architecture decision records (ADRs)
+
+== Open Questions
+
+[cols="1,3"]
+|===
+| Question | Context
+
+| Vector store choice
+| SQLite+vec vs dedicated (Qdrant, Milvus)?
+
+| Embedding model
+| OpenAI ada-002 vs local (nomic-embed, bge)?
+
+| Streaming verification
+| Verify during stream or after completion?
+
+| Multi-language support
+| Document parsing beyond English?
+
+|===
+
+== Contributing
+
+See link:README.adoc[README] for project setup. Contributions welcome once Phase 1 begins.
+
+Priority areas:
+1. Provider adapters for llm-unify
+2. Document parsers for llm-verify
+3. Hallucination detection heuristics for llm-antidote

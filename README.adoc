@@ -1,32 +1,189 @@
+// SPDX-License-Identifier: MIT OR AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2025 Hyperpolymath
+
 = PatALLM Gallery
+:toc: macro
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
 
 *LLM tools gallery - unified verification and antidote systems*
 
+[NOTE]
+====
+**Project Status**: Infrastructure Ready, Implementation Pending
+
+This monorepo establishes governance, CI/CD, and technology standards for the PatALLM suite.
+The four satellite projects are defined as git submodules awaiting implementation.
+====
+
+toc::[]
+
+== Overview
+
+PatALLM Gallery is a monorepo orchestrating a suite of LLM utility tools focused on:
+
+* **Unification** - A single interface to multiple LLM providers
+* **Verification** - Validating LLM outputs against source material
+* **Antidote** - Detecting and mitigating hallucinations
+
+=== Architecture
+
+[source]
+----
+patallm-gallery/
+├── llm-unify-core/    # Core abstractions and traits
+├── llm-unify/         # Provider adapters and routing
+├── llm-verify/        # Output verification engine
+└── llm-antidote/      # Hallucination detection/mitigation
+----
+
 == Components
 
+[cols="1,2,1"]
 |===
-| Repo | Description
+| Repository | Description | Status
 
 | link:llm-unify-core[llm-unify-core]
-| Core unified LLM interface
+| Core unified LLM interface - shared types, traits, and abstractions
+| 🔲 Planned
 
 | link:llm-unify[llm-unify]
-| LLM unification layer
+| LLM unification layer - provider adapters for OpenAI, Anthropic, local models
+| 🔲 Planned
 
 | link:llm-verify[llm-verify]
-| LLM output verification
+| LLM output verification - validate responses against source documents
+| 🔲 Planned
 
 | link:llm-antidote[llm-antidote]
-| LLM hallucination antidote
+| LLM hallucination antidote - detection, scoring, and mitigation strategies
+| 🔲 Planned
 
 |===
+
+== Vision
+
+=== Problem Statement
+
+Current LLM tooling suffers from:
+
+1. **Fragmentation** - Each provider requires different SDKs and patterns
+2. **Blind Trust** - Outputs accepted without verification against sources
+3. **Hallucination Opacity** - No systematic approach to detect or quantify confabulation
+
+=== Solution
+
+PatALLM provides:
+
+* A unified interface abstracting provider differences
+* Verification pipelines comparing outputs to source material
+* Hallucination detection with confidence scoring
+* Mitigation strategies (re-prompting, source injection, response filtering)
+
+== Technology Stack
+
+This project follows the **Hyperpolymath Standard** language policy.
+
+=== Allowed Technologies
+
+[cols="1,2,2"]
+|===
+| Technology | Use Case | Notes
+
+| ReScript
+| Primary application code
+| Compiles to JS, type-safe
+
+| Deno
+| Runtime & package management
+| Replaces Node/npm/bun
+
+| Rust
+| Performance-critical, systems, WASM
+| Preferred for CLI tools and core libraries
+
+| Gleam
+| Backend services
+| Runs on BEAM or compiles to JS
+
+| Guile Scheme
+| State/meta files
+| STATE.scm, META.scm, ECOSYSTEM.scm
+
+|===
+
+=== Explicitly Banned
+
+TypeScript, Node.js, npm, Go, Python (except SaltStack), Kotlin, Swift, React Native, Flutter
+
+See link:.claude/CLAUDE.md[CLAUDE.md] for the complete policy.
 
 == Quick Start
 
-```bash
+[source,bash]
+----
+# Clone with submodules
 git clone --recursive https://github.com/hyperpolymath/patallm-gallery.git
-```
+cd patallm-gallery
+
+# Initialize submodules if cloned without --recursive
+git submodule update --init --recursive
+----
+
+== Infrastructure
+
+=== CI/CD Pipelines
+
+[cols="1,3"]
+|===
+| Workflow | Purpose
+
+| `instant-sync.yml`
+| Automatic forge propagation on push/release
+
+| `mirror.yml`
+| Mirrors to GitLab and Bitbucket
+
+| `semgrep.yml`
+| SAST security scanning
+
+| `workflow-linter.yml`
+| RSR security standards enforcement
+
+|===
+
+=== Security Practices
+
+* SHA-pinned GitHub Actions
+* Semgrep SAST scanning
+* OpenSSF Scorecard compliance
+* SPDX license headers on all files
+* No hardcoded secrets
+
+== Contributing
+
+See link:CODE_OF_CONDUCT.md[Code of Conduct] and link:SECURITY.md[Security Policy].
+
+=== Development Prerequisites
+
+* Deno >= 2.0
+* Rust >= 1.75 (for core components)
+* Git with submodule support
 
 == License
 
-MIT OR Palimpsest-0.8
+Dual-licensed under:
+
+* MIT License
+* AGPL-3.0-or-later
+
+With Palimpsest philosophical overlay. See link:LICENSE.txt[LICENSE.txt] for details.
+
+== Funding
+
+Support this project:
+
+* https://github.com/sponsors/hyperpolymath[GitHub Sponsors]
+* https://ko-fi.com/hyperpolymath[Ko-fi]
+* https://liberapay.com/hyperpolymath[Liberapay]
