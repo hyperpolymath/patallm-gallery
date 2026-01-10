@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: MIT OR AGPL-3.0-or-later
+// SPDX-License-Identifier: PMPL-1.0 OR AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2025 Hyperpolymath
 
 = PatALLM Gallery
 
-image:https://img.shields.io/badge/license-AGPL--3.0-blue.svg[AGPL-3.0,link="https://www.gnu.org/licenses/agpl-3.0"] image:https://img.shields.io/badge/philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
+image:https://img.shields.io/badge/license-Palimpsest--MPL--1.0-purple.svg[Palimpsest-MPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"] image:https://img.shields.io/badge/philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
 :toc: macro
 :toclevels: 3
 :icons: font
@@ -177,7 +177,7 @@ See link:CODE_OF_CONDUCT.md[Code of Conduct] and link:SECURITY.md[Security Polic
 
 Dual-licensed under:
 
-* MIT License
+* Palimpsest-MPL-1.0 License
 * AGPL-3.0-or-later
 
 With Palimpsest philosophical overlay. See link:LICENSE.txt[LICENSE.txt] for details.
