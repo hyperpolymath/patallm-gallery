@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0 OR AGPL-3.0-or-later
+// SPDX-License-Identifier: PMPL-1.0 OR PMPL-1.0-or-later
 // SPDX-FileCopyrightText: 2025 Hyperpolymath
 
 = PatALLM Gallery
@@ -178,7 +178,7 @@ See link:CODE_OF_CONDUCT.md[Code of Conduct] and link:SECURITY.md[Security Polic
 Dual-licensed under:
 
 * Palimpsest-MPL-1.0 License
-* AGPL-3.0-or-later
+* PMPL-1.0-or-later
 
 With Palimpsest philosophical overlay. See link:LICENSE.txt[LICENSE.txt] for details.
 
