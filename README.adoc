@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 // SPDX-License-Identifier: PMPL-1.0-or-later
+=======
+// SPDX-License-Identifier: MPL-2.0-or-later
+>>>>>>> 1b58383 (chore: sync from parent repo automation)
 // SPDX-FileCopyrightText: 2025 Hyperpolymath
 
 = PatALLM Gallery
 
+<<<<<<< HEAD
 image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+=======
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+>>>>>>> 1b58383 (chore: sync from parent repo automation)
 :toc: macro
 :toclevels: 3
 :icons: font
