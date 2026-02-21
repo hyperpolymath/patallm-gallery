@@ -1,0 +1,64 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Hyperpolymath
+
+= Echomesh Roadmap
+:toc: auto
+
+== Overview
+
+Development roadmap for the Echomesh mesh networking and communication framework.
+
+[NOTE]
+====
+**Specification Pending**
+
+Detailed milestones and deliverables will be defined once project specifications are uploaded.
+====
+
+== Phases
+
+=== Phase 0: Foundation ✓
+
+*Status: Complete*
+
+* [x] Repository initialization
+* [x] Multi-forge distribution infrastructure (GitHub, GitLab, Codeberg, Bitbucket)
+* [x] Development standards and language policy
+* [x] License selection (AGPL-3.0-or-later)
+
+=== Phase 1: Specification
+
+*Status: Pending*
+
+* [ ] Project specification document
+* [ ] Architecture design
+* [ ] Protocol specification
+* [ ] API design
+
+=== Phase 2: Core Implementation
+
+*Status: Awaiting Phase 1*
+
+* [ ] Core mesh networking primitives
+* [ ] Communication protocol implementation
+* [ ] Node discovery and routing
+
+=== Phase 3: Integration & Tooling
+
+*Status: Awaiting Phase 2*
+
+* [ ] CLI tools
+* [ ] Client libraries
+* [ ] Documentation
+
+=== Phase 4: Hardening
+
+*Status: Awaiting Phase 3*
+
+* [ ] Security audit
+* [ ] Performance optimization
+* [ ] Production readiness
+
+== Contributing
+
+Contribution guidelines will be established once specifications are finalized.

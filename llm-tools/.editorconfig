@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+trim_trailing_whitespace = true
+
+[*.rs]
+indent_style = space
+indent_size = 4
+
+[*.hs]
+indent_style = space
+indent_size = 2
+
+[*.scm]
+indent_style = space
+indent_size = 2
+
+[*.adoc]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+
+[justfile]
+indent_style = space
+indent_size = 4
+
+[Makefile]
+indent_style = tab

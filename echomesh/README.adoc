@@ -1,0 +1,61 @@
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Hyperpolymath
+
+= Echomesh
+
+
+
+
+:toc: auto
+:toclevels: 3
+
+Mesh networking and communication framework.
+
+== Status
+
+[CAUTION]
+====
+**Project Specification Phase**
+
+This repository is in its initial foundation stage. Detailed specifications, architecture documents, and implementation code will be uploaded shortly.
+====
+
+== Current State
+
+[cols="1,3"]
+|===
+| Component | Status
+
+| Infrastructure
+| ✓ Multi-forge mirroring (GitHub → GitLab, Codeberg, Bitbucket)
+
+| Development Standards
+| ✓ Language policy established (see `.claude/CLAUDE.md`)
+
+| Specification
+| ⏳ Pending
+
+| Architecture
+| ⏳ Pending
+
+| Implementation
+| ⏳ Pending
+|===
+
+== Technology Stack (Planned)
+
+Per the link:.claude/CLAUDE.md[Hyperpolymath Language Policy]:
+
+* **ReScript** — Primary application code
+* **Rust** — Performance-critical components, WASM, CLI tools
+* **Deno** — Runtime and package management
+* **Gleam** — Backend services (BEAM/JS target)
+
+== Roadmap
+
+See link:ROADMAP.adoc[ROADMAP.adoc] for development phases.
+
+== License
+
+PMPL-1.0-or-later

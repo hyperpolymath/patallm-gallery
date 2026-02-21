@@ -1,0 +1,339 @@
+= elegant-STATE
+:toc: macro
+:toc-title: Contents
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
+:experimental:
+
+Local-first state graph for multi-agent orchestration.
+
+toc::[]
+
+== What is this?
+
+elegant-STATE replaces manual state tracking (like `STATE.adoc`) with a queryable, event-sourced graph database. Multiple agents (Claude, Llama, custom modules) can query and modify the state via GraphQL.
+
+== Features
+
+[cols="1,3"]
+|===
+|Feature |Description
+
+|*State Graph*
+|Nodes and edges with full event sourcing
+
+|*Full-Text Search*
+|Powered by tantivy
+
+|*Fuzzy Search*
+|agrep-like approximate matching (skim, nucleo)
+
+|*Document Conversion*
+|pandoc integration for any format
+
+|*OCR*
+|tesseract integration for image text extraction
+
+|*Multi-Agent Coordination*
+|Proposal mode, voting system, reputation tracking
+
+|*GraphQL API*
+|Query, mutation, and subscription support
+|===
+
+== Quick Start
+
+[source,bash]
+----
+# Development shell (with Guix)
+guix shell
+
+# Build
+cargo build --release
+
+# Create a project
+state-cli node create --kind project --content '{"name": "NeuroPhone"}'
+
+# Create an insight
+state-cli node create --kind insight --content '{"text": "Use sled for embedded storage"}'
+
+# Link them
+state-cli edge create --from <project-id> --to <insight-id> --kind part_of
+
+# Start GraphQL server
+state-cli serve http --port 4000
+----
+
+== Installation
+
+=== From Source
+
+[source,bash]
+----
+git clone https://github.com/Hyperpolymath/elegant-STATE
+cd elegant-STATE
+cargo build --release
+cp target/release/state-cli ~/.local/bin/
+----
+
+=== With Guix
+
+Add to your `~/.config/guix/channels.scm`:
+
+[source,scheme]
+----
+(cons*
+ (channel
+  (name 'elegant-state)
+  (url "https://github.com/Hyperpolymath/elegant-STATE")
+  (branch "main"))
+ %default-channels)
+----
+
+Then:
+
+[source,bash]
+----
+guix pull
+guix install elegant-state
+----
+
+=== As a System Service
+
+In your Guix system configuration:
+
+[source,scheme]
+----
+(use-modules (elegant-state services))
+
+(operating-system
+  ...
+  (services
+   (append
+    (list
+     (service elegant-state-service-type
+              (elegant-state-configuration
+               (port 4000)
+               (data-dir "/var/lib/elegant-state"))))
+    %base-services)))
+----
+
+== CLI Reference
+
+=== Core Commands
+
+[source,bash]
+----
+# Node operations
+state-cli node create --kind project --content '{"name": "MyProject"}'
+state-cli node list --kind conversation --limit 10
+state-cli node get <node-id>
+state-cli node update <node-id> --content '{"status": "active"}'
+state-cli node delete <node-id>
+
+# Edge operations
+state-cli edge create --from <id> --to <id> --kind references
+state-cli edge list --from <id>
+state-cli edge delete <edge-id>
+
+# Search
+state-cli search fulltext "NeuroPhone" --kinds project,insight
+state-cli search fuzzy "nrophone" --limit 5
+state-cli search agrep "neurophone" --max-errors 2
+
+# Events
+state-cli events --since "1 hour ago" --agent claude
+----
+
+=== Coordination Commands
+
+[source,bash]
+----
+# Agent management
+state-cli agent list --reputation
+state-cli agent set claude --mode proposal --vote-weight 0.8
+
+# Proposals
+state-cli proposal list --pending
+state-cli proposal create create "new:insight" --payload '{"text": "idea"}' --rationale "Found this"
+state-cli vote <proposal-id> approve --reason "Looks good"
+----
+
+=== Server Commands
+
+[source,bash]
+----
+# Start server
+state-cli serve http --port 4000
+
+# GraphQL operations
+state-cli graphql query '{ nodes(kind: PROJECT) { id content } }'
+state-cli graphql schema > schema.graphql
+----
+
+== GraphQL API
+
+=== Queries
+
+[source,graphql]
+----
+# Get nodes
+query {
+  nodes(kind: PROJECT) {
+    id
+    content
+    createdAt
+  }
+}
+
+# Search
+query {
+  search(query: "NeuroPhone", kinds: [PROJECT, INSIGHT]) {
+    id
+    kind
+    content
+  }
+}
+
+# Get neighbors
+query {
+  neighbors(id: "01ABC...", depth: 2) {
+    id
+    kind
+  }
+}
+----
+
+=== Mutations
+
+[source,graphql]
+----
+# Create a node
+mutation {
+  createNode(input: {
+    kind: INSIGHT
+    content: {text: "hello"}
+  }, agent: CLAUDE) {
+    id
+  }
+}
+
+# Create an edge
+mutation {
+  createEdge(input: {
+    from: "01ABC..."
+    to: "01DEF..."
+    kind: REFERENCES
+  }) {
+    id
+  }
+}
+----
+
+=== Subscriptions
+
+[source,graphql]
+----
+# Watch for node changes
+subscription {
+  nodeChanged(kinds: [INSIGHT, TASK]) {
+    id
+    kind
+    content
+  }
+}
+
+# Event stream
+subscription {
+  eventStream {
+    id
+    timestamp
+    agent
+    operation
+  }
+}
+----
+
+== Configuration
+
+=== Nickel Configuration
+
+elegant-STATE uses Nickel for type-safe, composable configuration.
+
+[source,bash]
+----
+# Generate config for environment
+just config dev
+just config prod
+
+# Generate all permutations
+just config-matrix
+----
+
+=== Environment Presets
+
+* *dev* - Permissive, verbose logging, direct mode
+* *staging* - Balanced, proposal mode, moderate logging
+* *prod* - Strict, secure, minimal logging
+* *minimal* - For embedded/constrained environments
+* *neurophone* - Optimized for Termux/mobile
+
+== Architecture
+
+----
+elegant-STATE/
+├── src/
+│   ├── schema/           # StateNode, StateEdge, StateEvent
+│   ├── store/
+│   │   ├── sled_store.rs # Core sled backend
+│   │   ├── fulltext.rs   # tantivy full-text search
+│   │   ├── fuzzy.rs      # agrep-like matching
+│   │   ├── pandoc.rs     # document conversion
+│   │   └── ocr.rs        # tesseract OCR
+│   ├── coordinator/
+│   │   ├── capabilities  # Direct/Proposal/Observer modes
+│   │   ├── proposal      # mutation proposals
+│   │   ├── voting        # multi-strategy voting
+│   │   └── reputation    # agent reputation tracking
+│   ├── graphql/
+│   │   ├── query
+│   │   ├── mutation
+│   │   └── subscription
+│   └── cli/
+├── config/               # Nickel configuration
+├── guix/                 # Guix channel
+└── doc/                  # Documentation
+----
+
+== Data Model
+
+[horizontal]
+*StateNode*:: Vertices in the knowledge graph (conversations, projects, insights, tasks)
+*StateEdge*:: Relationships between nodes (references, derived_from, part_of, etc.)
+*StateEvent*:: Append-only changelog of all mutations
+
+== Building
+
+[source,bash]
+----
+# Using just
+just build           # Debug build
+just build-release   # Release build
+just test            # Run tests
+just lint            # Run lints
+just doc             # Generate docs
+
+# Using cargo directly
+cargo build --release
+cargo test
+cargo clippy
+----
+
+== Contributing
+
+See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc] for guidelines.
+
+== License
+
+MIT - see link:LICENSE.txt[LICENSE.txt]

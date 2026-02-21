@@ -1,0 +1,36 @@
+= llm-antidote - Citation Guide
+:toc:
+
+== BibTeX
+
+[source,bibtex]
+----
+@software{llm-antidote_2025,
+  author = {Polymath, Hyper},
+  title = {llm-antidote},
+  year = {2025},
+  url = {https://github.com/hyperpolymath/llm-antidote},
+  license = {AGPL-3.0-or-later}
+}
+----
+
+== Harvard Style
+
+Polymath, H. (2025) _llm-antidote_ [Computer software]. Available at: https://github.com/hyperpolymath/llm-antidote
+
+== OSCOLA
+
+Hyper Polymath, 'llm-antidote' (2025) <https://github.com/hyperpolymath/llm-antidote>
+
+== MLA
+
+Polymath, Hyper. "llm-antidote." 2025, github.com/hyperpolymath/llm-antidote.
+
+== APA 7
+
+Polymath, H. (2025). _llm-antidote_ [Computer software]. GitHub. https://github.com/hyperpolymath/llm-antidote
+
+== See Also
+
+* link:../CITATION.cff[CITATION.cff]
+* link:../codemeta.json[codemeta.json]

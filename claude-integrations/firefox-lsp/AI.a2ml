@@ -1,0 +1,41 @@
+
+# AI Assistant Instructions
+
+## CRITICAL: Language Immutability
+
+⚠️ **DO NOT CHANGE THE PROGRAMMING LANGUAGE OF THIS REPOSITORY**
+
+This repository is an **Elixir LSP server** leveraging the BEAM VM.
+- The implementation language MUST remain Elixir
+- Do NOT port, rewrite, or translate to Rust, Go, TypeScript, Python, or any other language
+- Do NOT change the repository description or technical approach
+- Elixir + BEAM provides: hot code reload, supervision trees, process isolation, fault tolerance
+- The language and architecture are fundamental to the project's design
+
+## Repository Focus
+- This is a Language Server Protocol (LSP) implementation in Elixir
+- Uses GenLSP framework for LSP compliance
+- Adapters run as isolated GenServer processes under supervision
+- Follow Rhodium Standard Repository (RSR) conventions
+
+## Workflow
+1. Inspect `STATE.scm` for current state, blockers, and next actions
+2. Respect constraints in `META.scm` architecture decisions
+3. After finishing edits, update STATE.scm and commit with imperative message
+4. Never commit node_modules or build artifacts
+
+## Code Quality
+- Run `just quality` before committing (fmt, lint, dialyzer)
+- Maintain SPDX headers (PMPL-1.0-or-later)
+- Use correct author: Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+- Keep adapters isolated in separate GenServer processes
+
+## Testing
+- Write ExUnit tests for all adapters
+- Test LSP protocol compliance
+- Mock external CLI tools in tests
+- Run `just test` before pushing
+
+## Delivery Promises
+- Mention if STATE.scm, checkpoints, or workflows changed
+- Keep this file in sync with repository governance

@@ -1,0 +1,114 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+= LLM Tools
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/RSR-Platinum-9cf.svg[RSR Compliance]
+
+*A unified monorepo for LLM tooling: context management, conversation unification, and code verification.*
+
+:toc: macro
+:toclevels: 2
+:icons: font
+:source-highlighter: rouge
+
+toc::[]
+
+== Overview
+
+llm-tools consolidates four previously independent repositories into a single monorepo, providing a cohesive suite of tools for working with large language models.
+
+[cols="1,3,1"]
+|===
+| Component | Description | Language
+
+| antidote/
+| Universal semantic reset artifacts for LLM context management.
+| Guile Scheme
+
+| unify/
+| Local-first, privacy-focused tool for managing conversations across multiple LLM platforms.
+| Rust
+
+| unify-core/
+| Core Rust library providing foundational types and abstractions for the unified LLM conversation data model.
+| Rust
+
+| verify/
+| Real verification for LLM-generated code via ECHIDNA integration.
+| Haskell
+|===
+
+== Repository Structure
+
+[source]
+----
+llm-tools/
++-- antidote/           # Semantic reset artifacts (ex llm-antidote)
++-- unify/              # Conversation manager (ex llm-unify)
++-- unify-core/         # Core library (ex llm-unify-core)
++-- verify/             # Code verification (ex llm-verify)
++-- justfile            # Build orchestration
++-- LICENSE             # PMPL-1.0-or-later
++-- README.adoc         # This file
+----
+
+== Getting Started
+
+=== Prerequisites
+
+* https://www.rust-lang.org/[Rust] 1.75+ (for unify and unify-core)
+* https://www.haskell.org/ghcup/[GHC/Cabal] (for verify)
+* https://www.gnu.org/software/guile/[Guile Scheme] 3.0+ (for antidote)
+* https://just.systems/[just] (build orchestration)
+
+=== Building
+
+[source,bash]
+----
+# Build all Rust components
+just build-rust
+
+# Build the Haskell verifier
+just build-verify
+
+# Run all tests
+just test
+----
+
+== Components
+
+=== antidote
+
+Semantic reset artifacts for LLM context management. The core llm-reset artifact is a Guile Scheme program that purges prior context, associations, and semantic weight from language models.
+
+=== unify
+
+A local-first, privacy-focused conversation manager supporting multiple LLM providers. Zero unsafe Rust blocks.
+
+=== unify-core
+
+The foundational library providing provider-agnostic data models for LLM conversations, messages, and metadata.
+
+=== verify
+
+Real code verification via ECHIDNA integration. Instead of relying on LLM pattern matching for correctness claims, verify actually compiles, type-checks, and runs property-based tests on generated code.
+
+== Provenance
+
+This monorepo was created by consolidating:
+
+* https://github.com/hyperpolymath/llm-antidote[llm-antidote]
+* https://github.com/hyperpolymath/llm-unify[llm-unify]
+* https://github.com/hyperpolymath/llm-unify-core[llm-unify-core]
+* https://github.com/hyperpolymath/llm-verify[llm-verify]
+
+Full git history for each component is preserved in the original repositories.
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later
+
+Copyright (C) 2025-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+
+See link:LICENSE[LICENSE] for the full Palimpsest-MPL 1.0 license text.

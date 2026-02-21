@@ -1,0 +1,257 @@
+= state-cli(1)
+:doctype: manpage
+:man manual: elegant-STATE Manual
+:man source: elegant-STATE {version}
+:page-layout: base
+
+== NAME
+
+state-cli - Local-first state graph for multi-agent orchestration
+
+== SYNOPSIS
+
+*state-cli* [_OPTIONS_] _COMMAND_ [_ARGS_]...
+
+== DESCRIPTION
+
+elegant-STATE is a persistent knowledge graph that multiple agents (Claude, Llama, custom modules) can query and modify via GraphQL.
+
+The *state-cli* command provides a comprehensive interface for managing the state graph, including node and edge operations, search, agent coordination, and server management.
+
+== GLOBAL OPTIONS
+
+*-d, --db-path* _PATH_::
+    Path to the state database. Can also be set via *STATE_DB* environment variable.
+    Default: _~/.local/share/elegant-state/db_
+
+*-c, --config* _FILE_::
+    Path to configuration file (Nickel, JSON, TOML, or YAML).
+    Can also be set via *STATE_CONFIG* environment variable.
+
+*-l, --log-level* _LEVEL_::
+    Log level: trace, debug, info, warn, error.
+    Can also be set via *STATE_LOG* environment variable.
+    Default: _info_
+
+*-o, --output* _FORMAT_::
+    Output format: text, json, yaml, toml, table, csv, ndjson.
+    Default: _text_
+
+*-a, --agent* _NAME_::
+    Agent identity for operations.
+    Default: _user_
+
+*-q, --quiet*::
+    Suppress non-essential output.
+
+*-v, --verbose*::
+    Show detailed output.
+
+*--dry-run*::
+    Show what would be done without executing.
+
+*--force*::
+    Force operation without confirmation.
+
+*--no-color*::
+    Disable color output.
+
+== COMMANDS
+
+=== Core Operations
+
+*node* _SUBCOMMAND_::
+    Node operations (create, read, update, delete, list).
+    Alias: *n*
+
+*edge* _SUBCOMMAND_::
+    Edge operations (create, delete, list, traverse).
+    Alias: *e*
+
+*search* _SUBCOMMAND_::
+    Search operations (fulltext, fuzzy, agrep, exact).
+    Alias: *s*
+
+=== Events & History
+
+*events* [_OPTIONS_]::
+    Show recent events from the event log.
+    Alias: *ev*
+
+*history* _ID_ [_OPTIONS_]::
+    Show event history for a specific node or edge.
+
+=== Coordination
+
+*agent* _SUBCOMMAND_::
+    Agent configuration and management.
+    Alias: *ag*
+
+*proposal* _SUBCOMMAND_::
+    Proposal management for proposal mode.
+    Alias: *pr*
+
+*vote* _PROPOSAL_ID_ _DECISION_ [_OPTIONS_]::
+    Vote on a proposal (approve, reject, abstain).
+
+=== Import/Export
+
+*export* [_OUTPUT_] [_OPTIONS_]::
+    Export state to file (JSON, YAML, TOML, GraphML, DOT).
+
+*import* _FILE_ [_OPTIONS_]::
+    Import state from file.
+
+=== Server
+
+*serve* _SUBCOMMAND_::
+    Start GraphQL server.
+    Alias: *srv*
+
+*graphql* _SUBCOMMAND_::
+    GraphQL operations (query, mutate, introspect).
+    Alias: *gql*
+
+=== Database
+
+*db* _SUBCOMMAND_::
+    Database operations (backup, restore, compact, stats).
+    Alias: *database*
+
+=== Configuration
+
+*config* _SUBCOMMAND_::
+    Configuration management.
+    Alias: *cfg*
+
+=== Document Processing
+
+*convert* _INPUT_ [_OUTPUT_] [_OPTIONS_]::
+    Convert document using pandoc.
+
+*ocr* _IMAGE_ [_OPTIONS_]::
+    Extract text from image using tesseract.
+
+=== Utilities
+
+*completions* _SHELL_::
+    Generate shell completions (bash, zsh, fish, elvish, powershell).
+
+*version* [_OPTIONS_]::
+    Print version information.
+
+*info* [_OPTIONS_]::
+    Show system information and health.
+
+*repl*::
+    Interactive REPL mode.
+
+*watch* _COMMAND_...::
+    Watch for changes and execute command.
+
+== EXAMPLES
+
+Create a project node::
++
+[source,bash]
+----
+state-cli node create --kind project --content '{"name": "MyProject"}'
+----
+
+Search for nodes::
++
+[source,bash]
+----
+state-cli search fulltext "rust programming" --kinds insight,context
+----
+
+Start GraphQL server::
++
+[source,bash]
+----
+state-cli serve http --port 4000
+----
+
+Configure agent capabilities::
++
+[source,bash]
+----
+state-cli agent set claude --mode proposal --vote-weight 0.8
+----
+
+Export state as JSON::
++
+[source,bash]
+----
+state-cli export -f json --pretty > backup.json
+----
+
+Create an edge between nodes::
++
+[source,bash]
+----
+state-cli edge create --from 01ABC... --to 01DEF... --kind references
+----
+
+== ENVIRONMENT
+
+*STATE_DB*::
+    Database path. Default: _~/.local/share/elegant-state/db_
+
+*STATE_CONFIG*::
+    Configuration file path.
+
+*STATE_LOG*::
+    Log level. Default: _info_
+
+*STATE_HOST*::
+    Server host. Default: _127.0.0.1_
+
+*STATE_PORT*::
+    Server port. Default: _4000_
+
+== FILES
+
+_~/.local/share/elegant-state/db/_::
+    Default database directory.
+
+_~/.local/share/elegant-state/index/_::
+    Full-text search index.
+
+_~/.config/elegant-state/config.ncl_::
+    User configuration file.
+
+== EXIT STATUS
+
+*0*::
+    Success.
+
+*1*::
+    General error.
+
+*2*::
+    Command-line usage error.
+
+*3*::
+    Database error.
+
+*4*::
+    Network error.
+
+== SEE ALSO
+
+*state-cli-node*(1), *state-cli-edge*(1), *state-cli-search*(1),
+*state-cli-agent*(1), *state-cli-proposal*(1), *state-cli-db*(1)
+
+== AUTHORS
+
+elegant-STATE contributors.
+
+== BUGS
+
+Report bugs at: https://github.com/Hyperpolymath/elegant-STATE/issues
+
+== COPYRIGHT
+
+Copyright (C) 2024 elegant-STATE contributors.
+License: MIT

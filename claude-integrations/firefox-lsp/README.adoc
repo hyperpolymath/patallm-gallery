@@ -1,0 +1,207 @@
+= Claude Firefox LSP
+Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
+
+Language Server Protocol implementation for Firefox browser automation.
+
+== Overview
+
+Claude Firefox LSP provides LSP-based browser automation capabilities for Firefox, enabling editor integration for web testing, scraping, and automation tasks.
+
+Built on the https://firefox-source-docs.mozilla.org/testing/marionette/Protocol.html[Marionette protocol], Firefox's native automation interface.
+
+== Features
+
+* *Navigate* - Load URLs and control browser navigation
+* *Click* - Click elements using CSS selectors or XPath
+* *Type Text* - Enter text into form fields
+* *Screenshot* - Capture full page or element screenshots
+* *Execute JavaScript* - Run arbitrary JavaScript in page context
+* *Extract Content* - Get page HTML, text, or DOM representation
+
+== Installation
+
+=== Prerequisites
+
+* Elixir 1.17+
+* Firefox (with Marionette support)
+
+=== Setup
+
+[source,bash]
+----
+# Clone the repository
+cd ~/Documents/hyperpolymath-repos
+git clone https://github.com/hyperpolymath/claude-firefox-lsp
+cd claude-firefox-lsp
+
+# Install dependencies
+mix deps.get
+
+# Compile the project
+mix compile
+----
+
+== Usage
+
+=== Starting Firefox with Marionette
+
+Firefox must be started with the `-marionette` flag:
+
+[source,bash]
+----
+# Headless mode
+firefox -marionette -headless
+
+# With visible UI (for debugging)
+firefox -marionette
+----
+
+Or configure via `about:config`:
+
+* Set `marionette.enabled` to `true`
+* Set `marionette.port` to `2828` (default)
+
+=== Running the LSP Server
+
+[source,bash]
+----
+# Start the LSP server
+mix run --no-halt
+
+# Or build a release
+mix release
+_build/prod/rel/claude_firefox_lsp/bin/claude_firefox_lsp start
+----
+
+=== LSP Commands
+
+The server exposes these workspace commands:
+
+[cols="1,2,1"]
+|===
+| Command | Description | Arguments
+
+| `firefox.navigate`
+| Navigate to URL
+| `[url, opts?]`
+
+| `firefox.click`
+| Click element
+| `[selector, opts?]`
+
+| `firefox.typeText`
+| Type into element
+| `[selector, text, opts?]`
+
+| `firefox.screenshot`
+| Take screenshot
+| `[opts?]`
+
+| `firefox.executeJs`
+| Execute JavaScript
+| `[javascript, opts?]`
+
+| `firefox.getContent`
+| Get page content
+| `[opts?]`
+
+| `firefox.detectBrowsers`
+| Detect available browsers
+| `[]`
+|===
+
+=== Example: VS Code Integration
+
+[source,json]
+----
+{
+  "command": "firefox.navigate",
+  "arguments": ["https://example.com", {"timeout": 5000}]
+}
+----
+
+== Architecture
+
+=== Components
+
+* *Adapters* - Browser-specific implementations (Firefox, Chrome, etc.)
+** `ClaudeFirefox.Adapters.Behaviour` - Adapter contract
+** `ClaudeFirefox.Adapters.Firefox` - Marionette protocol implementation
+* *LSP Server* - GenLSP-based server handling LSP protocol
+* *Handlers* - Command execution and response formatting
+
+=== Protocol: Marionette
+
+Firefox's Marionette protocol communicates over TCP (port 2828 by default).
+
+Message format:
+
+----
+<length>:<json_payload>
+----
+
+Example:
+
+----
+47:{"id": 1, "name": "WebDriver:Navigate", "parameters": {"url": "https://example.com"}}
+----
+
+See https://firefox-source-docs.mozilla.org/testing/marionette/Protocol.html[Marionette Protocol Documentation].
+
+== Development
+
+=== Running Tests
+
+[source,bash]
+----
+mix test
+----
+
+=== Code Quality
+
+[source,bash]
+----
+# Format code
+mix format
+
+# Run linter
+mix credo --strict
+
+# Type checking
+mix dialyzer
+----
+
+=== Building Release
+
+[source,bash]
+----
+MIX_ENV=prod mix release
+----
+
+== Ecosystem Integration
+
+Related projects:
+
+* *poly-ssg-lsp* - LSP for static site generators
+* *poly-queue-lsp* - LSP for message queue systems
+* *poly-observability-lsp* - LSP for observability platforms
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later
+
+Copyright (c) 2026 Jonathan D.A. Jewell
+
+Licensed under the Palimpsest License, version 1.0 or later.
+
+== Contributing
+
+See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc] for contribution guidelines.
+
+== Security
+
+See link:SECURITY.md[SECURITY.md] for security policy.

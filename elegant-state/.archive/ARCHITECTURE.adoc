@@ -1,0 +1,367 @@
+= elegant-STATE Architecture
+:toc: macro
+:toc-title: Contents
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
+
+Technical architecture for elegant-STATE.
+
+toc::[]
+
+== Tech Stack
+
+[cols="1,1,2"]
+|===
+|Component |Choice |Rationale
+
+|Embedded DB
+|sled
+|Rust-native, ACID, embedded, no server
+
+|Full-text Search
+|tantivy
+|Rust-native, fast, feature-rich
+
+|Fuzzy Matching
+|skim + nucleo
+|fzf-like + helix editor matcher
+
+|GraphQL
+|async-graphql
+|Best Rust GraphQL, async-native
+
+|CLI
+|clap
+|Standard Rust CLI with derive macros
+
+|Serialization
+|serde + bincode
+|Fast binary, serde ecosystem
+
+|Async Runtime
+|tokio
+|Industry standard
+
+|Configuration
+|Nickel
+|Type-safe, composable configs
+
+|Packaging
+|Guix
+|Reproducible, declarative
+|===
+
+== Core Schema
+
+[source,rust]
+----
+// Identity
+type NodeId = Ulid;      // Universally unique, sortable
+type EdgeId = Ulid;
+type EventId = Ulid;
+
+// The fundamental unit of state
+struct StateNode {
+    id: NodeId,
+    kind: NodeKind,           // Conversation, Project, Insight, Task, etc.
+    content: Value,           // serde_json::Value for flexibility
+    metadata: Metadata,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+}
+
+enum NodeKind {
+    Conversation,  // A Claude conversation
+    Project,       // A project grouping
+    Insight,       // An extracted insight
+    Task,          // A todo/task
+    Context,       // Contextual information
+    Module,        // A registered module
+    Agent,         // An agent identity
+    Custom(String),
+}
+
+// Relationships between nodes
+struct StateEdge {
+    id: EdgeId,
+    from: NodeId,
+    to: NodeId,
+    kind: EdgeKind,
+    weight: f32,              // Relevance/strength
+    metadata: Metadata,
+    created_at: DateTime<Utc>,
+}
+
+enum EdgeKind {
+    References,    // A references B
+    DerivedFrom,   // A was derived from B
+    RelatedTo,     // A is related to B
+    PartOf,        // A is part of B
+    Blocks,        // A blocks B
+    Enables,       // A enables B
+    Supersedes,    // A supersedes B
+    Custom(String),
+}
+
+// Every mutation is logged
+struct StateEvent {
+    id: EventId,
+    timestamp: DateTime<Utc>,
+    agent: AgentId,           // Who made this change
+    operation: Operation,
+    target: Target,           // Node or Edge affected
+    before: Option<Value>,    // Previous state (for undo)
+    after: Option<Value>,     // New state
+}
+----
+
+== Storage Layout
+
+----
+sled database
+├── nodes/              # Tree: NodeId -> StateNode
+├── edges/              # Tree: EdgeId -> StateEdge
+├── edges_by_from/      # Index: NodeId -> Vec<EdgeId>
+├── edges_by_to/        # Index: NodeId -> Vec<EdgeId>
+├── events/             # Tree: EventId -> StateEvent (append-only)
+├── nodes_by_kind/      # Index: NodeKind -> Vec<NodeId>
+└── metadata/           # Tree: key -> value (config, schema version)
+----
+
+== Directory Structure
+
+----
+elegant-STATE/
+├── Cargo.toml
+├── justfile              # Build recipes
+├── src/
+│   ├── main.rs           # CLI entrypoint
+│   ├── lib.rs            # Library root
+│   ├── schema/
+│   │   ├── mod.rs
+│   │   ├── node.rs       # StateNode
+│   │   ├── edge.rs       # StateEdge
+│   │   └── event.rs      # StateEvent
+│   ├── store/
+│   │   ├── mod.rs
+│   │   ├── sled_store.rs # sled backend
+│   │   ├── fulltext.rs   # tantivy search
+│   │   ├── fuzzy.rs      # fuzzy matching
+│   │   ├── pandoc.rs     # document conversion
+│   │   ├── ocr.rs        # tesseract OCR
+│   │   └── indices.rs    # secondary indices
+│   ├── coordinator/
+│   │   ├── mod.rs
+│   │   ├── capabilities.rs
+│   │   ├── proposal.rs
+│   │   ├── voting.rs
+│   │   └── reputation.rs
+│   ├── graphql/
+│   │   ├── mod.rs
+│   │   ├── query.rs
+│   │   ├── mutation.rs
+│   │   ├── subscription.rs
+│   │   └── types.rs
+│   ├── cli/
+│   │   ├── mod.rs
+│   │   ├── node.rs
+│   │   ├── edge.rs
+│   │   ├── search.rs
+│   │   ├── agent.rs
+│   │   ├── proposal.rs
+│   │   ├── config.rs
+│   │   ├── db.rs
+│   │   ├── graphql.rs
+│   │   └── serve.rs
+│   └── event/
+│       ├── mod.rs
+│       └── sourcing.rs
+├── config/               # Nickel configs
+│   ├── main.ncl
+│   ├── types.ncl
+│   ├── presets.ncl
+│   └── validators.ncl
+├── guix/
+│   └── elegant-state/
+│       ├── packages.scm
+│       ├── services.scm
+│       └── manifests.scm
+├── doc/
+│   └── man/
+│       └── state-cli.1.adoc
+└── tests/
+    ├── integration/
+    └── fixtures/
+----
+
+== Coordination System
+
+=== Capability Modes
+
+[cols="1,3"]
+|===
+|Mode |Description
+
+|*Direct*
+|Agent can directly mutate state
+
+|*Proposal*
+|Agent must propose changes for approval
+
+|*Observer*
+|Agent can only read (read-only)
+|===
+
+=== Voting Strategies
+
+[cols="1,3"]
+|===
+|Strategy |Description
+
+|*Unanimous*
+|All voters must approve
+
+|*SimpleMajority*
+|More than 50% must approve
+
+|*Supermajority*
+|More than 66.7% must approve
+
+|*Weighted*
+|Sum of approve weights must exceed threshold
+
+|*FirstVote*
+|First vote wins (for fast iteration)
+
+|*SingleApprover*
+|Designated approver decides
+|===
+
+=== Reputation System
+
+* Initial score: 0.5 (neutral)
+* Updated via exponential moving average
+* Correct votes increase reputation
+* Incorrect votes decrease reputation
+* Optional time decay toward neutral
+
+== GraphQL Schema
+
+[source,graphql]
+----
+type Query {
+  node(id: ID!): StateNode
+  nodes(kind: NodeKind, limit: Int): [StateNode!]!
+  edges(from: ID, to: ID, kind: EdgeKind): [StateEdge!]!
+  events(since: DateTime, agent: AgentId, limit: Int): [StateEvent!]!
+  neighbors(id: ID!, direction: Direction, depth: Int): [StateNode!]!
+  path(from: ID!, to: ID!): [StateEdge!]
+  search(query: String!, kinds: [NodeKind!]): [StateNode!]!
+}
+
+type Mutation {
+  createNode(input: CreateNodeInput!, agent: AgentKind): StateNode!
+  updateNode(input: UpdateNodeInput!, agent: AgentKind): StateNode!
+  deleteNode(id: ID!, agent: AgentKind): Boolean!
+  createEdge(input: CreateEdgeInput!, agent: AgentKind): StateEdge!
+  deleteEdge(id: ID!, agent: AgentKind): Boolean!
+}
+
+type Subscription {
+  nodeChanged(kinds: [NodeKind!]): StateNode!
+  eventStream(agents: [AgentKind!]): StateEvent!
+}
+----
+
+== Feature Matrix
+
+[cols="1,1,1,1"]
+|===
+|Feature |v0.1 |v0.2 |v1.0
+
+|Node CRUD
+|✅
+|✅
+|✅
+
+|Edge CRUD
+|✅
+|✅
+|✅
+
+|Event logging
+|✅
+|✅
+|✅
+
+|GraphQL API
+|✅
+|✅
+|✅
+
+|CLI
+|✅
+|✅
+|✅
+
+|Guix package
+|✅
+|✅
+|✅
+
+|Full-text search
+|❌
+|✅
+|✅
+
+|Fuzzy search
+|❌
+|✅
+|✅
+
+|Pandoc integration
+|❌
+|✅
+|✅
+
+|OCR integration
+|❌
+|✅
+|✅
+
+|Proposal mode
+|❌
+|✅
+|✅
+
+|Voting system
+|❌
+|✅
+|✅
+
+|Reputation
+|❌
+|✅
+|✅
+
+|Subscriptions
+|❌
+|✅
+|✅
+
+|Nickel config
+|❌
+|✅
+|✅
+
+|TUI
+|❌
+|❌
+|✅
+
+|Semantic search
+|❌
+|❌
+|✅
+|===

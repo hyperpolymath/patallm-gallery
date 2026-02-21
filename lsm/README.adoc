@@ -1,0 +1,30 @@
+= LSM (Liquid State Machines)
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc: auto
+
+A Rust implementation of Liquid State Machines (spiking neural network reservoirs) for temporal pattern recognition.
+
+== Overview
+
+LSM implements reservoir computing using spiking neural networks for processing temporal/sequential data.
+
+== Features
+
+* Spiking neural network reservoirs
+* Temporal pattern recognition
+* Rust performance
+
+== Installation
+
+[source,bash]
+----
+cargo add lsm
+----
+
+== License
+
+PMPL-1.0-or-later

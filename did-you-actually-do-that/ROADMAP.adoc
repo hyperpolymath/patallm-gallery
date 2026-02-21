@@ -1,0 +1,82 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= DYADT Roadmap
+
+== Current Status: v0.1.0
+
+12-layer verification pipeline fully implemented with triple API and SLM ensemble.
+
+== Completed (v0.1.0)
+
+=== Foundation
+* [x] Core verification types (Claim, Evidence, Verdict)
+* [x] 12-layer verification pipeline (all layers implemented)
+* [x] CLI tool (check, verify, hash, report commands)
+* [x] JSON claim serialization
+* [x] Claim extractor from LLM output text
+
+=== Verification Layers
+* [x] Layers 1-7: File existence, content hash, syntactic validity, semantic integrity, test execution, diff coherence, dependency resolution
+* [x] Layer 8: Cross-reference analysis (import/export graph, contradiction detection, temporal validation)
+* [x] Layer 9: Completeness audit (claimed-but-missing files, stub detection, orphaned tests)
+* [x] Layer 10: Regression guard (baseline comparison, regression detection)
+* [x] Layer 11: SLM consensus (ensemble voting with GoT + MoE)
+* [x] Layer 12: Pattern learning (violation tracking, frequency analysis, risk scoring)
+
+=== SLM Ensemble
+* [x] Policy Oracle (Tier 1) — 12 cognitive-gating violation categories
+* [x] Graph-of-Thought backend — 3 adversarial reasoning paths
+* [x] Mixture-of-Experts backend — violation-routed expert selection
+* [x] Ensemble aggregation with asymmetric weighting (1.5x for rejections)
+
+=== API
+* [x] REST API on port 4200
+* [x] GraphQL API via Absinthe (port 4200, path /api/graphql)
+* [x] gRPC API on port 4201
+* [x] Single context module (DyadtBrain.Verifications)
+
+=== Infrastructure
+* [x] Erlang Port Protocol (Rust <-> Elixir)
+* [x] Container deployment (Containerfile, selur-compose.toml)
+* [x] Idris2 ABI definitions with formal proofs
+* [x] Zig FFI C-compatible implementation
+* [x] 204 tests (130 Rust + 74 Elixir), 0 failures
+
+== Planned (v0.2.0)
+
+=== Real SLM Inference
+* [ ] llama.cpp integration via llama-cpp-2 crate
+* [ ] TinyLlama-1.1B for lightweight evaluation
+* [ ] Phi-2 for higher-quality evaluation
+* [ ] Model download and caching
+
+=== Enhanced Evidence
+* [ ] HTTP reachability checker
+* [ ] Regex content matching
+* [ ] JSON path verification
+* [ ] Git blame integration
+
+=== Deployment
+* [ ] Publish to crates.io
+* [ ] GitHub Actions CI/CD
+* [ ] VeriSimDB integration (automated pipeline)
+
+== Planned (v1.0.0)
+
+=== Production
+* [ ] Property-based testing (proptest)
+* [ ] Async verification support
+* [ ] Rate limiting and authentication
+* [ ] Telemetry and observability
+
+=== Ecosystem
+* [ ] gitbot-fleet integration (finishbot verification)
+* [ ] Hypatia neurosymbolic scanning
+* [ ] echidna proofing enrollment
+* [ ] panic-attack security scanning
+
+== Future Directions
+
+* Real-time verification during LLM sessions
+* IDE plugins (VS Code, Neovim)
+* Cross-repo verification (monorepo support)
+* Verification attestation certificates

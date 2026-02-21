@@ -1,0 +1,16 @@
+[package]
+name = "llm-unify-tui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+llm-unify-core = { workspace = true }
+llm-unify-storage = { workspace = true }
+llm-unify-search = { workspace = true }
+ratatui = { workspace = true }
+crossterm = { workspace = true }
+tokio = { workspace = true }
+anyhow = { workspace = true }

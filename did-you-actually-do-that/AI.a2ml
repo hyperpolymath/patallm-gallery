@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+
+# AI Assistant Instructions — DYADT (Did You Actually Do That?)
+
+## Repository Focus
+- DYADT is a verification framework: 12-layer pipeline + SLM ensemble consensus.
+- Rust engine (layers 1-9, 11) communicates with Elixir brain (layers 5, 10, 12) via Erlang Port Protocol.
+- ABI defined in Idris2 (`src/abi/`), FFI implemented in Zig (`ffi/zig/`).
+- Triple API: REST + GraphQL (port 4200), gRPC (port 4201).
+
+## Critical Invariants
+- SCM files ONLY in `.machine_readable/` — never in repo root.
+- All code uses SPDX-License-Identifier: PMPL-1.0-or-later.
+- Container files are "Containerfile" not "Dockerfile".
+- Rejection votes get 1.5x weight (asymmetric cognitive-gating).
+
+## Canonical File Locations
+- Rust engine: `src/` (lib.rs, verifiers/, slm/, claim_extractor.rs, port_protocol.rs)
+- Elixir brain: `dyadt_brain/` (Phoenix-less Plug app)
+- ABI: `src/abi/` (Types.idr, Layout.idr, Foreign.idr)
+- FFI: `ffi/zig/` (main.zig, build.zig)
+- Container: `Containerfile`, `selur-compose.toml`
+- Machine-readable: `.machine_readable/` (STATE.scm, META.scm, ECOSYSTEM.scm)
+
+## Workflow
+1. Read `.machine_readable/STATE.scm` for current status and next actions.
+2. Run `cargo test` and `cd dyadt_brain && mix test` to verify changes.
+3. After edits, update STATE.scm with outcomes.
+4. Commit with concise, imperative messages.
+
+## Architecture Notes
+- DyadtBrain.Verifications is the single context module (Stacks pattern).
+- Ensemble::full() loads GoT + MoE backends.
+- Port protocol: 4-byte big-endian length prefix + JSON payload.
+- GoT uses pessimistic union (any rejection = rejection).
+- MoE routes to experts based on PolicyOracle violation signals.

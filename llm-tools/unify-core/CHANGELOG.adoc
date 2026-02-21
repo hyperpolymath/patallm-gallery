@@ -1,0 +1,66 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+== [Unreleased]
+
+=== Added
+
+- Core types for LLM conversation management (`Conversation`, `Message`, `Metadata`)
+- Provider trait abstraction for multi-platform support
+- Error handling with `thiserror` and `anyhow`
+- Support for multiple LLM providers (ChatGPT, Claude, Gemini, etc.)
+- Message role differentiation (User, Assistant, System)
+- Serialization support via `serde` and `serde_json`
+- Timestamp tracking with `chrono`
+- SLSA v0.1 provenance generation workflow
+- CodeQL security scanning
+- OpenSSF Scorecard compliance workflow
+- Instant-sync for automatic multi-forge propagation
+- Comprehensive CI/CD with Rust formatting, linting, and testing
+- GitHub issue templates (bug report, feature request, custom)
+- GitHub Sponsors funding configuration
+- RSR policy enforcement workflows
+- Language policy documentation (CLAUDE.md)
+- Project roadmap (ROADMAP.adoc)
+
+=== Changed
+
+- Standardized license to MIT OR AGPL-3.0-or-later dual licensing
+- Standardized .gitignore and .gitattributes per RSR
+- Updated thiserror from 1.0 to 2.0
+- Bumped peter-evans/repository-dispatch to 4.0.1
+- Mirror workflow now uses SSH for enhanced security
+
+=== Fixed
+
+- CodeQL language matrix configuration
+- CI workflow quality.yml issues
+- OpenSSF Scorecard security issues in workflow files
+
+=== Removed
+
+- Duplicate CodeQL workflow (codeql-analysis.yml)
+- Broken comprehensive-quality.yml workflow
+
+== [0.1.0] - Unreleased
+
+Initial extraction from llm-unify monorepo as standalone crate.
+
+=== Added
+
+- `Conversation` struct for managing chat threads
+- `Message` struct with content and metadata
+- `MessageRole` enum (User, Assistant, System)
+- `Metadata` struct for extensible message properties
+- `Provider` enum for supported LLM platforms
+- `ProviderTrait` for implementing custom providers
+- `Error` type with comprehensive error variants
+- Full serde serialization/deserialization support
+
+[Unreleased]: https://github.com/hyperpolymath/llm-unify-core/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/hyperpolymath/llm-unify-core/releases/tag/v0.1.0

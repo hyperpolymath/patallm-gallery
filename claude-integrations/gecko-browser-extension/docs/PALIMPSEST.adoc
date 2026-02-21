@@ -1,0 +1,113 @@
+// SPDX-License-Identifier: CC0-1.0
+= The Palimpsest License
+:author: hyperpolymath
+:revdate: 2025
+
+[quote]
+____
+A palimpsest is a manuscript page that has been written on, scraped off, and written over - yet traces of the original remain visible beneath.
+
+So too is all software: layers upon layers of human effort, each generation building atop the work of those who came before.
+____
+
+== Preamble
+
+This is not a legal license. It is a philosophical companion to whatever legal license you choose.
+
+The Palimpsest License is a commitment - to yourself, to your collaborators, and to those who will inherit your code long after you have moved on.
+
+== The Principles
+
+=== I. Acknowledge the Layers Beneath
+
+Every line of code you write stands on the shoulders of giants:
+
+* The language designers who gave you syntax
+* The compiler writers who gave you execution
+* The library authors who gave you building blocks
+* The teachers who gave you understanding
+* The community who gave you support
+
+Honor them. Credit them. Thank them when you can.
+
+=== II. Write for the Reader You Will Never Meet
+
+Your code will outlive your involvement with it. Write as if explaining to a future colleague who:
+
+* Has never seen this codebase before
+* Is debugging at 3 AM under deadline pressure
+* Speaks a different native language than you
+* Has different cultural assumptions than you
+
+Clarity is kindness across time.
+
+=== III. Leave It Better Than You Found It
+
+When you touch code, improve it:
+
+* Fix the bug, but also the unclear variable name nearby
+* Add the feature, but also the missing test
+* Refactor the mess, but also document why it was messy
+
+The campsite rule applies to codebases.
+
+=== IV. Consider the Downstream Effects
+
+Before you ship, ask:
+
+* Who will use this, and how might they misuse it?
+* What happens when this scales beyond my imagination?
+* Could this cause harm I haven't considered?
+* Am I building something I would want to exist in the world?
+
+Power demands responsibility.
+
+=== V. Pass the Knowledge Forward
+
+Teaching is not optional for those who have learned:
+
+* Document not just what, but why
+* Answer questions patiently, even the ones you've heard before
+* Create on-ramps for newcomers
+* Make your hard-won insights accessible
+
+Knowledge hoarded is knowledge lost.
+
+=== VI. Embrace Impermanence
+
+Your code will be:
+
+* Rewritten when better patterns emerge
+* Deprecated when needs change
+* Deleted when it's no longer useful
+
+This is not failure. This is the natural life cycle of all things.
+
+Build with care, but hold loosely.
+
+== Adoption
+
+To adopt the Palimpsest License:
+
+. Include it alongside your legal license
+. Reference it in your README
+. Live by its principles
+. Encourage (never require) others to do the same
+
+== The Closing
+
+[quote]
+____
+We are all writing on a palimpsest.
+
+The code beneath our code was written by others.
+The code above our code will be written by others.
+
+We are merely one layer in an ongoing story.
+
+Make your layer count.
+____
+
+---
+
+_The Palimpsest License is released to the public domain under CC0. Copy it, modify it, make it your own._

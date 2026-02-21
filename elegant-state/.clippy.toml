@@ -1,0 +1,25 @@
+# Clippy configuration for elegant-STATE
+
+# Cognitive complexity threshold
+cognitive-complexity-threshold = 25
+
+# Type complexity threshold
+type-complexity-threshold = 250
+
+# Too many arguments threshold
+too-many-arguments-threshold = 7
+
+# Too many lines threshold
+too-many-lines-threshold = 100
+
+# Trivial copy size limit (bytes)
+trivial-copy-size-limit = 16
+
+# MSRVs
+msrv = "1.75"
+
+# Allowed names
+allowed-idents-below-min-chars = ["id", "db", "to", "fs"]
+
+# Doc comment style
+doc-valid-idents = ["GraphQL", "JSON", "API", "CLI", "OCR", "ID", "IDs", "ULID"]

@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+  "name": "Claude for Mozilla",
+  "version": "1.0.0",
+  "description": "Claude AI assistant for Firefox - chat, ask questions, and get help directly in your browser",
+  "author": "hyperpolymath",
+  "homepage_url": "https://github.com/hyperpolymath/claude-mozilla-extension",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "claude@hyperpolymath.org",
+      "strict_min_version": "109.0"
+    }
+  },
+
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png",
+    "128": "icons/icon-128.png"
+  },
+
+  "permissions": [
+    "storage",
+    "activeTab",
+    "contextMenus"
+  ],
+
+  "host_permissions": [
+    "https://api.anthropic.com/*"
+  ],
+
+  "action": {
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    },
+    "default_title": "Open Claude"
+  },
+
+  "sidebar_action": {
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    },
+    "default_title": "Claude",
+    "default_panel": "ui/sidebar.html"
+  },
+
+  "background": {
+    "scripts": ["background/background.js"],
+    "type": "module"
+  },
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

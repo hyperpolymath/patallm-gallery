@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# ClusterFuzzLite project configuration
+# See: https://google.github.io/clusterfuzzlite/
+
+language: rust

@@ -1,0 +1,151 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+#
+# selur-compose service definition for DYADT
+# (Did You Actually Do That — AI work verification platform)
+#
+# Usage:
+#   selur-compose up          — start all services
+#   selur-compose down        — stop all services
+#   selur-compose verify      — run cerro-torre verification on all images
+#   selur-compose logs dyadt  — follow DYADT logs
+#
+# Compatible with podman-compose as fallback:
+#   podman-compose -f selur-compose.toml up
+#
+# Stapeln container ecosystem:
+#   Runtime:     vordr (verified container execution)
+#   Gateway:     svalinn (HTTP policy enforcement)
+#   Signing:     cerro-torre (Ed25519 .ctp bundles)
+#   Secrets:     rokur (credential management)
+#   Orchestrator: selur-compose (this file)
+
+[project]
+name = "dyadt"
+version = "0.1.0"
+description = "AI work verification platform — catches laziness, slop, and hallucination"
+
+# ============================================================
+# Services
+# ============================================================
+
+[services.dyadt]
+build.context = "."
+build.containerfile = "Containerfile"
+image = "localhost/dyadt:latest"
+ports = ["4200:4200", "4201:4201"]
+environment = [
+    "DYADT_BINARY=/app/bin/dyadt",
+    "MIX_ENV=prod",
+    "DYADT_API_PORT=4200",
+    "DYADT_GRPC_PORT=4201",
+    "DYADT_VERISIMDB_URL=http://verisimdb:8080",
+    "ROKUR_URL=http://rokur:9090",
+]
+networks = ["dyadt-internal"]
+depends_on = ["verisimdb"]
+restart = "unless-stopped"
+
+  [services.dyadt.healthcheck]
+  test = ["CMD", "/app/bin/dyadt", "--version"]
+  interval = "15s"
+  timeout = "5s"
+  retries = 3
+  start_period = "10s"
+
+  [services.dyadt.labels]
+  "dev.chainguard.verified" = "true"
+  "org.hyperpolymath.ecosystem" = "stapeln"
+  "org.hyperpolymath.cerro-torre.signed" = "pending"
+
+# VeriSimDB — 6-modal verification database
+[services.verisimdb]
+image = "localhost/verisimdb:latest"
+ports = ["8080:8080"]
+volumes = ["verisimdb-data:/data"]
+networks = ["dyadt-internal"]
+environment = [
+    "VERISIMDB_DATA_DIR=/data",
+    "VERISIMDB_PORT=8080",
+]
+restart = "unless-stopped"
+
+  [services.verisimdb.healthcheck]
+  test = ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
+  interval = "15s"
+  timeout = "5s"
+  retries = 3
+
+# Svalinn — edge HTTP gateway with policy enforcement
+[services.svalinn]
+image = "localhost/svalinn:latest"
+ports = ["443:443", "8443:8443"]
+networks = ["dyadt-internal", "dyadt-external"]
+depends_on = ["dyadt"]
+environment = [
+    "SVALINN_UPSTREAM=http://dyadt:4200",
+    "SVALINN_POLICY=default-deny",
+    "ROKUR_URL=http://rokur:9090",
+]
+restart = "unless-stopped"
+
+  [services.svalinn.labels]
+  "org.hyperpolymath.role" = "gateway"
+
+# Rokur — secrets management
+[services.rokur]
+image = "localhost/rokur:latest"
+volumes = ["rokur-secrets:/secrets:ro"]
+networks = ["dyadt-internal"]
+environment = [
+    "ROKUR_PORT=9090",
+    "ROKUR_SECRETS_DIR=/secrets",
+]
+restart = "unless-stopped"
+
+  [services.rokur.healthcheck]
+  test = ["CMD-SHELL", "curl -sf http://localhost:9090/health || exit 1"]
+  interval = "30s"
+  timeout = "5s"
+  retries = 3
+
+# ============================================================
+# Networks
+# ============================================================
+
+[networks.dyadt-internal]
+driver = "bridge"
+internal = true   # No external access — traffic goes through svalinn
+
+[networks.dyadt-external]
+driver = "bridge"
+
+# ============================================================
+# Volumes
+# ============================================================
+
+[volumes.verisimdb-data]
+driver = "local"
+
+[volumes.rokur-secrets]
+driver = "local"
+
+# ============================================================
+# Verification hooks (cerro-torre + vordr integration)
+# ============================================================
+
+[verification]
+# Run cerro-torre sign on all images before deployment
+pre_deploy = [
+    "cerro-torre sign localhost/dyadt:latest",
+    "cerro-torre sign localhost/verisimdb:latest",
+    "cerro-torre sign localhost/svalinn:latest",
+    "cerro-torre sign localhost/rokur:latest",
+]
+
+# Verify .ctp bundles are valid before starting containers
+pre_start = [
+    "cerro-torre verify localhost/dyadt:latest",
+]
+
+# Use vordr as container runtime for verified execution
+runtime = "vordr"

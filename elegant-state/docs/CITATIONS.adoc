@@ -1,0 +1,36 @@
+= elegant-STATE - Citation Guide
+:toc:
+
+== BibTeX
+
+[source,bibtex]
+----
+@software{elegant-state_2025,
+  author = {Polymath, Hyper},
+  title = {elegant-STATE},
+  year = {2025},
+  url = {https://github.com/hyperpolymath/elegant-STATE},
+  license = {AGPL-3.0-or-later}
+}
+----
+
+== Harvard Style
+
+Polymath, H. (2025) _elegant-STATE_ [Computer software]. Available at: https://github.com/hyperpolymath/elegant-STATE
+
+== OSCOLA
+
+Hyper Polymath, 'elegant-STATE' (2025) <https://github.com/hyperpolymath/elegant-STATE>
+
+== MLA
+
+Polymath, Hyper. "elegant-STATE." 2025, github.com/hyperpolymath/elegant-STATE.
+
+== APA 7
+
+Polymath, H. (2025). _elegant-STATE_ [Computer software]. GitHub. https://github.com/hyperpolymath/elegant-STATE
+
+== See Also
+
+* link:../CITATION.cff[CITATION.cff]
+* link:../codemeta.json[codemeta.json]

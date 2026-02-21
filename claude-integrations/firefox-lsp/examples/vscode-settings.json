@@ -1,0 +1,13 @@
+{
+  // Example VSCode settings for this LSP server
+  "editor.quickSuggestions": true,
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.acceptSuggestionOnEnter": "on",
+  "editor.formatOnSave": true,
+  "files.watcherExclude": {
+    "**/.git/**": true,
+    "**/node_modules/**": true,
+    "**/_build/**": true,
+    "**/deps/**": true
+  }
+}

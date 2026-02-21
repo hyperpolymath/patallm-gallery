@@ -1,0 +1,25 @@
+[package]
+name = "esn"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jonathan D.A. Jewell <hyperpolymath@protonmail.com>"]
+license = "MIT"
+repository = "https://github.com/hyperpolymath/esn"
+description = "Echo State Network - Reservoir Computing library in Rust"
+keywords = ["reservoir-computing", "neural-network", "esn", "machine-learning", "echo-state"]
+categories = ["science", "algorithms"]
+readme = "README.md"
+
+[dependencies]
+ndarray = { version = "0.17", features = ["rayon", "serde"] }
+ndarray-rand = "0.16"
+rand = "0.9"
+rand_distr = "0.5"
+rayon = "1.8"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "2.0"
+tracing = "0.1"
+
+[dev-dependencies]
+approx = "0.5"
+rand_chacha = "0.9"

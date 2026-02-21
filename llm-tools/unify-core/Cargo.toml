@@ -1,0 +1,18 @@
+[package]
+name = "llm-unify-core"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jonathan D.A. Jewell <hyperpolymath@protonmail.com>"]
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/hyperpolymath/llm-unify-core"
+description = "Core types for managing LLM conversations across multiple providers"
+keywords = ["llm", "chatgpt", "claude", "gemini", "conversation"]
+categories = ["data-structures", "parser-implementations"]
+readme = "README.md"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "2.0"
+anyhow = "1.0"

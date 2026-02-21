@@ -1,0 +1,59 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+[package]
+name = "did-you-actually-do-that"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"]
+description = "A verification framework for validating claimed AI actions against actual outcomes"
+license = "PMPL-1.0-or-later"
+repository = "https://gitlab.com/hyperpolymath/did-you-actually-do-that"
+keywords = ["verification", "ai", "accountability", "trust"]
+categories = ["development-tools", "command-line-utilities"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+sha2 = "0.10"
+hex = "0.4"
+regex = "1.0"
+git2 = { version = "0.19", default-features = false, features = ["vendored-libgit2"] }
+toml = "0.8"
+
+# Optional async support for network checks
+[features]
+default = []
+async = ["tokio", "reqwest"]
+watch = ["notify"]
+
+[dependencies.notify]
+version = "7.0"
+optional = true
+
+[dependencies.tokio]
+version = "1.0"
+features = ["rt-multi-thread", "macros"]
+optional = true
+
+[dependencies.reqwest]
+version = "0.12"
+features = ["json"]
+optional = true
+
+[dev-dependencies]
+proptest = "1.0"
+tempfile = "3.0"
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bin]]
+name = "dyadt"
+path = "src/main.rs"
+
+[lib]
+name = "did_you_actually_do_that"
+path = "src/lib.rs"
+
+[[bench]]
+name = "verification"
+harness = false

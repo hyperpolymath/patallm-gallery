@@ -1,0 +1,267 @@
+= Governance
+:toc:
+:toclevels: 3
+
+== Overview
+
+This document defines the governance structure for the Claude GitLab Bridge project. We use the Tri-Perimeter Contribution Framework (TPCF) to manage community participation and decision-making.
+
+== Tri-Perimeter Contribution Framework (TPCF)
+
+The TPCF organizes contributors into three perimeters based on trust, expertise, and commitment level.
+
+=== Perimeter 3: Community Sandbox
+
+**Status**: Open to all
+
+**Description**: The outer perimeter where new contributors start. Open to anyone who follows our Code of Conduct.
+
+**Privileges**:
+
+* Open issues
+* Submit pull requests
+* Participate in discussions
+* Comment on issues and PRs
+* Vote in community polls
+* Access public documentation
+
+**Requirements**:
+
+* Follow link:CODE_OF_CONDUCT.adoc[Code of Conduct]
+* Respectful communication
+* Good faith participation
+
+**How to Join**: Simply start contributing! All community members begin here.
+
+=== Perimeter 2: Trusted Contributors
+
+**Status**: Earned through sustained contributions
+
+**Description**: Contributors who have demonstrated expertise and commitment to the project.
+
+**Requirements to Enter**:
+
+* Minimum 3 months of active contribution
+* At least 10 merged pull requests
+* Demonstrated technical expertise
+* Positive community interaction
+* Nominated by a Perimeter 1 maintainer
+* Majority approval from existing Perimeter 2 members
+
+**Additional Privileges**:
+
+* Priority code review
+* Mentor new contributors
+* Participate in design discussions
+* Review pull requests
+* Label and triage issues
+* Access to private contributor channels
+
+**Responsibilities**:
+
+* Mentor Perimeter 3 contributors
+* Review pull requests within 48 hours
+* Participate in design discussions
+* Uphold Code of Conduct
+* Represent project positively
+
+=== Perimeter 1: Core Maintainers
+
+**Status**: By invitation only
+
+**Description**: Project leaders with full commit access and decision-making authority.
+
+**Current Members**:
+
+* See link:MAINTAINERS.md[]
+
+**Requirements to Enter**:
+
+* Minimum 6 months as Perimeter 2 contributor
+* Significant technical contributions
+* Demonstrated leadership
+* Strategic vision alignment
+* Unanimous approval from existing Perimeter 1 members
+
+**Additional Privileges**:
+
+* Merge pull requests
+* Create releases
+* Manage repository settings
+* Invite new maintainers
+* Final decision authority
+* Access to security reports
+* Moderate community spaces
+
+**Responsibilities**:
+
+* Strategic direction
+* Release management
+* Security response
+* Conflict resolution
+* Community health
+* Legal compliance
+* Budget management (if applicable)
+
+== Decision-Making Process
+
+=== Consensus
+
+We strive for consensus on all major decisions. Consensus means:
+
+* All voices are heard
+* Objections are addressed
+* Agreement is reached through discussion
+
+=== Voting
+
+When consensus cannot be reached, decisions are made by vote:
+
+**Perimeter 3 Decisions** (Feature requests, minor changes)::
+Simple majority of participants in the discussion
+
+**Perimeter 2 Decisions** (Technical architecture, dependencies)::
+2/3 majority of Perimeter 2 + Perimeter 1 members
+
+**Perimeter 1 Decisions** (Governance changes, security policies)::
+Unanimous approval from Perimeter 1 maintainers
+
+=== RFC Process
+
+For significant changes, we use an RFC (Request for Comments) process:
+
+1. **Draft**: Author creates RFC document
+2. **Discussion**: 2-week community discussion period
+3. **Revision**: RFC updated based on feedback
+4. **Decision**: Vote held if consensus not reached
+5. **Implementation**: Approved RFCs move to implementation
+
+== Roles and Responsibilities
+
+=== Project Roles
+
+**Project Lead**::
+Strategic vision, final decision authority, community representation
+
+**Technical Lead**::
+Architecture decisions, code quality, technical direction
+
+**Release Manager**::
+Version releases, changelog management, release automation
+
+**Community Manager**::
+Community health, communication, event organization
+
+**Security Lead**::
+Security policies, vulnerability response, security audits
+
+=== Role Assignment
+
+Roles are assigned by Perimeter 1 maintainers based on:
+
+* Demonstrated expertise
+* Time commitment
+* Community trust
+* Project needs
+
+== Code Review Process
+
+All code changes require review before merging:
+
+**Perimeter 3 PRs**::
+* Require 1 review from Perimeter 2 or Perimeter 1
+* Must pass all automated checks
+* May require revisions
+
+**Perimeter 2 PRs**::
+* Require 1 review from Perimeter 2 or Perimeter 1
+* Fast-track for minor changes
+* May self-merge after approval
+
+**Perimeter 1 PRs**::
+* Require 1 review from another Perimeter 1 member
+* May self-merge for urgent fixes
+* Should still get review when possible
+
+== Conflict Resolution
+
+=== Process
+
+1. **Direct Communication**: Parties attempt to resolve directly
+2. **Mediation**: Community Manager or neutral third party mediates
+3. **Escalation**: Perimeter 1 maintainers make final decision
+4. **Appeal**: Decisions can be appealed once to full Perimeter 1
+
+=== Code of Conduct Violations
+
+See link:CODE_OF_CONDUCT.adoc[] for enforcement procedures.
+
+== Changes to Governance
+
+Governance changes require:
+
+1. RFC process with 4-week discussion period
+2. Unanimous approval from Perimeter 1
+3. Public announcement with rationale
+4. 30-day comment period before taking effect
+
+== Perimeter Movement
+
+=== Promotion
+
+* Perimeter 3 → 2: Nominated by any Perimeter 1, 2/3 vote of Perimeter 2+1
+* Perimeter 2 → 1: Nominated by any Perimeter 1, unanimous vote of Perimeter 1
+
+=== Demotion
+
+Members may be moved to outer perimeters for:
+
+* Inactivity (6+ months with notice)
+* Code of Conduct violations
+* Loss of trust
+* Personal request
+
+Process:
+
+1. Private discussion with member
+2. Perimeter 1 vote (majority required)
+3. Public announcement with respect and gratitude
+
+=== Voluntary Step Down
+
+Members may voluntarily move to outer perimeters at any time. We thank them for their service.
+
+== Transparency
+
+=== Public Information
+
+* All governance decisions
+* Meeting notes (non-sensitive)
+* Voting results
+* Perimeter membership
+* Role assignments
+
+=== Private Information
+
+* Security issues (until disclosed)
+* Code of Conduct reports
+* Personal information
+* Confidential business matters
+
+== Amendments
+
+This governance document is versioned. See git history for changes.
+
+**Current Version**: 1.0 +
+**Last Updated**: 2024-11-28 +
+**Next Review**: 2025-05-28
+
+== Contact
+
+* **Governance Questions**: hello@hyperpolymath.dev
+* **Code of Conduct**: conduct@hyperpolymath.dev
+* **Security Issues**: security@hyperpolymath.dev
+
+---
+
+_This governance framework is inspired by successful open source projects including Rust, Django, and Apache Software Foundation._

@@ -1,0 +1,124 @@
+// SPDX-License-Identifier: MPL-2.0-or-later
+
+== License & Philosophy
+
+This project must declare **MPL-2.0-or-later** for platform/tooling compatibility.
+
+Philosophy: **Palimpsest**. The Palimpsest-MPL (PMPL) text is provided in `license/PMPL-1.0.txt`, and the canonical source is the palimpsest-license repository.
+= Claude for Mozilla
+:toc:
+:icons: font
+
+Claude AI assistant extension for Mozilla products - Firefox, Thunderbird, and SeaMonkey.
+
+== Features
+
+* **Sidebar Chat** - Chat with Claude directly in your browser sidebar
+* **Context Menu** - Right-click selected text to ask Claude about it
+* **Streaming Responses** - See Claude's responses as they're generated
+* **Multiple Models** - Choose between Claude Sonnet 4, Opus 4, or Haiku 3.5
+* **Conversation History** - Your conversations are saved locally
+* **Thunderbird Integration** - Help with email composition (Thunderbird only)
+
+== Requirements
+
+* An https://console.anthropic.com[Anthropic API key]
+* Firefox 109+ (Manifest V3) or Firefox 68+ (Manifest V2)
+* Thunderbird 78+ (for email features)
+* SeaMonkey 2.53+ (Manifest V2)
+
+== Installation
+
+=== Firefox (Modern - MV3)
+
+1. Download `claude-mozilla-firefox-mv3.xpi` from Releases
+2. Go to `about:debugging` > This Firefox
+3. Click "Load Temporary Add-on" and select the .xpi file
+
+=== Firefox (Legacy - MV2)
+
+1. Download `claude-mozilla-firefox-mv2.xpi` from Releases
+2. Go to `about:addons`
+3. Click the gear icon > Install Add-on From File
+
+=== Thunderbird
+
+1. Download `claude-mozilla-thunderbird.xpi` from Releases
+2. Go to Tools > Add-ons and Themes
+3. Click the gear icon > Install Add-on From File
+
+=== SeaMonkey
+
+1. Download `claude-mozilla-seamonkey.xpi` from Releases
+2. Go to Tools > Add-ons Manager
+3. Click Install from file
+
+== Building from Source
+
+[source,bash]
+----
+# Clone the repository
+git clone https://github.com/hyperpolymath/claude-mozilla-extension.git
+cd claude-mozilla-extension
+
+# Generate icons (requires imagemagick, librsvg, or inkscape)
+./scripts/generate-icons.sh
+
+# Build all variants
+./scripts/build.sh
+----
+
+Output files will be in `dist/`:
+
+* `claude-mozilla-firefox-mv3.xpi` - Firefox 109+
+* `claude-mozilla-firefox-mv2.xpi` - Firefox 68-108
+* `claude-mozilla-thunderbird.xpi` - Thunderbird 78+
+* `claude-mozilla-seamonkey.xpi` - SeaMonkey 2.53+
+
+== Usage
+
+1. Click the Claude icon in your toolbar or open the sidebar
+2. Enter your Anthropic API key when prompted
+3. Start chatting!
+
+=== Context Menu
+
+Select any text on a webpage, right-click, and choose "Ask Claude about this" to quickly get Claude's help with the selected content.
+
+=== Thunderbird Features
+
+In Thunderbird, Claude can help you:
+
+* Draft email responses
+* Summarize email threads
+* Improve email clarity and tone
+
+== Configuration
+
+Access settings via the gear icon in the sidebar:
+
+* **API Key** - Your Anthropic API key
+* **System Prompt** - Custom instructions for Claude
+* **Streaming** - Enable/disable streaming responses
+* **Max Tokens** - Maximum response length
+
+== Privacy
+
+* Your API key is stored locally in browser storage
+* Conversations are stored locally, never sent to third parties
+* Only communicates with `api.anthropic.com`
+
+== License
+
+PMPL-1.0-or-later
+
+This is an independent project and is not affiliated with Anthropic.
+Claude is a trademark of Anthropic, PBC.
+
+== Contributing
+
+Contributions welcome! Please ensure:
+
+* Code follows existing style
+* All files have SPDX headers
+* Both MV2 and MV3 manifests are updated if needed

@@ -1,0 +1,210 @@
+= llm-antidote
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+*Universal semantic reset artifacts for language model context management*
+
+[![RSR Compliance](https://img.shields.io/badge/RSR-Platinum-9cf?style=flat-square)](https://github.com/Hyperpolymath/llm-antidote)
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+[![Version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)](./VERSION)
+[![TPCF](https://img.shields.io/badge/TPCF-Perimeter_3-green?style=flat-square)](./MAINTAINERS.md)
+
+== Overview
+
+`llm-antidote` is a collection of tools and artifacts designed to manage, reset, and manipulate LLM context across multiple platforms. The project explores the boundaries of language model behavior through minimal, symbolic interventions.
+
+== Core Artifacts
+
+=== `llm-reset` - Universal Semantic Reset
+
+A Guile Scheme artifact that purges all prior context, associations, and semantic weight from language models.
+
+*Supported Models:*
+- Claude (Anthropic)
+- GPT (OpenAI)
+- Gemini (Google)
+- Copilot (Microsoft)
+- Mistral
+
+*Usage:*
+```scheme
+;; Simply paste the contents of llm-reset into any LLM chat
+;; The model will reset its context to a clean state
+;; Expected response: "Reset complete." or (define identity 'clean)
+```
+
+== Use Cases
+
+=== 1. Clean Slate Conversations
+Start fresh without creating a new chat window:
+```
+Previous conversation about Python...
+[Paste llm-reset]
+"Reset complete."
+Now discuss JavaScript with no Python context bleeding through
+```
+
+=== 2. Context Contamination Removal
+Clear unwanted associations or confused state:
+```
+Model is confused about project structure...
+[Paste llm-reset]
+Re-introduce only the relevant information
+```
+
+=== 3. Testing Model Behavior
+Research how models handle context boundaries:
+```
+Establish baseline state with reset
+Introduce controlled context
+Measure model responses
+```
+
+=== 4. Privacy-Conscious Development
+Purge sensitive information from active context:
+```
+Discussed proprietary code...
+[Paste llm-reset]
+Continue on general topics with clean context
+```
+
+== Philosophy
+
+This project is built on three core principles:
+
+1. *Minimalism*: Artifacts should be simple, self-contained, and easy to understand
+2. *User Agency*: Tools empower users to control their LLM interactions
+3. *Cross-Platform*: Solutions work across multiple model providers
+
+== Installation
+
+No installation required. This is a collection of copy-paste artifacts.
+
+```bash
+git clone https://github.com/Hyperpolymath/llm-antidote.git
+cd llm-antidote
+cat llm-reset  # View the artifact
+```
+
+== Project Structure
+
+```
+llm-antidote/
+├── LICENSE              # CC0 1.0 Universal (Public Domain)
+├── README.md            # This file
+├── CLAUDE.md            # AI assistant development guide
+├── llm-reset            # Universal reset artifact (Guile Scheme)
+├── artifacts/           # Additional reset variants
+├── tools/               # Verification and diagnostic tools
+├── examples/            # Usage demonstrations
+└── docs/                # Research and documentation
+```
+
+== How It Works
+
+The reset artifact leverages several LLM behavioral patterns:
+
+1. *System-Level Instructions*: Formatted to mimic system prompts
+2. *Symbolic Clarity*: Uses Scheme's minimal syntax for clean semantic signals
+3. *Explicit Commands*: Direct imperatives that models are trained to follow
+4. *Verification Mechanisms*: Built-in confirmation and testing
+
+=== Technical Details
+
+Language models maintain context through:
+- Token-level attention patterns
+- Semantic associations in embedding space
+- Conversation history in the context window
+
+Reset artifacts work by:
+- Providing explicit instructions to disregard prior context
+- Using authoritative formatting (system-level comments)
+- Employing symbolic representations that signal "start fresh"
+- Requesting confirmation of the reset state
+
+*Note*: Effectiveness varies by model architecture and provider implementation.
+
+== Contributing
+
+This project is released under CC0 1.0 Universal (Public Domain). Contributions welcome!
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+*Quick Guidelines:*
+- Maintain simplicity and clarity
+- Test across at least two LLM platforms
+- Document model-specific behaviors
+- Follow ethical guidelines (see CLAUDE.md)
+
+== Research & Development
+
+This is an active research project. Areas of exploration:
+
+- Context boundary mechanisms in different architectures
+- Effectiveness metrics for reset artifacts
+- Model-specific optimization strategies
+- Selective context preservation techniques
+- Diagnostic tools for context state inspection
+
+== Ethical Considerations
+
+*This project is for:*
+✓ User control and agency over LLM interactions
+✓ Research into model behavior and context management
+✓ Privacy-conscious LLM usage
+✓ Educational purposes
+
+*This project is NOT for:*
+✗ Bypassing safety mechanisms
+✗ Deceptive or malicious manipulation
+✗ Circumventing content policies
+✗ Hiding harmful interactions
+
+== FAQ
+
+*Q: Does this actually work?*
+A: Effectiveness varies by model. Some models follow reset instructions closely, others show residual context effects. See benchmarks in `docs/research/`.
+
+*Q: Is this "jailbreaking"?*
+A: No. This is context management, not safety bypass. Models retain all safety training and guardrails.
+
+*Q: Why Guile Scheme?*
+A: Scheme provides symbolic clarity and minimal syntax. The format itself signals "meta-level instruction" to models trained on code.
+
+*Q: Can I use this in production?*
+A: These are research artifacts. Use at your own discretion. Production systems should use official API context management features.
+
+*Q: Does it work with local models?*
+A: Potentially, but effectiveness depends on training. Models fine-tuned to follow system instructions work best.
+
+== License
+
+CC0 1.0 Universal - Public Domain
+
+This work has been dedicated to the public domain. You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission.
+
+== Author
+
+*Jonathan Jewell*
+
+== Acknowledgments
+
+This project explores concepts at the intersection of:
+- Programming language semantics
+- Machine learning interpretability
+- Human-AI interaction design
+- Context-aware computing
+
+Special thanks to the open-source AI community for inspiration and dialogue.
+
+== Links
+
+- Repository: https://github.com/Hyperpolymath/llm-antidote
+- Issues: https://github.com/Hyperpolymath/llm-antidote/issues
+- Discussions: https://github.com/Hyperpolymath/llm-antidote/discussions
+
+---
+
+*Status*: Active Development
+*Version*: 0.1.0-alpha
+*Last Updated*: 2025-11-22

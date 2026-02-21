@@ -1,0 +1,271 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Did You Actually Do That? (DYADT)
+:toc: macro
+:toclevels: 3
+
+**Verification framework that catches when LLMs claim work they haven't done.**
+
+DYADT uses a 12-layer verification pipeline with SLM ensemble consensus to detect
+laziness, slop, hallucination, and scope reduction in AI-generated outputs.
+
+toc::[]
+
+== Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                    DYADT Architecture                        │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │           Elixir Brain (dyadt_brain)                    │ │
+│  │                                                         │ │
+│  │  ┌─────────────────┐  ┌──────────────────────────────┐  │ │
+│  │  │  Triple API      │  │  Tier 3: Consensus Arbiter  │  │ │
+│  │  │  REST  (4200)    │  │  Weighted vote aggregation   │  │ │
+│  │  │  GraphQL (4200)  │  │  Final GO/NO-GO             │  │ │
+│  │  │  gRPC   (4201)   │  └──────────────────────────────┘  │ │
+│  │  └─────────────────┘                                     │ │
+│  │  ┌─────────────────┐  ┌──────────────────────────────┐  │ │
+│  │  │  PatternLearner │  │  RegressionBaseline          │  │ │
+│  │  │  Layer 12       │  │  Layer 10                    │  │ │
+│  │  └─────────────────┘  └──────────────────────────────┘  │ │
+│  └──────────────────────────┬──────────────────────────────┘ │
+│                             │ Erlang Port Protocol           │
+│                             │ (4-byte BE + JSON)             │
+│  ┌──────────────────────────┴──────────────────────────────┐ │
+│  │           Rust Verification Engine                      │ │
+│  │                                                         │ │
+│  │  ┌──────────────────────────────────────────────────┐   │ │
+│  │  │  12-Layer Verification Pipeline                  │   │ │
+│  │  │  Layers 1-9 (deterministic checks)               │   │ │
+│  │  └──────────────────────────────────────────────────┘   │ │
+│  │  ┌──────────────────────────────────────────────────┐   │ │
+│  │  │  SLM Ensemble (Layer 11)                         │   │ │
+│  │  │  Tier 1: Policy Oracle (deterministic)           │   │ │
+│  │  │  Tier 2: GoT + MoE backends (voting)             │   │ │
+│  │  └──────────────────────────────────────────────────┘   │ │
+│  └─────────────────────────────────────────────────────────┘ │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │  ABI/FFI Layer                                          │ │
+│  │  Idris2 (formal proofs) + Zig (C-compatible FFI)        │ │
+│  └─────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────┘
+```
+
+== 12-Layer Verification Pipeline
+
+[cols="1,3,1,2"]
+|===
+| Layer | Purpose | Technology | Module
+
+| 1. File Existence
+| Verify claimed files actually exist
+| Rust
+| `verifiers/file_existence`
+
+| 2. Content Hash
+| SHA-256 hash verification of file contents
+| Rust
+| `verifiers/content_hash`
+
+| 3. Syntactic Validity
+| Parse files to confirm syntactic correctness
+| Rust
+| `verifiers/syntactic`
+
+| 4. Semantic Integrity
+| Check that code semantics match claims
+| Rust
+| `verifiers/semantic`
+
+| 5. Test Execution
+| Run tests and verify they pass
+| Elixir
+| `DyadtBrain.TestRunner`
+
+| 6. Diff Coherence
+| Verify diffs are internally consistent
+| Rust
+| `verifiers/diff_coherence`
+
+| 7. Dependency Resolution
+| Check claimed dependencies are resolvable
+| Rust
+| `verifiers/dependency`
+
+| 8. Cross-Reference
+| Import/export graph analysis, contradiction detection
+| Rust
+| `verifiers/cross_reference`
+
+| 9. Completeness Audit
+| Scan for claimed-but-missing files, stubs, untested code
+| Rust
+| `verifiers/completeness`
+
+| 10. Regression Guard
+| Baseline comparison of test results, regression detection
+| Elixir
+| `DyadtBrain.RegressionBaseline`
+
+| 11. SLM Consensus
+| Multi-backend ensemble voting with asymmetric weighting
+| Rust
+| `slm/ensemble`
+
+| 12. Pattern Learning
+| Track violation patterns, frequency analysis, risk scoring
+| Elixir
+| `DyadtBrain.PatternLearner`
+|===
+
+== SLM Ensemble Architecture
+
+The SLM (Small Language Model) ensemble uses a three-tier cognitive-gating model:
+
+=== Tier 1: Policy Oracle
+Deterministic rule-based checking. Detects 12 violation categories from cognitive-gating:
+stub/placeholder detection, scope reduction, completeness gaps, documentation mismatches, etc.
+
+=== Tier 2: SLM Backends
+Multiple backends vote independently:
+
+* **Graph-of-Thought (GoT)**: 3 adversarial reasoning paths
+** Path A (AssumeGenuine): Looks for contradictions in ostensibly good work
+** Path B (AssumeFabricated): Looks for positive evidence of real work
+** Path C (AssumeIncomplete): Checks scope matches claims
+** Aggregation: Pessimistic union — any problem found = problem reported
+
+* **Mixture-of-Experts (MoE)**: Violation-routed expert selection
+** StubDetection expert (activated on stub/placeholder patterns)
+** ScopeVerification expert (activated on scope mismatch)
+** CompletenessCheck expert (activated on completeness gaps)
+** GeneralPurpose expert (always active as baseline)
+
+=== Tier 3: Consensus Arbiter (Elixir)
+Weighted vote aggregation with asymmetric weighting:
+
+* Approve votes: weight 1.0x
+* Reject votes: weight 1.5x (rejection carries more weight)
+* Final GO/NO-GO decision
+
+== Triple API
+
+All three API surfaces call through `DyadtBrain.Verifications` (single context module).
+
+=== REST API (port 4200)
+
+[source,bash]
+----
+# Verify a claim
+curl -X POST http://localhost:4200/api/verify \
+  -H "Content-Type: application/json" \
+  -d '{"description":"Added login endpoint","evidence":[]}'
+
+# Health check
+curl http://localhost:4200/api/health
+
+# Statistics
+curl http://localhost:4200/api/stats
+
+# SLM evaluation
+curl -X POST http://localhost:4200/api/slm/evaluate \
+  -H "Content-Type: application/json" \
+  -d '{"claim_text":"test","evidence_summary":""}'
+----
+
+=== GraphQL API (port 4200, path /api/graphql)
+
+[source,graphql]
+----
+# Health check
+query { health { brain rustPort slmBackends } }
+
+# Verify a claim
+mutation {
+  verifyClaim(input: {
+    description: "Added login endpoint"
+    evidence: []
+  }) { verdict layers { layer result } }
+}
+
+# SLM evaluation
+mutation {
+  evaluateSlm(context: {
+    claimText: "Added auth module"
+    evidenceSummary: "FileExists: Confirmed"
+  }) { suggestedVerdict approveWeight rejectWeight }
+}
+----
+
+=== gRPC API (port 4201)
+
+Length-delimited JSON over TCP. Methods:
+
+* `VerifyClaim` — Verify a single claim
+* `VerifyBatch` — Verify multiple claims
+* `GetReport` — Get verification report by ID
+* `EvaluateSlm` — Run SLM ensemble evaluation
+* `Health` — Health check
+* `GetStats` — Get system statistics
+* `ListClaims` — List claims with filtering
+
+== Quick Start
+
+=== Prerequisites
+
+* Rust nightly (via asdf)
+* Elixir 1.16+ / OTP 26+
+* Zig 0.13+ (for FFI)
+* Idris2 0.7+ (for ABI, optional)
+
+=== Build
+
+[source,bash]
+----
+# Build Rust engine
+cargo build --release
+
+# Build Elixir brain
+cd dyadt_brain
+mix deps.get
+mix compile
+
+# Run tests
+cargo test              # 130 Rust tests
+mix test                # 74 Elixir tests
+----
+
+=== Run
+
+[source,bash]
+----
+cd dyadt_brain
+mix run --no-halt
+# REST + GraphQL on port 4200, gRPC on port 4201
+----
+
+=== Container Deployment
+
+[source,bash]
+----
+# Build container
+podman build -f Containerfile -t localhost/dyadt:latest .
+
+# Run with selur-compose
+selur-compose up
+
+# Verify images
+cerro-torre sign localhost/dyadt:latest
+----
+
+== ABI/FFI
+
+Formal interface definitions in Idris2 with C-compatible FFI in Zig.
+
+See link:ABI-FFI-README.md[ABI/FFI Documentation] for complete details.
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later

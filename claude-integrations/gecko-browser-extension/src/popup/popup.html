@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude for Gecko</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Claude</h1>
+      <button id="settings-btn" class="icon-btn" title="Settings">⚙️</button>
+    </header>
+
+    <div id="api-key-warning" class="warning hidden">
+      <p>API key not configured.</p>
+      <a href="options.html" target="_blank">Set up API key →</a>
+    </div>
+
+    <main class="chat-container">
+      <div id="messages" class="messages">
+        <div class="message assistant">
+          <p>Hello! I'm Claude. How can I help you today?</p>
+        </div>
+      </div>
+
+      <form id="chat-form" class="input-area">
+        <textarea
+          id="user-input"
+          placeholder="Ask Claude anything..."
+          rows="2"
+          autofocus
+        ></textarea>
+        <button type="submit" id="send-btn" title="Send message">
+          <span>Send</span>
+        </button>
+      </form>
+    </main>
+
+    <footer class="footer">
+      <span class="model-info">claude-sonnet-4</span>
+      <span class="disclaimer">Unofficial extension</span>
+    </footer>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

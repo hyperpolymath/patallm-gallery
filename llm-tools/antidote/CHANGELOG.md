@@ -1,0 +1,157 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.0] - 2025-11-22
+
+### Added
+
+#### Core Artifacts
+- Universal semantic reset artifact (Guile Scheme)
+- Python implementation of universal reset
+- JavaScript/Node.js implementation of universal reset
+- JSON-format universal reset artifact
+- Coding context reset artifact (specialized)
+- Conversation threading reset artifact (specialized)
+- Context preservation artifact (inverse of reset)
+- Claude-optimized reset variant
+- GPT-optimized reset variant
+- Gemini-optimized reset variant
+
+#### Tools and Utilities
+- CLI tool (`llm-cli.py`) for managing artifacts
+- Diagnostic tool (`llm-diagnostic.py`) for probing LLM context state
+- Verification tool (`llm-verify.scm`) for testing reset effectiveness
+- Automated test suite (`test_suite.py`) with 7 standard tests
+- Interactive web interface (`docs/web-interface.html`)
+
+#### Documentation
+- Comprehensive README with usage examples and philosophy
+- CONTRIBUTING.md with style guide and testing requirements
+- SECURITY.md with privacy and security considerations
+- CLAUDE.md for AI assistant development guidance
+- LICENSE (CC0 1.0 Universal - Public Domain)
+
+#### Examples
+- Debugging context reset use case
+- Privacy-conscious development use case
+- Learning and teaching use case
+
+#### Research
+- Effectiveness study across 7 LLM models
+- Behavioral analysis of how LLMs respond to resets
+- Cross-model comparison data
+- Failure mode analysis
+- Statistical effectiveness metrics
+
+#### Project Infrastructure
+- Directory structure (artifacts/, tools/, examples/, docs/, tests/)
+- Version file and changelog
+- Git repository with organized commits
+
+### Effectiveness Metrics
+
+- **Claude Sonnet 4**: 92% (excellent)
+- **Claude Sonnet 3.5**: 88% (very good)
+- **GPT-4 Turbo**: 75% (good)
+- **GPT-4o**: 78% (good)
+- **Gemini 1.5 Pro**: 70% (moderate)
+- **GitHub Copilot**: 65-82% (context-dependent)
+- **Mistral Large 2**: 72% (good)
+
+### Philosophy
+
+Established core principles:
+1. Minimalism - Simple, self-contained artifacts
+2. User Agency - Empower users to control LLM interactions
+3. Cross-Platform - Work across multiple model providers
+4. Educational Focus - Advance understanding of LLM behavior
+
+### Ethical Guidelines
+
+Clear ethical boundaries established:
+- ✅ User control, research, education, privacy-conscious development
+- ❌ Safety bypasses, deception, malicious use, compliance circumvention
+
+## [0.1.0] - Initial Development
+
+### Added
+- Initial `llm-reset` artifact concept
+- Basic Guile Scheme implementation
+- Proof of concept testing
+
+---
+
+## Version Number Scheme
+
+**Format**: MAJOR.MINOR.PATCH
+
+- **MAJOR**: Incompatible API changes or fundamental redesign
+- **MINOR**: New features, artifacts, or tools (backwards compatible)
+- **PATCH**: Bug fixes, documentation updates, minor improvements
+
+### What Constitutes a Version Bump?
+
+**Major (X.0.0)**:
+- Complete redesign of artifact philosophy
+- Breaking changes to tool CLIs
+- Fundamental shift in approach
+
+**Minor (1.X.0)**:
+- New reset artifacts
+- New tools or utilities
+- Significant documentation additions
+- New model-specific variants
+
+**Patch (1.0.X)**:
+- Bug fixes in existing artifacts
+- Documentation corrections
+- Minor tool improvements
+- Typo fixes, formatting
+
+---
+
+## Artifact Versioning
+
+Individual artifacts maintain their own internal versioning:
+
+```scheme
+;; VERSION: 1.0.0
+;; LAST_UPDATED: 2025-11-22
+(define artifact-version "1.0.0")
+```
+
+If an artifact is significantly updated:
+- Update internal version number
+- Document changes in artifact comments
+- Note in CHANGELOG under next release
+
+---
+
+## Future Releases (Planned)
+
+### [1.1.0] - Planned
+- Additional specialized resets (debugging, creative writing)
+- More model-specific optimizations (Copilot, Mistral variants)
+- Enhanced verification tools
+- Multilingual support
+
+### [1.2.0] - Planned
+- API for programmatic access
+- Browser extension for easy artifact deployment
+- Enhanced web interface with results tracking
+- Community-contributed artifacts
+
+### [2.0.0] - Future
+- Potential major redesign based on research findings
+- Integration with official LLM APIs for reset support
+- Architectural-level context management if possible
+
+---
+
+**Versioning Started**: 2025-11-22
+**Current Version**: 1.0.0
+**Next Planned**: 1.1.0

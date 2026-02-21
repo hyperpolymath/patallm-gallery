@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude for Gecko - Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Claude for Gecko Settings</h1>
+    </header>
+
+    <main>
+      <section class="setting-group">
+        <h2>API Configuration</h2>
+
+        <div class="setting-item">
+          <label for="api-key">Anthropic API Key</label>
+          <p class="description">
+            Get your API key from
+            <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">
+              console.anthropic.com
+            </a>
+          </p>
+          <div class="input-group">
+            <input
+              type="password"
+              id="api-key"
+              placeholder="sk-ant-api03-..."
+              autocomplete="off"
+            >
+            <button type="button" id="toggle-visibility" title="Show/hide API key">👁️</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <label for="model-select">Model</label>
+          <p class="description">Choose which Claude model to use</p>
+          <select id="model-select">
+            <option value="claude-sonnet-4-20250514">Claude Sonnet 4 (Recommended)</option>
+            <option value="claude-opus-4-20250514">Claude Opus 4 (Most capable)</option>
+            <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku (Fastest)</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="setting-group">
+        <h2>Behavior</h2>
+
+        <div class="setting-item">
+          <label for="system-prompt">Custom System Prompt (Optional)</label>
+          <p class="description">Add a custom instruction for Claude to follow</p>
+          <textarea
+            id="system-prompt"
+            rows="4"
+            placeholder="e.g., Always respond concisely. Prefer code examples when explaining programming concepts."
+          ></textarea>
+        </div>
+      </section>
+
+      <div class="button-group">
+        <button id="save-btn" class="primary">Save Settings</button>
+        <button id="clear-btn" class="danger">Clear All Data</button>
+      </div>
+
+      <div id="status-message" class="status hidden"></div>
+    </main>
+
+    <footer>
+      <p>
+        This is an unofficial extension.
+        <a href="https://github.com/hyperpolymath/claude-gecko-browser-extension" target="_blank">
+          View source on GitHub
+        </a>
+      </p>
+    </footer>
+  </div>
+
+  <script src="options.js" type="module"></script>
+</body>
+</html>

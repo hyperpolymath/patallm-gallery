@@ -1,0 +1,197 @@
+image:https://img.shields.io/badge/license-PMPL--1.0-blue.svg[License,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+// SPDX-License-Identifier: PMPL-1.0
+// SPDX-FileCopyrightText: 2025 hyperpolymath
+
+= Claude for Gecko
+
+
+
+
+:toc: auto
+:icons: font
+
+**Unofficial Claude AI assistant for Firefox and Gecko-based browsers**
+
+image::https://img.shields.io/badge/Firefox-115%2B-orange.svg[Firefox 115+]
+image::https://img.shields.io/badge/Manifest-V3-green.svg[Manifest V3]
+
+== Overview
+
+Claude for Gecko brings Claude AI to browsers that the official extension doesn't support:
+
+* Firefox
+* LibreWolf
+* Mullvad Browser
+* Tor Browser
+* Waterfox
+* Floorp
+
+This is an *unofficial* extension that uses the Anthropic API directly. It is not affiliated with or endorsed by Anthropic.
+
+== Features
+
+* **Popup Chat** - Quick access to Claude from any page
+* **Context Menu** - Right-click selected text to:
+** Explain
+** Summarize
+** Translate
+** Ask custom questions
+* **Overlay Responses** - See Claude's answers without leaving the page
+* **Conversation History** - Maintains context within a session
+* **Model Selection** - Choose between Sonnet, Opus, or Haiku
+
+== Requirements
+
+* Firefox 115+ (or compatible Gecko-based browser)
+* Anthropic API key (https://console.anthropic.com/settings/keys[Get one here])
+
+== Installation
+
+=== From Source (Developer Mode)
+
+[source,bash]
+----
+git clone https://github.com/hyperpolymath/claude-gecko-browser-extension.git
+cd claude-gecko-browser-extension
+----
+
+. Open Firefox and navigate to `about:debugging`
+. Click "This Firefox" in the sidebar
+. Click "Load Temporary Add-on..."
+. Select the `manifest.json` file from the cloned directory
+
+=== From Firefox Add-ons (Coming Soon)
+
+The extension will be submitted to https://addons.mozilla.org[Firefox Add-ons] once stable.
+
+== Configuration
+
+. Click the extension icon in your toolbar
+. Click the ⚙️ settings button
+. Enter your Anthropic API key
+. (Optional) Select your preferred model
+. (Optional) Add a custom system prompt
+
+== Usage
+
+=== Popup Chat
+
+. Click the Claude icon in your toolbar
+. Type your message and press Enter (or click Send)
+. Shift+Enter for multi-line input
+
+=== Context Menu
+
+. Select text on any webpage
+. Right-click to open the context menu
+. Choose a Claude action:
+** "Ask Claude to explain"
+** "Ask Claude to summarize"
+** "Ask Claude to translate"
+** "Ask Claude about this..."
+
+=== Keyboard Shortcuts
+
+[cols="1,2"]
+|===
+| Shortcut | Action
+
+| `Enter`
+| Send message
+
+| `Shift+Enter`
+| New line in input
+
+| `Escape`
+| Close overlay
+|===
+
+== Privacy
+
+* Your API key is stored locally in browser storage
+* Messages are sent directly to Anthropic's API
+* No data is collected or transmitted to third parties
+* No analytics or tracking
+
+== Licensing
+
+=== Legal License
+
+This project is licensed under the **Palimpsest-MPL License v1.0 (PMPL-1.0)** - see link:LICENSE[LICENSE] for details.
+
+You are free to use, modify, and distribute this software.
+
+=== Philosophical Companion: Palimpsest License
+
+We encourage adopters to also consider the principles of the **Palimpsest License** - a philosophical manifesto for building technology that serves humanity's long-term flourishing.
+
+The Palimpsest License is not a legal document but a commitment to:
+
+* Building on the work of others with gratitude
+* Leaving the codebase better than you found it
+* Considering the ethical implications of your changes
+* Passing knowledge forward to future contributors
+
+See link:docs/PALIMPSEST.adoc[docs/PALIMPSEST.adoc] for the full text.
+
+== Development
+
+=== Project Structure
+
+[source]
+----
+claude-gecko-browser-extension/
+├── manifest.json           # Extension manifest (MV3)
+├── src/
+│   ├── background/
+│   │   └── background.js   # Service worker, API calls
+│   ├── content/
+│   │   ├── content.js      # Page overlay injection
+│   │   └── content.css     # Overlay styles
+│   ├── popup/
+│   │   ├── popup.html      # Main popup UI
+│   │   ├── popup.js        # Popup logic
+│   │   ├── popup.css       # Popup styles
+│   │   ├── options.html    # Settings page
+│   │   ├── options.js      # Settings logic
+│   │   └── options.css     # Settings styles
+│   └── icons/
+│       └── icon-*.png      # Extension icons
+├── docs/
+│   └── PALIMPSEST.adoc     # Philosophical license
+├── LICENSE                 # Palimpsest-MPL License v1.0 (PMPL-1.0)
+├── README.adoc             # This file
+└── STATE.scm               # Project state checkpoint
+----
+
+=== Building
+
+No build step required - the extension runs directly from source.
+
+=== Testing
+
+. Make changes to the source files
+. Go to `about:debugging` → "This Firefox"
+. Click "Reload" on the extension
+. Test your changes
+
+== Contributing
+
+Contributions welcome! Please:
+
+. Fork the repository
+. Create a feature branch
+. Make your changes
+. Submit a pull request
+
+== Disclaimer
+
+This is an unofficial extension. "Claude" is a trademark of Anthropic, PBC. This project is not affiliated with, endorsed by, or sponsored by Anthropic.
+
+== See Also
+
+* https://docs.anthropic.com/[Anthropic API Documentation]
+* https://extensionworkshop.com/[Firefox Extension Workshop]
+* https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions[MDN WebExtensions Guide]

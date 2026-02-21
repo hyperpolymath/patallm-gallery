@@ -1,0 +1,6 @@
+homepage: "https://github.com/hyperpolymath/llm-unify-core"
+language: rust
+main_repo: "https://github.com/hyperpolymath/llm-unify-core"
+sanitizers:
+  - address
+  - undefined

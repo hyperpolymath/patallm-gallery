@@ -1,0 +1,387 @@
+= Contributing to Claude GitLab Bridge
+:toc:
+:toclevels: 3
+
+Thank you for your interest in contributing to Claude GitLab Bridge! This guide will help you get started.
+
+== Ways to Contribute
+
+* 🐛 Report bugs
+* 💡 Suggest features
+* 📝 Improve documentation
+* 🧪 Write tests
+* 💻 Submit code changes
+* 🔒 Report security issues
+* 🌍 Add translations
+* 🎨 Improve user experience
+
+== Getting Started
+
+=== Prerequisites
+
+* Node.js 18+ (LTS recommended)
+* Git
+* Code editor (VS Code recommended)
+* GitLab account for testing
+* Basic knowledge of TypeScript
+
+=== Setup
+
+[source,bash]
+----
+# Fork and clone the repository
+git clone https://github.com/YOUR_USERNAME/claude-gitlab-bridge.git
+cd claude-gitlab-bridge
+
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Start development server
+npm run dev
+----
+
+== Tri-Perimeter Contribution Framework (TPCF)
+
+This project uses TPCF for community management. See link:GOVERNANCE.adoc[] for full details.
+
+=== Perimeter 3: Community Sandbox (YOU ARE HERE)
+
+**Open to all contributors who follow the Code of Conduct**
+
+**Privileges**:
+
+* Open issues
+* Submit pull requests
+* Participate in discussions
+* Vote in community polls
+
+**Requirements**:
+
+* Follow link:CODE_OF_CONDUCT.adoc[Code of Conduct]
+* Respectful communication
+* Quality contributions
+
+=== Perimeter 2: Trusted Contributors
+
+**Earned through sustained quality contributions**
+
+**Requirements**:
+
+* 3+ months of contributions
+* 10+ merged PRs
+* Demonstrated expertise
+* Positive community interaction
+
+**Privileges**:
+
+* Priority code review
+* Mentor new contributors
+* Participate in design discussions
+
+=== Perimeter 1: Core Maintainers
+
+**By invitation only**
+
+See link:GOVERNANCE.adoc[] for details.
+
+== Development Workflow
+
+=== 1. Find an Issue
+
+* Browse https://github.com/hyperpolymath/claude-gitlab-bridge/issues[open issues]
+* Look for `good first issue` or `help wanted` labels
+* Comment on the issue to claim it
+* Wait for maintainer confirmation
+
+=== 2. Create Feature Branch
+
+[source,bash]
+----
+git checkout -b feature/your-feature-name
+----
+
+**Branch naming conventions**:
+
+* `feature/` - New features
+* `fix/` - Bug fixes
+* `docs/` - Documentation
+* `refactor/` - Code refactoring
+* `test/` - Tests
+* `chore/` - Build, dependencies
+
+=== 3. Make Changes
+
+==== TypeScript Code Style
+
+[source,typescript]
+----
+// ✅ Good: Clear names, type annotations
+function parseGitLabUrl(url: string): Result<RepoContext, ParseError> {
+  // Implementation
+}
+
+// ❌ Bad: Unclear, no types
+function parse(u) {
+  // Implementation
+}
+----
+
+**Guidelines**:
+
+* Descriptive variable and function names
+* Type annotations on public functions
+* Return types for error handling
+* Comments for complex logic
+* Small, focused functions
+* Avoid any type
+
+==== Testing
+
+[source,bash]
+----
+# Run tests
+npm test
+
+# Watch mode
+npm test -- --watch
+
+# Coverage
+npm run test:coverage
+----
+
+**Coverage targets**:
+
+* Overall: 80%+
+* New files: 90%+
+* Critical paths: 100%
+
+**Write tests for**:
+
+* All new functionality
+* Bug fixes (regression tests)
+* Edge cases
+* Error conditions
+
+=== 4. Commit Changes
+
+We follow https://www.conventionalcommits.org/[Conventional Commits]:
+
+[source,bash]
+----
+git commit -m "feat(parser): add Azure DevOps support"
+git commit -m "fix(api): handle rate limiting correctly"
+git commit -m "docs(readme): update installation instructions"
+----
+
+**Commit types**:
+
+* `feat` - New feature
+* `fix` - Bug fix
+* `docs` - Documentation
+* `style` - Formatting
+* `refactor` - Code refactoring
+* `test` - Tests
+* `chore` - Build, dependencies
+* `perf` - Performance improvement
+* `ci` - CI/CD changes
+
+**Commit guidelines**:
+
+* One logical change per commit
+* Clear, descriptive messages
+* Reference issues: `fixes #123`
+* Keep commits atomic
+
+=== 5. Push and Create PR
+
+[source,bash]
+----
+git push origin feature/your-feature-name
+----
+
+Then open a Pull Request with:
+
+* **Clear title**: Following conventional commit format
+* **Description**: What changes and why
+* **Related issues**: `Fixes #123` or `Relates to #456`
+* **Screenshots**: For UI changes
+* **Testing**: How you tested the changes
+* **Checklist**: Complete the PR template
+
+==== Pull Request Template
+
+[source,markdown]
+----
+## Description
+Brief description of changes
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Documentation update
+- [ ] Refactoring
+
+## Testing
+- [ ] Unit tests pass
+- [ ] Integration tests pass
+- [ ] Manual testing completed
+
+## Screenshots (if applicable)
+
+## Checklist
+- [ ] Code follows project style
+- [ ] Tests added/updated
+- [ ] Documentation updated
+- [ ] No breaking changes (or documented)
+- [ ] Commit messages follow convention
+----
+
+== Code Review Process
+
+=== What to Expect
+
+1. **Acknowledgment**: Within 24 hours
+2. **Initial Review**: Within 3 days
+3. **Feedback**: Constructive comments
+4. **Iteration**: May request changes
+5. **Approval**: Requires 1+ approving review
+6. **Merge**: Maintainer will merge
+
+=== Review Criteria
+
+* **Correctness**: Does it work as intended?
+* **Tests**: Adequate test coverage?
+* **Style**: Follows project conventions?
+* **Documentation**: Necessary docs updated?
+* **Performance**: No degradation?
+* **Security**: No vulnerabilities introduced?
+
+=== Responding to Feedback
+
+* Be receptive to feedback
+* Ask questions if unclear
+* Make requested changes
+* Request re-review when ready
+* Keep discussions professional
+
+== Code of Conduct
+
+All contributors must follow our link:CODE_OF_CONDUCT.adoc[Code of Conduct].
+
+**Key principles**:
+
+* Be respectful and inclusive
+* Welcome newcomers
+* Accept constructive feedback
+* Focus on what's best for the community
+
+**Enforcement**: Contact conduct@hyperpolymath.dev
+
+== Security
+
+**Do NOT report security issues publicly!**
+
+Instead:
+
+1. Email: security@hyperpolymath.dev
+2. Include:
+   * Detailed description
+   * Steps to reproduce
+   * Potential impact
+   * Suggested fix (optional)
+
+See link:SECURITY.md[] for full security policy.
+
+== Documentation
+
+=== Types of Documentation
+
+* **Code comments**: For complex logic
+* **API documentation**: Public interfaces
+* **User guides**: How to use features
+* **Developer guides**: How to contribute
+* **Architecture docs**: System design
+
+=== Documentation Standards
+
+* Clear and concise
+* Examples for complex topics
+* Keep up to date with code
+* Use AsciiDoc for main docs
+* Use Markdown for quick notes
+
+== Development Tips
+
+=== Local Development
+
+[source,bash]
+----
+# Install development dependencies
+npm install
+
+# Run in development mode
+npm run dev
+
+# Run type checking
+npm run type-check
+
+# Run linter
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
+
+# Format code
+npm run format
+----
+
+=== Debugging
+
+* Use VSCode debugger
+* Add `console.log` statements (remove before committing)
+* Check network requests in DevTools
+* Review GitLab API responses
+* Use breakpoints
+
+=== Common Issues
+
+**Tests failing**::
+Check that you're using the correct Node.js version
+
+**Type errors**::
+Run `npm run type-check` to see all errors
+
+**Linting errors**::
+Run `npm run lint:fix` to auto-fix
+
+**Build errors**::
+Try `npm run clean && npm install`
+
+== Release Process
+
+For maintainers only. See link:GOVERNANCE.adoc[] for details.
+
+== Questions and Help
+
+* 💬 https://github.com/hyperpolymath/claude-gitlab-bridge/discussions[GitHub Discussions]
+* 🐛 https://github.com/hyperpolymath/claude-gitlab-bridge/issues[Issues]
+* 📧 hello@hyperpolymath.dev
+
+== Recognition
+
+Contributors are recognized in:
+
+* README.md contributors section
+* Release notes
+* Project website (coming soon)
+* Annual contributor spotlight
+
+Thank you for contributing! 🎉
+
+---
+
+*Last Updated*: 2024-11-28 +
+*License*: MIT

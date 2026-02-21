@@ -1,0 +1,23 @@
+# Build artifacts
+/target/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Elixir
+dyadt_brain/_build/
+dyadt_brain/deps/
+dyadt_brain/.elixir_ls/
+
+# Container runtime artifacts (images built locally)
+*.ctp
+
+# Crash recovery artifacts
+ai-cli-crash-capture/

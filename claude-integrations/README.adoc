@@ -1,0 +1,100 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+
+= Claude Integrations
+Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
+
+Unified monorepo consolidating all Claude browser and service integration projects.
+
+image:https://img.shields.io/badge/license-PMPL--1.0--or--later-blue.svg[License,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+== Overview
+
+This repository brings together five previously separate repositories into a single,
+coherent workspace for developing Claude AI integrations across browsers and services.
+
+== Components
+
+[cols="1,3,1"]
+|===
+| Directory | Description | Stack
+
+| firefox-lsp/
+| LSP implementation for Firefox browser automation via Marionette protocol
+| Elixir
+
+| firefox-mcp/
+| Model Context Protocol server for Firefox browser control
+| Deno / JavaScript
+
+| gecko-browser-extension/
+| Browser extension for Gecko-based browsers (Firefox, Thunderbird, SeaMonkey)
+| JavaScript / WebExtensions API
+
+| gitlab-bridge/
+| Bridge between Claude AI and GitLab for developer productivity
+| ReScript / Deno
+
+| mozilla-extension/
+| Claude AI assistant extension for Mozilla products
+| JavaScript / WebExtensions API
+|===
+
+== Getting Started
+
+Each component has its own README with setup instructions. Navigate to the
+relevant subdirectory for component-specific documentation.
+
+[source,bash]
+----
+# List available build recipes
+just --list
+
+# Build a specific component
+just build-firefox-lsp
+just build-firefox-mcp
+just build-gecko-extension
+just build-gitlab-bridge
+just build-mozilla-extension
+----
+
+== Repository Structure
+
+----
+claude-integrations/
+├── firefox-lsp/             # Firefox LSP via Marionette protocol
+├── firefox-mcp/             # Firefox MCP server
+├── gecko-browser-extension/  # Gecko browser extension
+├── gitlab-bridge/           # GitLab integration bridge
+├── mozilla-extension/       # Mozilla products extension
+├── .machine_readable/       # SCM checkpoint files
+├── justfile                 # Build recipes
+├── LICENSE                  # PMPL-1.0-or-later
+└── README.adoc              # This file
+----
+
+== History
+
+This monorepo was created by consolidating the following repositories:
+
+* claude-firefox-lsp
+* claude-firefox-mcp
+* claude-gecko-browser-extension
+* claude-gitlab-bridge
+* claude-mozilla-extension
+
+Full git history for each component is preserved in the original repositories
+(archived).
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later
+
+Copyright (C) 2024-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+
+Licensed under the Palimpsest License, Version 1.0 or later.
+See link:LICENSE[] for the full license text.

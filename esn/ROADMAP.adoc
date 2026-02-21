@@ -1,0 +1,211 @@
+// SPDX-FileCopyrightText: 2024 Jonathan D.A. Jewell
+// SPDX-License-Identifier: PMPL-1.0-or-later
+
+= ESN Development Roadmap
+:author: Jonathan D.A. Jewell (hyperpolymath)
+:toc: macro
+:toclevels: 2
+:icons: font
+
+This document outlines the development roadmap for the ESN (Echo State Networks) library.
+
+toc::[]
+
+== Current State
+
+=== What Exists (v0.1)
+
+The library provides a **production-grade foundation** for reservoir computing:
+
+[cols="1,3,1"]
+|===
+| Component | Description | Status
+
+| **EchoStateNetwork**
+| Core ESN implementation with sparse reservoir, leaky integrator neurons, ridge regression training
+| Complete
+
+| **HierarchicalEsn**
+| Multi-layer ESN for hierarchical temporal feature extraction
+| Complete
+
+| **Activation Functions**
+| Tanh, Sigmoid, ReLU, LeakyReLU, Identity
+| Complete
+
+| **Training Pipeline**
+| Ridge regression with washout, MSE calculation
+| Complete
+
+| **State Management**
+| State history tracking, reset, feedback connections
+| Complete
+
+| **Configuration**
+| Full EsnConfig with serialization support
+| Complete
+
+| **Error Handling**
+| Comprehensive EsnError types with thiserror
+| Complete
+
+| **Tests**
+| Unit tests for creation, stepping, echo property, hierarchical behavior
+| Complete
+|===
+
+=== Code Metrics
+
+* **~600 lines** of core Rust implementation
+* **4 unit tests** covering fundamental behavior
+* **9 configurable parameters** for reservoir tuning
+* **5 activation functions** available
+
+== Roadmap
+
+=== Phase 1: Core Enhancements
+
+==== Persistence & Serialization
+* [ ] Implement `Serialize`/`Deserialize` for `EchoStateNetwork`
+* [ ] Add model save/load functionality (`save_to_file`, `load_from_file`)
+* [ ] Support for CBOR, MessagePack, and JSON formats
+
+==== Additional Training Methods
+* [ ] **Online learning**: Recursive least squares (RLS) for incremental updates
+* [ ] **FORCE learning**: Real-time recurrent learning for generative tasks
+* [ ] **Intrinsic plasticity**: Adapt reservoir dynamics during training
+* [ ] **Conceptor-based control**: Pattern-selective reservoir gating
+
+==== Reservoir Variants
+* [ ] **Cycle Reservoir Computing (CRC)**: Simplified deterministic topology
+* [ ] **Simple Cycle Reservoir (SCR)**: Minimal reservoir with single cycle
+* [ ] **Delay Line Reservoir (DLR)**: Shift-register based architecture
+* [ ] **Orthogonal reservoir**: Improved gradient flow properties
+
+=== Phase 2: Performance & Scale
+
+==== GPU Acceleration
+* [ ] CUDA backend via `cudarc` or `burn`
+* [ ] GPU-accelerated matrix operations for large reservoirs
+* [ ] Batch processing for multiple sequences
+
+==== Parallelization
+* [ ] Multi-threaded reservoir updates using `rayon`
+* [ ] Parallel training across multiple sequences
+* [ ] SIMD optimizations for activation functions
+
+==== Memory Optimization
+* [ ] Sparse matrix storage (CSR/CSC) for large reservoirs
+* [ ] Streaming mode for memory-constrained environments
+* [ ] Quantized weights (f16, i8) for embedded deployment
+
+=== Phase 3: Advanced Architectures
+
+==== Deep Reservoir Computing
+* [ ] **Deep ESN**: Multiple reservoirs with skip connections
+* [ ] **Grouped ESN**: Parallel reservoir pools with different timescales
+* [ ] **Modular ESN**: Specialized sub-reservoirs for different input features
+
+==== Attention Mechanisms
+* [ ] Self-attention over reservoir states
+* [ ] Temporal attention for variable-length sequences
+* [ ] Cross-attention for multi-modal inputs
+
+==== Hybrid Architectures
+* [ ] ESN + Transformer hybrid for long-range dependencies
+* [ ] ESN encoder with linear decoder
+* [ ] Convolutional input preprocessing
+
+=== Phase 4: Ecosystem Integration
+
+==== LSM Integration
+* [ ] Liquid State Machine (LSM) coupling (as noted in source comments)
+* [ ] Spiking-to-continuous state conversion
+* [ ] Joint LSM-ESN training pipeline
+
+==== LLM Interfaces
+* [ ] Output formatting for LLM prompt generation
+* [ ] Action encoding for agent-based systems
+* [ ] Embedding generation for downstream tasks
+
+==== Interoperability
+* [ ] ONNX export for cross-platform deployment
+* [ ] Python bindings via PyO3
+* [ ] C FFI for embedded systems
+* [ ] WASM compilation for browser deployment
+
+=== Phase 5: Tooling & Documentation
+
+==== Examples & Benchmarks
+* [ ] Time series prediction (Mackey-Glass, Lorenz, NARMA)
+* [ ] Classification (speech recognition, gesture detection)
+* [ ] Anomaly detection (sensor data, network traffic)
+* [ ] Chaotic system modeling
+
+==== Visualization
+* [ ] Reservoir activity visualization
+* [ ] Weight matrix heatmaps
+* [ ] Training dynamics plots
+* [ ] Interactive parameter tuning
+
+==== Documentation
+* [ ] API documentation with rustdoc
+* [ ] Tutorial notebooks
+* [ ] Performance tuning guide
+* [ ] Architecture decision records
+
+=== Phase 6: Production Hardening
+
+==== Robustness
+* [ ] Property-based testing with `proptest`
+* [ ] Fuzzing for edge cases
+* [ ] Numerical stability improvements
+* [ ] NaN/Inf handling and recovery
+
+==== Observability
+* [ ] Metrics export (Prometheus, OpenTelemetry)
+* [ ] Training progress callbacks
+* [ ] Performance profiling hooks
+
+==== Deployment
+* [ ] Docker images for inference
+* [ ] Kubernetes operator for scaled inference
+* [ ] Edge deployment guides (ARM, RISC-V)
+
+== Research Directions
+
+These are exploratory areas that may influence future development:
+
+=== Theoretical Foundations
+* Memory capacity analysis and optimization
+* Kernel quality metrics for reservoir evaluation
+* Dynamical systems interpretation of ESN behavior
+
+=== Novel Applications
+* Neuromorphic hardware compatibility
+* Quantum reservoir computing bridges
+* Continual/lifelong learning protocols
+
+=== Algorithmic Advances
+* Reservoir optimization via evolutionary algorithms
+* Neural architecture search for ESN topology
+* Meta-learning for rapid adaptation
+
+== Contributing
+
+Contributions aligned with this roadmap are welcome. Please:
+
+1. Check existing issues for related work
+2. Open an issue to discuss before major changes
+3. Follow the Hyperpolymath Standard (see `.claude/CLAUDE.md`)
+
+== Version History
+
+[cols="1,2,4"]
+|===
+| Version | Date | Changes
+
+| 0.1
+| 2024
+| Initial release: core ESN, hierarchical ESN, basic training
+|===

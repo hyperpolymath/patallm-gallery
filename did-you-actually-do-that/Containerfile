@@ -1,0 +1,128 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+#
+# Containerfile for did-you-actually-do-that (DYADT)
+# Multi-stage build: Rust verifier + Elixir OTP brain
+#
+# Build:  podman build -t dyadt:latest -f Containerfile .
+# Run:    podman run -p 4200:4200 dyadt:latest
+# Sign:   cerro-torre sign dyadt:latest
+#
+# Uses the stapeln container ecosystem:
+#   - Base images: Chainguard wolfi-base (build) / wolfi-base (runtime)
+#   - Runtime: Podman (never Docker)
+#   - Orchestration: selur-compose
+#   - Signing: cerro-torre
+#   - Secrets: rokur
+
+# ============================================================
+# Stage 1: Build Rust verifier binary
+# ============================================================
+FROM cgr.dev/chainguard/wolfi-base:latest AS rust-builder
+
+RUN apk add --no-cache \
+    rust \
+    cargo \
+    build-base \
+    openssl-dev \
+    libgit2-dev \
+    pkgconf
+
+WORKDIR /build
+
+# Cache dependency builds
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir src && echo 'fn main() {}' > src/main.rs && echo '' > src/lib.rs && \
+    cargo build --release 2>/dev/null || true && \
+    rm -rf src
+
+# Build the actual binary
+COPY src/ src/
+COPY tests/ tests/
+COPY benches/ benches/
+RUN cargo build --release --bin dyadt && \
+    strip /build/target/release/dyadt
+
+# ============================================================
+# Stage 2: Build Elixir OTP release
+# ============================================================
+FROM cgr.dev/chainguard/wolfi-base:latest AS elixir-builder
+
+RUN apk add --no-cache \
+    elixir \
+    erlang \
+    erlang-dev \
+    build-base \
+    git
+
+WORKDIR /build/dyadt_brain
+
+# Cache dependency fetching
+COPY dyadt_brain/mix.exs dyadt_brain/mix.lock* ./
+RUN mix local.hex --force && \
+    mix local.rebar --force && \
+    MIX_ENV=prod mix deps.get && \
+    MIX_ENV=prod mix deps.compile
+
+# Copy application code
+COPY dyadt_brain/lib/ lib/
+COPY dyadt_brain/config/ config/
+COPY dyadt_brain/priv/ priv/ 2>/dev/null || true
+
+# Compile in prod mode
+RUN MIX_ENV=prod mix compile
+
+# Build OTP release
+COPY dyadt_brain/rel/ rel/ 2>/dev/null || true
+RUN MIX_ENV=prod mix release dyadt_brain 2>/dev/null || \
+    MIX_ENV=prod mix compile
+
+# ============================================================
+# Stage 3: Runtime image
+# ============================================================
+FROM cgr.dev/chainguard/wolfi-base:latest AS runtime
+
+RUN apk add --no-cache \
+    erlang \
+    libgcc \
+    libstdc++ \
+    openssl \
+    libgit2 \
+    ca-certificates
+
+# Create non-root user
+RUN adduser -D -u 1000 dyadt
+WORKDIR /app
+
+# Copy Rust verifier binary
+COPY --from=rust-builder /build/target/release/dyadt /app/bin/dyadt
+
+# Copy Elixir application
+# If release was built:
+COPY --from=elixir-builder /build/dyadt_brain/_build/prod/ /app/elixir/_build/prod/ 2>/dev/null || true
+COPY --from=elixir-builder /build/dyadt_brain/lib/ /app/elixir/lib/
+COPY --from=elixir-builder /build/dyadt_brain/config/ /app/elixir/config/
+COPY --from=elixir-builder /build/dyadt_brain/deps/ /app/elixir/deps/
+COPY --from=elixir-builder /build/dyadt_brain/mix.exs /app/elixir/mix.exs
+COPY --from=elixir-builder /build/dyadt_brain/.mix/ /root/.mix/ 2>/dev/null || true
+
+# Copy fleet integration (for gitbot-fleet)
+COPY fleet/ /app/fleet/
+
+# Set environment
+ENV DYADT_BINARY=/app/bin/dyadt \
+    MIX_ENV=prod \
+    DYADT_API_PORT=4200 \
+    DYADT_VERISIMDB_URL=http://verisimdb:8080 \
+    ERL_FLAGS="+JMsingle true" \
+    LANG=C.UTF-8
+
+EXPOSE 4200
+
+USER dyadt
+
+# Health check
+HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
+    CMD /app/bin/dyadt --version || exit 1
+
+# Start the Elixir brain (which spawns the Rust port internally)
+CMD ["sh", "-c", "cd /app/elixir && elixir --sname dyadt -S mix run --no-halt"]

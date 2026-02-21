@@ -1,0 +1,476 @@
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 LLM Unify Contributors
+= LLM Unify
+
+:toc: macro
+:toclevels: 2
+:icons: font
+:source-highlighter: rouge
+
+*A local-first, privacy-focused tool for managing conversations across multiple LLM platforms*
+
+image:https://img.shields.io/badge/RSR-Silver-C0C0C0[RSR Compliance,link=./RSR-COMPLIANCE.md]
+image:https://img.shields.io/badge/TPCF-Perimeter%203-green[TPCF: Perimeter 3,link=./CONTRIBUTING.md]
+image:https://img.shields.io/badge/Rust-1.75+-orange.svg[Rust 1.75+]
+image:https://img.shields.io/badge/unsafe-0%20blocks-brightgreen.svg[Zero Unsafe]
+
+toc::[]
+
+== What Is This?
+
+LLM Unify consolidates your AI conversation history from multiple platforms into a single, searchable, offline database. Your chats with ChatGPT, Claude, Gemini, and Copilot - all accessible through one interface, stored locally on your machine, under your control.
+
+[source,bash]
+----
+# Import your ChatGPT export
+llm-unify import chatgpt ~/Downloads/conversations.json
+
+# Search across all providers
+llm-unify search "async rust tokio"
+
+# Browse in terminal UI
+llm-unify tui
+----
+
+== Why?
+
+**The Problem:** Your AI conversations are scattered across platforms, locked in proprietary formats, subject to deletion, and not easily searchable.
+
+**The Solution:** A unified local archive that:
+
+* **Preserves** your conversations permanently on your machine
+* **Unifies** multiple providers into one searchable database
+* **Protects** your privacy - no data ever leaves your computer
+* **Empowers** you to search, export, and analyze your AI interactions
+
+== Features
+
+=== Implemented (v0.1.0)
+
+[cols="1,3"]
+|===
+|Feature|Description
+
+|**Multi-Platform Import**
+|ChatGPT, Claude, Gemini, and GitHub Copilot - all four major providers
+
+|**Full-Text Search**
+|SQLite FTS5-powered search with snippet highlighting
+
+|**Terminal UI**
+|Ratatui-based browser with vim bindings (`j`/`k`, `/` search)
+
+|**14 CLI Commands**
+|import, list, show, search, delete, export, stats, validate, backup, restore, init, schema, tui, version
+
+|**Local-First Storage**
+|SQLite database with WAL mode and zero network dependencies
+
+|**Type-Safe Rust**
+|Idiomatic Rust with zero unsafe blocks
+
+|**Schema Versioning**
+|Automatic migrations with full version history
+
+|**Backup Integrity**
+|SHA-256 checksums with atomic operations and validation
+
+|**Connection Pooling**
+|Efficient SQLite access with up to 5 concurrent connections
+|===
+
+=== Coming Soon (v0.2.0)
+
+* Database encryption (SQLCipher)
+* Export file encryption (age/GPG)
+* Enhanced TUI with message viewing
+* 80%+ test coverage
+
+See link:ROADMAP.adoc[ROADMAP.adoc] for the full development plan.
+
+== Installation
+
+=== From Source (Recommended)
+
+[source,bash]
+----
+# Prerequisites: Rust 1.75+, SQLite 3.35+
+git clone https://github.com/Hyperpolymath/llm-unify.git
+cd llm-unify
+cargo install --path crates/llm-unify-cli
+----
+
+=== From crates.io (Coming Soon)
+
+[source,bash]
+----
+cargo install llm-unify-cli
+----
+
+== Quick Start
+
+=== 1. Initialize Database
+
+[source,bash]
+----
+llm-unify init
+# Creates ~/.local/share/llm-unify/conversations.db
+----
+
+=== 2. Import Conversations
+
+[source,bash]
+----
+# ChatGPT (export from Settings → Data Controls → Export)
+llm-unify import chatgpt ./conversations.json
+
+# Claude (export from Anthropic Console → Settings → Export)
+llm-unify import claude ./claude-export.json
+
+# Gemini (use browser extensions like Gem Chat Exporter)
+llm-unify import gemini ./gemini-export.json
+
+# GitHub Copilot (VS Code: Chat: Export Chat... command)
+llm-unify import copilot ./copilot-chat.json
+----
+
+=== 3. Search Your History
+
+[source,bash]
+----
+# Search all conversations
+llm-unify search "machine learning"
+
+# Limit results
+llm-unify search "rust async" --limit 5
+
+# List all conversations
+llm-unify list
+
+# Filter by provider
+llm-unify list --provider chatgpt
+----
+
+=== 4. Launch Terminal UI
+
+[source,bash]
+----
+llm-unify tui
+----
+
+.TUI Keybindings
+[cols="1,3"]
+|===
+|Key|Action
+
+|`j` / `↓`|Move down
+|`k` / `↑`|Move up
+|`/`|Search mode
+|`Enter`|Select conversation
+|`q`|Quit
+|===
+
+=== 5. Backup Your Data
+
+[source,bash]
+----
+# Create backup
+llm-unify backup ~/llm-unify-backup.db
+
+# Restore from backup
+llm-unify restore ~/llm-unify-backup.db
+----
+
+== Architecture
+
+LLM Unify is structured as a Rust workspace with 6 focused crates:
+
+[source]
+----
+llm-unify/
+├── crates/
+│   ├── llm-unify-core/     # Domain models, traits, errors (179 LOC)
+│   ├── llm-unify-storage/  # SQLite persistence layer (322 LOC)
+│   ├── llm-unify-parser/   # Provider import parsers (246 LOC)
+│   ├── llm-unify-search/   # Full-text search engine (130 LOC)
+│   ├── llm-unify-cli/      # Command-line interface (261 LOC)
+│   └── llm-unify-tui/      # Terminal UI (216 LOC)
+├── docs/                    # Additional documentation
+├── .well-known/            # RFC 9116 compliant metadata
+└── ...
+----
+
+=== Core Types
+
+[source,rust]
+----
+// Provider enumeration
+pub enum Provider {
+    ChatGpt,
+    Claude,
+    Gemini,
+    Copilot,
+    Other(String),
+}
+
+// Conversation structure
+pub struct Conversation {
+    pub id: String,
+    pub title: String,
+    pub provider: Provider,
+    pub messages: Vec<Message>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+// Message structure
+pub struct Message {
+    pub id: String,
+    pub role: MessageRole,  // User, Assistant, System
+    pub content: String,
+    pub timestamp: DateTime<Utc>,
+    pub metadata: Metadata,
+}
+----
+
+=== Database Schema
+
+[source,sql]
+----
+-- Conversations table
+CREATE TABLE conversations (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    provider TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
+-- Messages table with FTS5 index
+CREATE TABLE messages (
+    id TEXT PRIMARY KEY,
+    conversation_id TEXT NOT NULL,
+    role TEXT NOT NULL,
+    content TEXT NOT NULL,
+    timestamp TEXT NOT NULL,
+    metadata TEXT,
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id)
+);
+
+-- Full-text search
+CREATE VIRTUAL TABLE messages_fts USING fts5(
+    content,
+    content=messages,
+    content_rowid=rowid
+);
+----
+
+== Commands Reference
+
+[cols="1,3"]
+|===
+|Command|Description
+
+|`init`
+|Initialize the database
+
+|`import <provider> <file>`
+|Import conversations from a provider export
+
+|`list [--provider <name>]`
+|List all conversations, optionally filtered
+
+|`show <id>`
+|Display a specific conversation
+
+|`search <query> [--limit <N>]`
+|Full-text search across messages
+
+|`delete <id>`
+|Remove a conversation
+
+|`export <id> [--output <path>]`
+|Export conversation to JSON
+
+|`stats`
+|Show database statistics
+
+|`validate`
+|Check database integrity (SQLite + data consistency)
+
+|`backup <output>`
+|Create database backup with SHA-256 checksum
+
+|`restore <input>`
+|Restore from backup with integrity verification
+
+|`schema`
+|Display schema version and migration history
+
+|`tui`
+|Launch terminal UI
+
+|`version`
+|Show version information (schema, backup, export formats)
+|===
+
+== Security
+
+=== Guarantees
+
+* **Zero unsafe code** - Memory safety verified by Rust compiler
+* **Parameterized queries** - SQL injection prevention via SQLx
+* **Backup integrity** - SHA-256 checksums with pre-restore validation
+* **Atomic operations** - WAL mode prevents corruption during writes
+* **No telemetry** - Zero data collection or phone-home behavior
+* **Local-only** - All data stays on your machine
+* **Open source** - Fully auditable codebase
+
+=== Known Limitations (v0.1.x)
+
+* Database not encrypted at rest (use disk encryption)
+* Export files are plaintext (encryption coming v0.2)
+* Relies on filesystem permissions for access control
+
+See link:SECURITY.md[SECURITY.md] for vulnerability reporting.
+
+== Philosophy
+
+=== We Believe In
+
+* **User autonomy** over platform lock-in
+* **Privacy by default**, not by policy
+* **Open source** as a public good
+* **Local-first** data ownership
+* **Accessibility** for all users
+
+=== We Reject
+
+* Surveillance capitalism
+* Dark patterns and manipulation
+* Gatekeeping and elitism
+* Vendor lock-in
+
+== Compliance & Standards
+
+[cols="1,2"]
+|===
+|Standard|Status
+
+|**RSR (Rhodium Standard Repository)**
+|🥈 Silver (51/55 points)
+
+|**TPCF (Trusted Perimeter Classification)**
+|Perimeter 3 (Community Sandbox)
+
+|**RFC 9116**
+|Compliant (security.txt)
+
+|**REUSE**
+|SPDX license headers
+
+|**Keep a Changelog**
+|v1.0.0 format
+
+|**Semantic Versioning**
+|v2.0.0 spec
+|===
+
+== Development
+
+=== Prerequisites
+
+* Rust 1.75+ (latest stable recommended)
+* SQLite 3.35+
+* Just command runner
+* Git 2.30+
+
+=== Building
+
+[source,bash]
+----
+# Clone repository
+git clone https://github.com/Hyperpolymath/llm-unify.git
+cd llm-unify
+
+# Build all crates
+just build
+
+# Run tests
+just test
+
+# Run lints
+just lint
+
+# Full CI simulation
+just ci
+
+# See all recipes
+just --list
+----
+
+=== Contributing
+
+We welcome contributions! See link:CONTRIBUTING.md[CONTRIBUTING.md] for:
+
+* Development workflow
+* Coding standards
+* PR process
+* Path to maintainership
+
+== Documentation
+
+[cols="1,3"]
+|===
+|Document|Purpose
+
+|link:ROADMAP.adoc[ROADMAP.adoc]
+|Development roadmap and feature backlog
+
+|link:CHANGELOG.md[CHANGELOG.md]
+|Release history
+
+|link:CONTRIBUTING.md[CONTRIBUTING.md]
+|How to contribute
+
+|link:SECURITY.md[SECURITY.md]
+|Security policy and reporting
+
+|link:CODE_OF_CONDUCT.md[CODE_OF_CONDUCT.md]
+|Community standards
+
+|link:MAINTAINERS.md[MAINTAINERS.md]
+|Governance model
+
+|link:RSR-COMPLIANCE.md[RSR-COMPLIANCE.md]
+|Rhodium Standard compliance report
+
+|link:docs/CITATIONS.adoc[docs/CITATIONS.adoc]
+|Citation formats for academic use
+|===
+
+== License
+
+This project is dual-licensed:
+
+* **PMPL-1.0-or-later** for the codebase - Strong copyleft ensuring user freedom
+* **Palimpsest Protocol** for data portability - Your data, your rights
+
+See link:LICENSE[LICENSE] and link:LICENSE-PALIMPSEST[LICENSE-PALIMPSEST] for details.
+
+== Community
+
+* **TPCF Perimeter:** 3 (Community Sandbox)
+* **Code of Conduct:** Contributor Covenant 2.1 + CCCP extensions
+* **Governance:** Consensus-seeking with voting fallback
+
+== Acknowledgments
+
+See link:.well-known/humans.txt[.well-known/humans.txt] for credits and attribution.
+
+---
+
+_No AI training on user data. See link:.well-known/ai.txt[.well-known/ai.txt] for our AI policy._
