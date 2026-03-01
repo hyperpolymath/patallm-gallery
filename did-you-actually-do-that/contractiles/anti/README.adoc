@@ -1,0 +1,239 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Antifile Contractile Specification
+:author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+:date: 2026-03-01
+:toc:
+
+== What Is an Antifile?
+
+A Dustfile catalogues recovery procedures. An Antifile catalogues **known
+patterns that produce logic errors** — not compilation errors, not runtime
+crashes, but semantically wrong code that looks correct.
+
+These are the most dangerous software failures because they pass every
+automated check. The code compiles. The tests (if written) pass. The output
+looks plausible. But the logic is wrong, and the wrongness is invisible until
+it causes damage in production.
+
+The Antifile is to code what a virus signature database is to files: a
+catalog of known-bad shapes. But instead of byte patterns, it stores
+*structural patterns* — shapes of code that historically produce logic
+errors — and *forensic signatures* — observable characteristics of code
+that was generated rather than thoughtfully written.
+
+== Antipattern Categories
+
+=== Category 1: Structural Antipatterns (Language-Agnostic)
+
+These patterns are wrong regardless of who or what wrote them.
+
+[cols="2,3,1"]
+|===
+| Pattern | Description | Severity
+
+| **Always-true guard**
+| A condition that evaluates to `true` for all inputs, making the guarded
+  branch unreachable. `if x >= 0 \|\| x < 0` or equivalent.
+| High
+
+| **Silent swallow**
+| An error handler that catches exceptions and does nothing. No logging,
+  no re-raise, no fallback. `catch(_) -> ok` or `rescue => nil`.
+| Critical
+
+| **Constant return**
+| A function that always returns the same value regardless of input.
+  `fn verify(x) { true }`. Often a stub that was never completed.
+| Critical
+
+| **Dead branch**
+| Code after an unconditional `return`, `break`, `panic`, or `throw`.
+  Present to appear complete but never executes.
+| Medium
+
+| **Off-by-one**
+| Loop bounds that process one too many or one too few elements. Most
+  common in 0-indexed iteration with `<=` instead of `<`.
+| High
+
+| **Redundant computation**
+| Computing a value that is never used, or computing the same value twice.
+  Often a sign of copy-paste without understanding.
+| Low
+
+| **Type coercion trap**
+| Implicit type conversions that silently produce wrong results.
+  JavaScript's `"5" + 3 = "53"` vs `"5" - 3 = 2`.
+| High
+
+| **Race condition shape**
+| Check-then-act patterns without synchronisation. `if file_exists(f)
+  then read(f)` in concurrent code.
+| Critical
+|===
+
+=== Category 2: LLM Forensic Signatures (AI-Specific)
+
+These patterns are characteristic of LLM-generated code that was produced
+without genuine understanding.
+
+[cols="2,3,1"]
+|===
+| Signature | Description | Confidence
+
+| **Burst coding**
+| Large volumes of structurally similar code produced in implausibly short
+  time windows. 14,000 lines of Idris2 in under an hour. 80 commits in
+  5 hours with zero test failures.
+| High
+
+| **Identical stubs**
+| Multiple functions with the same body: `todo!()`, `believe_me`,
+  `unimplemented!()`, or `pass`. The LLM generated the signatures but
+  not the implementations.
+| Very High
+
+| **Implausible perfection**
+| Zero compilation errors, zero test failures, zero warnings across a
+  large initial commit. Real development always has false starts.
+| Medium
+
+| **Domain naivety**
+| Cryptographic code with no randomness source. Network code with no
+  timeout handling. Database code with no transaction management.
+  Concurrent code with no synchronisation. The LLM knows the *vocabulary*
+  of the domain but not the *invariants*.
+| High
+
+| **Template echo**
+| Multiple functions that are clearly instantiations of a template, with
+  only names changed. The logic, structure, error handling, and comments
+  are identical across functions that should have distinct implementations.
+| High
+
+| **Confident hallucination**
+| Code that calls APIs or uses patterns that don't exist in the library
+  version being used. The names are plausible but fictional. Often
+  accompanied by confident-sounding comments explaining the fictional API.
+| Very High
+
+| **Annotation vacuum**
+| Large blocks of code with zero comments, zero doc strings, zero
+  annotations. When an LLM generates code it genuinely understands, it
+  naturally produces explanatory prose. Bare code suggests generation
+  without comprehension.
+| Medium
+|===
+
+== VerisimDB Storage Model
+
+Each antipattern is stored as an octad entry:
+
+[cols="1,3"]
+|===
+| Modality | Content
+
+| Document
+| The pattern description: what to look for, regex or AST pattern
+
+| Semantic
+| Domain tags: crypto, networking, parsing, concurrency, etc.
+
+| Graph
+| Co-occurrence relationships: pattern A often appears with pattern B
+
+| Temporal
+| Discovery date, frequency of occurrence across scanned codebases
+
+| Provenance
+| Which codebase the pattern was first observed in, which audit
+
+| Vector
+| Code embedding of representative examples for similarity search
+
+| Tensor
+| Cross-cutting attributes: which languages, frameworks, failure phyla
+
+| Spatial
+| (Reserved for future CI runner / execution environment metadata)
+|===
+
+== Detection Methods
+
+=== Static Analysis (panic-attack)
+
+panic-attack's `assail` subcommand already detects many structural
+antipatterns. The Antifile extends this with:
+
+- Custom pattern definitions (regex + AST patterns)
+- Severity classification per pattern
+- Threshold configuration (how many instances before alerting)
+
+=== Vector Similarity (VerisimDB)
+
+For patterns that resist syntactic detection (e.g., "code that looks like
+a stub but has no TODO marker"), vector embeddings in VerisimDB enable
+similarity search against known-bad examples.
+
+=== Temporal Forensics
+
+The attestation chain's evidence phase captures timing data. Combined with
+VerisimDB's temporal modality, this enables forensic queries like:
+
+"Show me all code created in burst windows (>100 lines/minute) that has
+no corresponding test code."
+
+=== Cross-Modal Queries
+
+The most powerful detection combines multiple modalities. See
+`docs/VERISIMDB-CODE-IDENTITY.adoc` for query examples.
+
+== K9 Integration
+
+=== Kennel Tier
+
+Parse the Antifile and validate its structure. Ensure all patterns have
+required fields (name, description, severity, detection method).
+
+=== Yard Tier
+
+Nickel contracts validate that pattern definitions are internally consistent.
+Severity levels are from the allowed set. Detection methods reference
+existing tools.
+
+=== Hunt Tier
+
+Execute detection: run panic-attack with custom patterns, query VerisimDB
+for vector similarity matches, run temporal forensic queries. Report
+matches with severity and confidence.
+
+== File Format
+
+The Antifile uses A2ML format, similar to the blueprint:
+
+[source]
+----
+# Antifile — Known-Bad Pattern Catalog
+# SPDX-License-Identifier: PMPL-1.0-or-later
+
+@pattern(id="anti-001", severity="critical"):
+  name: Silent Swallow
+  description: Error handler that catches and discards without logging
+  languages: [rust, elixir, python, javascript]
+  detection: ast-pattern
+  match: |
+    catch/rescue/except block with empty body or single `ok`/`nil`/`pass`
+  example: |
+    try { risky() } catch(_) { }
+  references: [CWE-391]
+@end
+----
+
+== Relationship to Other Documents
+
+- `contractiles/trust/blueprint.a2ml` — INV-10 (Implementation Completeness) uses
+  Antifile patterns for banned marker detection
+- `docs/CLADISTIC-TAXONOMY.adoc` — Antifile patterns map to cladistic orders
+- `docs/VERISIMDB-CODE-IDENTITY.adoc` — Antipatterns stored as VerisimDB octads
+- `docs/LLM-PROCRASTINATION-PATTERNS.adoc` — Behavioral antipatterns documented there
+  should eventually be formalised as Antifile entries

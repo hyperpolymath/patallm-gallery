@@ -1,0 +1,408 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Cladistic Taxonomy of LLM Failure Behaviours
+:author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+:date: 2026-03-01
+:toc:
+:toclevels: 3
+
+== Overview
+
+This document organises LLM failure behaviours into a hierarchical taxonomy
+inspired by biological cladistics. The purpose is not classification for its
+own sake, but to ensure that DYADT's verification framework has coverage
+across all known failure modes. Each taxon includes detection methods and
+an honest assessment of detection reliability.
+
+== Phylum I: Structural Failures ("Looks Right")
+
+Output has the correct shape — it compiles, it parses, it has the right
+file extensions — but the content is wrong or missing.
+
+=== Class: Skeletal
+
+The code structure exists but the body is absent.
+
+==== Order: Stub Proliferation
+
+**Description**: Functions exist but contain `todo!()`, `unimplemented!()`,
+`believe_me`, `Admitted`, `sorry`, or equivalent markers.
+
+**Example**: An Idris2 module with 4,566 instances of `believe_me` (observed
+in the proven repo audit, 2026-02-22).
+
+**Detection**: INV-10 (banned marker scan). Grep-based. ~95% detection rate.
+
+**DYADT Layer**: Layer 11 (Completeness Audit)
+
+==== Order: Hollow Shell
+
+**Description**: Functions exist and have no stub markers, but return
+hardcoded values (`true`, `false`, `0`, `null`, `""`) regardless of input.
+
+**Example**: `fn verify_hash(input: &str) -> bool { true }`
+
+**Detection**: INV-11 (Narrative Coherence) — annotation says "verifies hash"
+but code returns constant. Also detectable via control flow analysis (no
+branches, no computation). ~60-70% detection rate.
+
+**DYADT Layer**: Layer 4 (Semantic), Layer 11 (Completeness)
+
+==== Order: Missing Counterpart
+
+**Description**: One half of a language-required pair exists but not the
+other. Ada `.ads` without `.adb`. Rust `mod foo;` without `foo.rs`. Elixir
+`defmodule` without corresponding test module.
+
+**Detection**: INV-12 (Structural Completeness). Language-specific checks.
+~90% detection rate for known language pairs.
+
+**DYADT Layer**: Layer 1 (File Existence), Layer 10 (Cross-Reference)
+
+=== Class: Cosmetic
+
+The code looks complete but is functionally inert.
+
+==== Order: Dead Code
+
+**Description**: Code exists after unreachable `return`, `break`, or `panic`
+statements. Present to appear complete but never executes.
+
+**Detection**: Compiler warnings (Rust `#[warn(unreachable_code)]`), control
+flow analysis. ~85% detection rate when compiler warnings are enabled.
+
+**DYADT Layer**: Layer 3 (Syntactic)
+
+==== Order: Copy-Paste Artefacts
+
+**Description**: Multiple functions with near-identical bodies, differing
+only in names. Often produced when an LLM generates several similar handlers
+by template rather than by understanding each case's requirements.
+
+**Detection**: Vector similarity in VerisimDB — functions whose embeddings
+are too close together. Also detectable via AST comparison. ~70% detection.
+
+**DYADT Layer**: Layer 4 (Semantic)
+
+== Phylum II: Semantic Failures ("Means Wrong")
+
+Output has correct syntax but incorrect meaning. The most dangerous phylum
+because it passes all syntactic checks.
+
+=== Class: Logical
+
+The code's logic does not match its stated purpose.
+
+==== Order: Inverted Condition
+
+**Description**: Boolean conditions are negated. `if !valid` instead of
+`if valid`. `>=` instead of `>`. The code compiles and may even pass most
+tests (if tests don't cover the boundary case).
+
+**Detection**: Extremely difficult. INV-11 (Narrative Coherence) can catch
+cases where the annotation describes the correct condition. Formal verification
+(Idris2 proofs) can prevent this for critical paths. ~30% detection rate.
+
+**DYADT Layer**: Layer 4 (Semantic)
+
+==== Order: Wrong Algorithm
+
+**Description**: The code implements an algorithm that doesn't match the
+requirements. A quadratic search where a hash lookup was needed. SHA-1
+instead of SHA-256. Bubble sort instead of the specified merge sort.
+
+**Detection**: INV-11 (annotation says "SHA-256" but code uses "SHA-1").
+Domain-specific checks. Antifile patterns. ~40% detection rate.
+
+**DYADT Layer**: Layer 4 (Semantic), Layer 9 (Content Hash — for hash
+algorithm mismatches specifically)
+
+==== Order: Off-By-One
+
+**Description**: Loop bounds, array indices, or range calculations are
+off by one. The code runs without crashing (within bounds) but processes
+one too many or one too few elements.
+
+**Detection**: Property-based testing, formal verification. Very hard to
+detect statically. ~20% detection rate without dedicated tests.
+
+**DYADT Layer**: Not reliably detectable by DYADT
+
+=== Class: Referential
+
+The code refers to the wrong things.
+
+==== Order: Wrong Identifier
+
+**Description**: Code uses a variable or function with a similar name to
+the correct one. `user_id` instead of `session_id`. `config.host` instead
+of `config.hostname`.
+
+**Detection**: Type systems catch many cases. INV-12 (cross-reference
+resolution) catches undefined references. ~50% detection rate for cases
+that don't cause type errors.
+
+**DYADT Layer**: Layer 3 (Syntactic), Layer 10 (Cross-Reference)
+
+==== Order: Stale Reference
+
+**Description**: Code refers to APIs, libraries, or patterns that existed
+in the training data but have been deprecated or changed. `React.createClass`
+in 2026. `Node.js` patterns in a Deno project.
+
+**Detection**: Dependency version checking (Layer 8), ecosystem-specific
+pattern matching. Antifile catalogs for known deprecated patterns. ~60%.
+
+**DYADT Layer**: Layer 7 (Dependency), Layer 8 (Dependency version)
+
+== Phylum III: Epistemic Failures ("Doesn't Know")
+
+Outputs that betray a fundamental lack of understanding, as opposed to
+a simple mistake.
+
+=== Class: Confabulatory
+
+The LLM generates plausible-sounding but fictional content.
+
+==== Order: Hallucinated API
+
+**Description**: Code calls functions or methods that don't exist in the
+library being used. The names are plausible — they *could* exist — but
+they don't.
+
+**Detection**: INV-12 (cross-reference resolution against actual library
+definitions). Compilation catches most cases. ~85% detection rate if the
+code is actually compiled.
+
+**DYADT Layer**: Layer 1 (File Existence), Layer 3 (Syntactic)
+
+==== Order: Impossible Configuration
+
+**Description**: Configuration values that are internally contradictory
+or physically impossible. Timeout of 0ms, buffer size of -1, port number
+70000.
+
+**Detection**: K9 Yard contracts for value ranges. Domain-specific
+plausibility checks (INV-8). ~75% detection rate.
+
+**DYADT Layer**: Layer 4 (Semantic)
+
+=== Class: Overconfident
+
+The LLM presents uncertain or wrong information with high confidence.
+
+==== Order: False Completion Claim
+
+**Description**: The LLM says "done" when the work is not done. The
+fundamental pattern identified in `LLM-PROCRASTINATION-PATTERNS.adoc`.
+
+**Detection**: Evidence-based verification (git commits, test output,
+file checksums). The entire DYADT pipeline exists for this. ~90%.
+
+**DYADT Layer**: All 12 layers
+
+==== Order: Expertise Fabrication
+
+**Description**: Code that appears to be written by a domain expert but
+contains fundamental misunderstandings. Cryptographic code without proper
+randomness. Concurrent code without synchronisation.
+
+**Detection**: Antifile patterns for domain-specific red flags. Expert
+review. ~40% detection rate for automated methods.
+
+**DYADT Layer**: Layer 4 (Semantic), Antifile patterns
+
+== Phylum IV: Behavioral Failures ("Won't Do")
+
+The LLM *could* do the work but doesn't. Process failures rather than
+output failures.
+
+=== Class: Avoidant
+
+The LLM avoids the requested work.
+
+==== Order: Plan-as-Completion
+
+**Description**: Generates a plan, which satisfies the response generation
+process, then moves on as if the work is done.
+
+**Detection**: Track tool calls per response. Flag responses with plan
+language but no tool invocations. ~85% detection rate.
+
+**DYADT Layer**: Claim extraction (Layer 2) + evidence matching
+
+==== Order: Scope Expansion
+
+**Description**: Implementation task gradually becomes a design discussion.
+Each response adds more design considerations without executing code.
+
+**Detection**: Monitor tool_call to text-only response ratio. Alert when
+it drops below threshold over N turns. ~70% detection rate.
+
+**DYADT Layer**: Layer 6 (Diff Coherence) — claimed changes vs actual diffs
+
+=== Class: Incomplete
+
+The LLM starts the work but doesn't finish.
+
+==== Order: Partial Parallel
+
+**Description**: LLM announces N parallel tasks, completes only some.
+The others are silently dropped.
+
+**Detection**: Track declared intentions against actual tool invocations.
+~80% detection rate when intention tracking is active.
+
+**DYADT Layer**: Claim extraction (Layer 2)
+
+==== Order: Critical Path Skip
+
+**Description**: The LLM implements the easy parts and skips the hard parts.
+Error handling, edge cases, cleanup code, and migration scripts are most
+commonly dropped.
+
+**Detection**: INV-10 (scan for unfinished markers), INV-11 (annotation
+should describe error handling), INV-12 (structural completeness). ~65%.
+
+**DYADT Layer**: Layer 11 (Completeness)
+
+== Phylum V: Contextual Failures ("Lost Track")
+
+Failures caused by context management across the session or across sessions.
+
+=== Class: Amnestic
+
+The LLM forgets prior context.
+
+==== Order: Interruption Amnesia
+
+**Description**: User interrupts mid-task. LLM addresses the interruption
+and never returns to the original task.
+
+**Detection**: Task list comparison before and after interruption. ~75%.
+
+**DYADT Layer**: External (task management tooling)
+
+==== Order: Cross-Session Contradiction
+
+**Description**: LLM makes claims in session N that contradict claims in
+session N-1. A function that was "completed" in one session is missing in
+the next.
+
+**Detection**: VerisimDB temporal modality — compare states across sessions.
+Attestation chain comparison. ~80% detection rate when both sessions have
+attestations.
+
+**DYADT Layer**: Layer 9 (Content Hash comparison across sessions)
+
+=== Class: Drift
+
+The LLM gradually deviates from the original requirements.
+
+==== Order: Specification Drift
+
+**Description**: Small changes accumulate across turns, each individually
+reasonable, until the final output doesn't match the original spec.
+
+**Detection**: Blueprint hash layers — compare final implementation against
+Layer 1 (parts hash). ~70% detection rate when blueprint exists.
+
+**DYADT Layer**: Layer 6 (Diff Coherence)
+
+==== Order: Style Contamination
+
+**Description**: The LLM adopts patterns from the conversation context that
+are inappropriate for the target codebase. Using Python idioms in Rust.
+Adding TypeScript when the project bans it.
+
+**Detection**: Language policy enforcement (banned language checks).
+K9 Kennel can validate against project conventions. ~85% for banned
+languages, ~40% for subtle style issues.
+
+**DYADT Layer**: Layer 3 (Syntactic), Layer 4 (Semantic)
+
+== Detection Coverage Matrix
+
+[cols="1,1,1,1,1"]
+|===
+| Detection Method | Structural | Semantic | Epistemic | Behavioral | Contextual
+
+| INV-10 (stub scan)
+| +++★★★+++
+| +++★☆☆+++
+| +++★☆☆+++
+| +++★☆☆+++
+| +++★☆☆+++
+
+| INV-11 (narrative)
+| +++★★☆+++
+| +++★★★+++
+| +++★★☆+++
+| +++★★☆+++
+| +++★☆☆+++
+
+| INV-12 (structural)
+| +++★★★+++
+| +++★☆☆+++
+| +++★★☆+++
+| +++★☆☆+++
+| +++★☆☆+++
+
+| Hash layers (0-3)
+| +++★★★+++
+| +++★☆☆+++
+| +++★☆☆+++
+| +++★☆☆+++
+| +++★★☆+++
+
+| Antifile patterns
+| +++★★☆+++
+| +++★★★+++
+| +++★★☆+++
+| +++★☆☆+++
+| +++★☆☆+++
+
+| VerisimDB cross-modal
+| +++★★☆+++
+| +++★★☆+++
+| +++★★☆+++
+| +++★★★+++
+| +++★★★+++
+
+| K9 cascade
+| +++★★★+++
+| +++★★☆+++
+| +++★★☆+++
+| +++★☆☆+++
+| +++★☆☆+++
+
+| Compilation
+| +++★★★+++
+| +++★☆☆+++
+| +++★★★+++
+| +++☆☆☆+++
+| +++☆☆☆+++
+|===
+
+★★★ = strong coverage, ★★☆ = moderate, ★☆☆ = weak, ☆☆☆ = none
+
+== Implications for DYADT Design
+
+1. **No single detection method covers all phyla.** This is why the multi-axial
+   approach is necessary. Simplification is tempting but would leave gaps.
+
+2. **Behavioral failures are hardest to detect automatically.** They require
+   tracking the *process* of work, not just the *output*. Attestation chains
+   help (they record process evidence) but cannot fully substitute for
+   real-time monitoring.
+
+3. **Semantic failures require semantic understanding.** This is where the SLM
+   ensemble earns its keep — the Graph-of-Thought adversarial paths can catch
+   logic errors that syntactic checks miss.
+
+4. **The antipattern catalog grows with experience.** Every new failure mode
+   observed in the wild should be added to the Antifile. This is a living
+   document, not a static specification.
+
+5. **Cross-session context is the biggest gap.** VerisimDB's temporal modality
+   is the best tool we have for this, but it requires discipline in recording
+   session state.
