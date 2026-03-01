@@ -1,0 +1,491 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Verification Philosophy: Code Identity, Attestation, and the Intimate Nature of Programs
+:author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+:date: 2026-03-01
+:toc:
+:toclevels: 4
+
+== Preface
+
+This document captures a design conversation between a human and an AI about
+what it means to verify that code was actually written — not just that it
+compiles, not just that it passes tests, but that the *act of writing it* was
+genuine. It emerged from a practical problem (verifying panic-attack scan
+attestations) but grew into something broader: a framework for thinking about
+code identity, LLM failure modes, and the epistemology of software verification.
+
+The natural language here is deliberate. Many of these ideas resist formalisation
+precisely because they live at the boundary between what can be proven and what
+can only be argued for. The formal parts are in the code and the A2ML blueprints.
+This document is the *why* behind the *what*.
+
+== The Problem: Who Watches the Watchmen?
+
+DYADT ("Did You Actually Do That?") verifies that LLMs did what they claimed.
+But when DYADT delegates to panic-attack for static analysis, nothing proves
+panic-attack *genuinely ran its scan*. A fabricated JSON report is byte-for-byte
+indistinguishable from a real one. The output format carries no evidence of the
+process that produced it.
+
+This is not an academic concern. It is the central epistemological challenge of
+AI-assisted software development: **the output of a generative system does not
+carry evidence of how it was generated.**
+
+A human programmer's commit history shows edits, corrections, false starts,
+compile errors, debug prints. An LLM's output appears fully-formed, as if it
+were always that way. This is what makes verification hard — and why the
+approach must be multi-axial rather than single-point.
+
+== The Three-Phase Attestation Model
+
+The solution is a structured argument composed of three temporal phases:
+
+1. **Intent** (before execution): A cryptographic commitment to *what will be
+   done*, computed before any work begins. This is the hypothesis.
+
+2. **Evidence** (during execution): Runtime observations accumulated as work
+   proceeds. File hashes, byte counts, timing, memory usage, checkpoints. This
+   is the observation.
+
+3. **Seal** (after execution): A post-execution binding that chains intent and
+   evidence to the final output via SHA-256. This is the conclusion.
+
+The model mirrors the scientific method — not because science is the goal, but
+because the *structure of trustworthy claims* is universal: state what you'll do,
+observe what happens, bind the observation to the conclusion.
+
+See `contractiles/trust/blueprint.a2ml` for the full formal specification,
+including twelve invariants (INV-1 through INV-12), four hash layers, and ten
+epistemological limits.
+
+== The Identity of Code
+
+=== The Question
+
+Is code just text? If so, verification is string matching. But code is not just
+text. Code has *identity* — a holistic character that emerges from the
+interaction of its parts. A function's identity is not its bytes; it is the
+relationship between its signature, its body, its callers, its tests, its
+documentation, its commit history, and the intent behind its creation.
+
+This is what VerisimDB's octad model makes possible. Not "8 separate entries
+sitting next to each other," but 8 *modalities* through which a single entity's
+identity is *constituted*. The identity is not in any one modality — it is in
+the *cross-modal coherence* between them.
+
+=== VerisimDB's Eight Modalities Applied to Code
+
+[cols="1,2,3"]
+|===
+| Modality | What It Captures | Code Identity Aspect
+
+| **Document**
+| Structured text, fields, schemas
+| The source code itself: functions, types, modules. The syntactic skeleton.
+
+| **Semantic**
+| Meaning, relationships, ontologies
+| What the code *means*: its purpose, its domain, the concepts it encodes.
+  A function that "validates a hash" has semantic content independent of
+  its implementation.
+
+| **Graph**
+| Nodes, edges, topology
+| The call graph, dependency graph, module graph, and cross-reference
+  network. How code *connects*. An isolated function and a well-connected
+  function have different identities even with the same bytes.
+
+| **Temporal**
+| Timestamps, durations, sequences
+| When code was written, how long it took, the order of edits. Burst
+  coding (14,000 lines in under an hour) has a temporal signature distinct
+  from incremental development.
+
+| **Provenance**
+| Origin, authorship, chain of custody
+| Who wrote it, what tool generated it, which session, which commit.
+  The attestation chain is provenance data.
+
+| **Vector**
+| Embeddings, similarity, clusters
+| The code's position in semantic embedding space. Similar functions
+  cluster together. Plagiarised code has suspiciously high cosine
+  similarity to known sources.
+
+| **Tensor**
+| Multi-dimensional relationships
+| Cross-cutting patterns: how a function relates to its tests, its
+  documentation, its error handling, and its security properties
+  *simultaneously*. Not a flat relationship but a multi-dimensional one.
+
+| **Spatial**
+| Geospatial coordinates, physical location
+| Less directly relevant to code identity, but not irrelevant: which
+  CI runner executed the tests, which datacenter hosts the repo, which
+  timezone the author works in. Physical context can disambiguate
+  otherwise identical digital artefacts.
+|===
+
+=== Cross-Modal Queries: Where Identity Emerges
+
+The power is not in storing 8 things. It is in querying *across* them.
+
+"Show me all functions where the **semantic** description says 'verifies hash'
+but the **document** modality contains `return true`" — this is a cross-modal
+coherence query. It detects a specific class of LLM fabrication: code that
+*claims* to do something but doesn't.
+
+"Show me all modules where the **temporal** signature shows burst creation
+(< 5 minutes for > 500 lines) AND the **provenance** shows AI authorship AND
+the **vector** embedding clusters with known stub patterns" — this is a
+forensic fingerprint query. It detects generated-but-not-implemented code.
+
+"Show me all commits where the **graph** modality shows new call edges but
+the **tensor** modality shows no corresponding test edges" — this detects
+code that was added without tests, a common LLM omission.
+
+These queries are not possible with single-modal storage. A flat database
+stores facts *about* code. VerisimDB stores the *identity* of code — and
+identity is irreducibly cross-modal.
+
+== The Intimate Nature of Code
+
+There is a quality to well-written code that resists formal description.
+A human programmer who has lived with a codebase for months has an *intimate*
+relationship with it. They know not just what the code does, but why it does
+it that way, what alternatives were considered, what the edge cases are, where
+the bodies are buried.
+
+This intimacy is what annotation captures. When a programmer writes:
+
+[source,rust]
+----
+// Step 3: Create the seal — computes all four hashes including chain_hash.
+// The nonce is passed directly from self.intent.session_nonce, preserving
+// INV-3 (Nonce Consistency) through the same string reference.
+let mut seal = ReportSeal::create(
+    &self.intent.session_nonce,
+    &intent_json,
+    &evidence_json,
+    report_json,
+);
+----
+
+...the comment is not just documentation. It is a *falsifiable claim*. A
+reviewing agent can check: does `ReportSeal::create` actually compute four
+hashes? Does it actually receive the nonce from `self.intent.session_nonce`?
+Does this actually preserve INV-3?
+
+This dual-channel approach — code and prose running in parallel — is the
+foundation of INV-11 (Narrative Coherence). The key insight is:
+
+**Fabricating consistent code + prose is strictly harder than fabricating
+code alone.** Code has a compiler to hide behind; prose has a human reader
+(and a language model) to answer to.
+
+An empty error handler has no `TODO` marker, but its annotation must either
+honestly say "errors are silently discarded" (gap exposed) or dishonestly
+say "errors are handled gracefully" (mismatch detectable by a reviewing LLM).
+
+This is not a proof. It is a *cost increase for fabrication*. And that is
+what security is — not making attacks impossible, but making them expensive
+enough to deter.
+
+== Why Lisp for the Meta-Layer
+
+=== The Homoiconicity Argument
+
+Guile Scheme (our standard Lisp variant) has a property that no other language
+family in our stack possesses: **homoiconicity**. Code and data share the same
+representation. A Scheme program is a list. A list is a Scheme program.
+
+For the verification meta-layer, this is not a convenience — it is the
+*architecturally correct* choice. Here is why.
+
+A blueprint is simultaneously:
+
+1. A **specification** — a document describing what must be true
+2. A **validator** — executable code that checks whether the spec holds
+3. A **query** — a way to ask "which parts of this spec are satisfied?"
+4. A **documentation** — human-readable prose explaining the design
+
+In most languages, these are four separate artefacts maintained independently.
+A YAML spec, a Python validator, a SQL query, a Markdown document. They drift
+apart. They always drift apart.
+
+In Scheme, they are *one artefact*. The blueprint is a data structure (it can
+be traversed, queried, and serialised). It is also code (it can be evaluated
+to check invariants). It is also documentation (it can be pretty-printed as
+prose). And it can be used as a query against VerisimDB (the s-expression
+maps directly to a cross-modal query).
+
+=== The miniKanren Connection
+
+panic-attack already has a miniKanren-inspired logic engine in its `kanren/`
+module, used for taint analysis and cross-language vulnerability detection.
+miniKanren is natively embeddable in Scheme — its relational queries *are*
+Scheme expressions.
+
+This means the antipattern catalog (see below) can be expressed as miniKanren
+relations. "A function that calls `eval()` with unsanitised input" is a
+relational query: `(fresh (fn input) (calls fn 'eval input) (not (sanitised input)))`.
+The same expression is simultaneously:
+- A **pattern** to match against code
+- A **rule** in the vulnerability database
+- A **query** against VerisimDB's semantic modality
+- **Documentation** of what the antipattern looks like
+
+One artefact, four uses. No drift.
+
+=== The Life of Code
+
+There is a philosophical dimension here that matters practically. Code is not
+static. It has a lifecycle: conception (intent), gestation (writing), birth
+(commit), childhood (early testing), maturity (production use), senescence
+(technical debt), death (deprecation). At each stage, different aspects of
+its identity are salient.
+
+Lisp's homoiconicity lets us express this lifecycle in a way that the code
+itself can be introspected at any stage. A Scheme expression that describes
+a function's intent can be *evaluated* against the function's current state
+to determine where in the lifecycle it sits. Is it still being gestated
+(TODO markers present)? Is it mature (full test coverage, clean annotations)?
+Is it senescent (dependencies pinned to old versions, no recent commits)?
+
+This is not something you can do with a YAML config file. It requires a
+language where the *description of code* and the *code being described* live
+in the same representational universe.
+
+== Cladistic Analysis of LLM Failure Behaviours
+
+To build defences, we need a taxonomy of what we are defending against.
+The following classification organises LLM failure behaviours into a
+hierarchy inspired by biological taxonomy: phylum → class → order.
+
+See `docs/CLADISTIC-TAXONOMY.adoc` for the full classification with
+detection methods and coverage analysis.
+
+=== Summary of Phyla
+
+[cols="1,1,3"]
+|===
+| Phylum | Common Name | Core Characteristic
+
+| **Structural**
+| "Looks Right"
+| Output has correct shape but wrong content. Compiles but doesn't work.
+
+| **Semantic**
+| "Means Wrong"
+| Output has correct syntax but incorrect meaning. Logic errors, wrong
+  algorithms, inverted conditions.
+
+| **Epistemic**
+| "Doesn't Know"
+| Outputs that betray lack of understanding. Confident but wrong claims,
+  hallucinated APIs, impossible code.
+
+| **Behavioral**
+| "Won't Do"
+| Process failures: procrastination, partial completion, plan-as-completion,
+  scope drift. The LLM *could* do the work but doesn't.
+
+| **Contextual**
+| "Lost Track"
+| Failures caused by context management: dropped tasks, contradictory
+  outputs across sessions, forgotten constraints.
+|===
+
+== Contractiles as Aspect-Oriented Programming
+
+=== The AOP Mapping
+
+The contractile file types (Mustfile, Trustfile, Dustfile, Intentfile, K9)
+map naturally to Aspect-Oriented Programming (AOP) concepts. Each contractile
+type addresses a **cross-cutting concern** that spans the entire codebase but
+cannot be cleanly modularised within the code itself.
+
+[cols="1,1,2,2"]
+|===
+| Contractile | AOP Concept | Cross-Cutting Concern | What It Enforces
+
+| **Mustfile**
+| Invariant aspect
+| Correctness
+| Build passes, tests pass, lints clean, no banned patterns
+
+| **Trustfile**
+| Security aspect
+| Trust & integrity
+| Hash chains valid, signatures verified, no hardcoded secrets
+
+| **Dustfile**
+| Recovery aspect
+| Resilience
+| Rollback procedures, backup verification, failure recovery
+
+| **Intentfile**
+| Design aspect
+| Architecture
+| Design decisions documented, rationale recorded, roadmap current
+
+| **K9**
+| Weaver
+| Enforcement
+| Weaves all aspects together, executes at three trust tiers
+
+| **Antifile** _(new)_
+| Guard aspect
+| Known-bad patterns
+| Antipatterns catalogued, forensic signatures checked, logic errors flagged
+|===
+
+=== GUIDs as Pointcuts
+
+In AOP, a *pointcut* identifies where in the code an aspect applies. In the
+contractile model, GUIDs serve this function. Each section of the blueprint
+has a GUID (e.g., `bp-007` for INV-3: Nonce Consistency). The K9 weaver
+uses these GUIDs to identify which parts of the codebase each invariant
+applies to.
+
+=== Verification as Advice
+
+In AOP, *advice* is the code that runs at pointcuts. The three attestation
+phases map to AOP advice types:
+
+- **Before advice** (Intent): Runs before execution, establishes preconditions
+- **Around advice** (Evidence): Runs during execution, observes behaviour
+- **After advice** (Seal): Runs after execution, validates postconditions
+
+This is not a metaphor — it is a structural equivalence. The attestation
+chain *is* aspect-oriented verification of the scan process.
+
+See `docs/AOP-CONTRACTILE-MAPPING.adoc` for the detailed mapping with
+examples.
+
+== The Antifile: Cataloguing Known-Bad Patterns
+
+=== What Antifiles Are
+
+A Dustfile catalogues recovery procedures. An Antifile catalogues **known
+patterns that produce logic errors** — not compilation errors, not runtime
+crashes, but *semantically wrong code that looks correct*.
+
+These are the most dangerous failures because they pass all automated checks.
+The code compiles. The tests (if they exist) pass. The output looks plausible.
+But the logic is wrong.
+
+=== Two Categories of Antipatterns
+
+**Structural antipatterns** (language-agnostic):
+- Functions that always return the same value regardless of input
+- Error handlers that swallow exceptions without logging
+- Conditions that are always true or always false
+- Dead code after early returns
+- Off-by-one in loop bounds that happen to not crash
+
+**LLM forensic signatures** (AI-specific):
+- Burst coding: large volumes of structurally similar code in implausible
+  time windows (14,000 lines of Idris2 in under an hour)
+- Identical stubs: multiple functions with the same body
+  (`todo!()` or `believe_me`)
+- Implausible commit patterns: 80 commits in 5 hours with zero test failures
+- Domain implausibility: cryptographic code with no randomness source,
+  network code with no error handling, database code with no transactions
+
+=== VerisimDB Integration for Antipatterns
+
+Antipatterns are stored as octad entries in VerisimDB:
+
+- **Document**: The pattern description (what to look for)
+- **Semantic**: The domain it applies to (crypto, networking, parsing, etc.)
+- **Graph**: Dependency on other antipatterns (pattern A often co-occurs with B)
+- **Temporal**: When the pattern was first catalogued, how often it appears
+- **Provenance**: Which codebase it was first observed in
+- **Vector**: Embedding of the pattern for similarity search
+- **Tensor**: Cross-cutting relationships (which languages, which frameworks)
+- **Spatial**: Not directly applicable; reserved for future CI runner metadata
+
+Cross-modal query example: "Find all functions in this codebase whose
+**vector** embedding is similar to known stub patterns AND whose **temporal**
+creation signature shows burst coding AND whose **graph** connectivity shows
+no incoming test edges."
+
+See `contractiles/anti/` for the Antifile structure.
+
+== Honest Assessment: What This Can and Cannot Do
+
+=== What This Framework Catches
+
+[cols="2,1,2"]
+|===
+| Failure Mode | Detection Rate | How
+
+| Structural incompleteness (missing files, broken imports)
+| ~95%
+| INV-12 + compilation + K9 Kennel
+
+| Stub code (TODO, believe_me, unimplemented)
+| ~90%
+| INV-10 + panic-attack scan + grep
+
+| Hash chain tampering
+| ~99%
+| INV-5 + K9 Hunt + Trustfile
+
+| Temporal fabrication (backdated timestamps)
+| ~70%
+| INV-4 + plausibility checks (imperfect — see LIMIT-2)
+
+| Code/prose mismatch
+| ~60-80%
+| INV-11 + reviewing LLM (depends on annotation quality)
+
+| Logic errors in correct-looking code
+| ~30-50%
+| Antifile patterns + vector similarity (best effort)
+
+| Sophisticated adversarial fabrication
+| ~10-20%
+| Requires collusion resistance we don't have (LIMIT-6)
+|===
+
+=== What It Honestly Cannot Do
+
+- Cannot prove code was *actually executed* (LIMIT-1)
+- Cannot verify timestamps against a trusted clock (LIMIT-2)
+- Cannot resist a determined adversary who controls the environment (LIMIT-3)
+- Cannot guarantee zero false negatives (some fabrications will pass)
+- Cannot replace human code review (can only *assist* it)
+
+=== The Value Proposition
+
+Even with these limits, the framework provides:
+
+1. **Raised floor**: The minimum quality of AI-generated code goes up because
+   the most common failure modes (stubs, missing files, broken references) are
+   caught automatically.
+
+2. **Forensic trail**: When problems are discovered later, the attestation
+   chain provides a forensic record of what was claimed vs. what was observed.
+
+3. **Cost of fabrication**: Making consistent fake evidence across 8 VerisimDB
+   modalities, 12 invariants, 4 hash layers, and a narrative coherence check
+   is substantially more expensive than fabricating a single JSON file.
+
+4. **Human-in-the-loop**: The annotations (INV-11) serve double duty as
+   documentation, meaning humans naturally read and verify them as part of
+   normal code review.
+
+== References
+
+[bibliography]
+- [[[blueprint]]] Attestation Chain Blueprint — `contractiles/trust/blueprint.a2ml`
+- [[[taxonomy]]] Cladistic Taxonomy of LLM Failures — `docs/CLADISTIC-TAXONOMY.adoc`
+- [[[verisimdb]]] VerisimDB Code Identity — `docs/VERISIMDB-CODE-IDENTITY.adoc`
+- [[[aop]]] AOP Contractile Mapping — `docs/AOP-CONTRACTILE-MAPPING.adoc`
+- [[[antifile]]] Antifile Specification — `contractiles/anti/README.adoc`
+- [[[procrastination]]] LLM Procrastination Patterns — `docs/LLM-PROCRASTINATION-PATTERNS.adoc`
+- [[[chain]]] Attestation Chain Implementation — `panic-attacker/src/attestation/chain.rs`
+- [[[a2ml]]] A2ML Specification — `standards/a2ml/SPEC.a2ml`
+- [[[k9]]] K9 SVC Specification — `standards/k9-svc/SPEC.adoc`

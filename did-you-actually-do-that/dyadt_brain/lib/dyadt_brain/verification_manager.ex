@@ -84,6 +84,9 @@ defmodule DyadtBrain.VerificationManager do
 
     final_verdict = VerdictEngine.aggregate(layer_results)
 
+    # Step 4b: Auto-discover panic-attack attestation sidecars
+    attestation_result = discover_and_verify_attestation(claim, layer_results)
+
     # Step 5: Run SLM consensus (Layer 11) if applicable
     slm_result = run_slm_evaluation(claim, layer_results)
 
@@ -91,6 +94,7 @@ defmodule DyadtBrain.VerificationManager do
       "final_verdict" => final_verdict,
       "layer_results" => layer_results,
       "slm_result" => slm_result,
+      "attestation_result" => attestation_result,
       "verified_at" => DateTime.utc_now() |> DateTime.to_iso8601()
     })
 
@@ -123,6 +127,59 @@ defmodule DyadtBrain.VerificationManager do
     case SurveillanceSupervisor.evaluate(context) do
       {:ok, result} -> result
       {:error, _reason} -> nil
+    end
+  end
+
+  # Scan evidence for FileExists/FileWithHash pointing at *.json report
+  # files, and auto-discover matching .attestation.json sidecars.
+  defp discover_and_verify_attestation(claim, _layer_results) do
+    evidence_list = Map.get(claim, "evidence", [])
+
+    json_paths =
+      evidence_list
+      |> Enum.flat_map(fn ev ->
+        case ev do
+          %{"type" => type, "spec" => %{"path" => path}}
+          when type in ["FileExists", "FileWithHash"] ->
+            if String.ends_with?(path, ".json") do
+              [path]
+            else
+              []
+            end
+
+          _ ->
+            []
+        end
+      end)
+      |> Enum.uniq()
+
+    # Try to find and verify attestation sidecars
+    results =
+      json_paths
+      |> Enum.filter(&DyadtBrain.Attestation.has_attestation?/1)
+      |> Enum.map(fn report_path ->
+        attestation_path = DyadtBrain.Attestation.derive_attestation_path(report_path)
+
+        case DyadtBrain.Attestation.verify(attestation_path, report_path) do
+          {:ok, verdict} ->
+            %{
+              "report_path" => report_path,
+              "attestation_path" => attestation_path,
+              "verdict" => verdict
+            }
+
+          {:error, reason} ->
+            %{
+              "report_path" => report_path,
+              "attestation_path" => attestation_path,
+              "error" => inspect(reason)
+            }
+        end
+      end)
+
+    case results do
+      [] -> nil
+      _ -> results
     end
   end
 
