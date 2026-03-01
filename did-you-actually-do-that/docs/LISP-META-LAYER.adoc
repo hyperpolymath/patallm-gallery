@@ -1,0 +1,169 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= The Lisp Meta-Layer: Why Guile Scheme for Verification Intelligence
+:author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+:date: 2026-03-01
+:toc:
+
+== The Problem of Four Artefacts
+
+A verification specification typically requires four separate artefacts:
+
+1. A **specification** — a document describing what must be true
+2. A **validator** — executable code that checks whether the spec holds
+3. A **query** — a way to ask "which parts of the spec are satisfied?"
+4. **Documentation** — human-readable prose explaining the design
+
+In conventional architectures, these are four separate files in four separate
+formats: YAML for the spec, Python for the validator, SQL for the query,
+Markdown for the documentation. They are maintained independently. And they
+always, eventually, drift apart.
+
+The drift is not laziness. It is structural. When the spec changes, someone
+must remember to update the validator, the query, and the documentation.
+Four artefacts means three opportunities for inconsistency per change.
+
+== The Homoiconicity Solution
+
+Guile Scheme has a property called **homoiconicity**: code and data share
+the same representation. A Scheme program is a list. A list is a Scheme
+program. There is no syntactic distinction between "data I am processing"
+and "code I am executing."
+
+For the verification meta-layer, this eliminates the four-artefact problem.
+A single s-expression can be simultaneously:
+
+- **Specification**: `(invariant INV-3 (equal? intent-nonce evidence-nonce seal-nonce))`
+- **Validator**: Evaluate it — the `equal?` predicate returns `#t` or `#f`
+- **Query**: Transform it to a VerisimDB cross-modal query
+- **Documentation**: Pretty-print it — the structure is self-explanatory
+
+One artefact. Zero drift.
+
+== Why Not Other Lisps?
+
+**Common Lisp**: More powerful, but heavier. CL's condition system and CLOS
+are overkill for a meta-layer that primarily does data transformation and
+pattern matching.
+
+**Clojure**: JVM dependency. Banned by language policy (Java ecosystem).
+
+**Racket**: Excellent for language-oriented programming, but the Hyperpolymath
+ecosystem already standardises on Guile for `.scm` files (STATE.scm, META.scm,
+ECOSYSTEM.scm). Using Guile maintains consistency.
+
+**Guile Scheme**: Already the standard. Already in every repo. Already
+integrated with the SCM file protocol. And it has excellent C FFI for
+integration with the Rust engine via the Zig FFI bridge.
+
+== The miniKanren Connection
+
+panic-attack already has a miniKanren-inspired logic engine (`src/kanren/`)
+for taint analysis and cross-language vulnerability detection. miniKanren is
+natively embeddable in Scheme — its relational queries *are* Scheme
+expressions.
+
+This means the antipattern catalog can be expressed as miniKanren relations:
+
+[source,scheme]
+----
+;; "A function that calls eval with unsanitised input"
+(define (tainted-eval fn input)
+  (fresh ()
+    (calls fn 'eval input)
+    (not (sanitised input))))
+
+;; "A module with a .ads spec file but no .adb body file"
+(define (missing-counterpart spec-file)
+  (fresh (body-file)
+    (ada-spec spec-file)
+    (expected-body spec-file body-file)
+    (not (file-exists body-file))))
+----
+
+The same expression is simultaneously:
+- A **pattern** to match against code
+- A **rule** in the vulnerability database
+- A **query** against VerisimDB's semantic modality
+- **Documentation** of what the antipattern looks like
+
+== The Life of Code
+
+Code has a lifecycle: conception (intent), gestation (writing), birth
+(commit), childhood (early testing), maturity (production use), senescence
+(technical debt), death (deprecation).
+
+Lisp's homoiconicity lets us express this lifecycle in a way that can be
+*introspected at any stage*:
+
+[source,scheme]
+----
+(define (code-lifecycle function-id)
+  (let* ((doc    (verisimdb-query 'document function-id))
+         (tests  (verisimdb-query 'tensor function-id 'test-co-occurrence))
+         (age    (verisimdb-query 'temporal function-id 'days-since-creation))
+         (stubs  (verisimdb-query 'document function-id 'contains-stub-markers))
+         (deps   (verisimdb-query 'graph function-id 'outdated-dependencies)))
+    (cond
+      (stubs           'gestating)    ; Still being written
+      ((zero? tests)   'newborn)      ; No tests yet
+      ((> age 365)
+       (if deps        'senescent     ; Old with outdated deps
+                       'mature))      ; Old but well-maintained
+      (else            'adolescent)))) ; Young with tests
+----
+
+This is not a metaphor-in-code. It is a *query that runs against VerisimDB*
+and returns a lifecycle stage. The same expression is the specification of
+what "mature code" means, the code that checks it, and the documentation
+explaining the lifecycle model.
+
+== Integration with Existing Stack
+
+[source,text]
+----
+                    ┌─────────────────┐
+                    │  Guile Scheme   │
+                    │  (meta-layer)   │
+                    │                 │
+                    │  - Blueprints   │
+                    │  - Antipatterns │
+                    │  - Queries      │
+                    │  - miniKanren   │
+                    └────────┬────────┘
+                             │
+                    ┌────────┴────────┐
+                    │                 │
+              ┌─────┴─────┐   ┌──────┴──────┐
+              │  Rust      │   │  VerisimDB  │
+              │  engine    │   │  (octad)    │
+              │  (DYADT)   │   │             │
+              └─────┬──────┘   └─────────────┘
+                    │
+              ┌─────┴──────┐
+              │  Elixir    │
+              │  brain     │
+              │  (DyadtBrain) │
+              └────────────┘
+----
+
+The Guile meta-layer sits above the Rust engine. It does not replace any
+existing component — it provides a **reflective layer** where specifications,
+validators, queries, and documentation coexist as a single artefact.
+
+The Rust engine remains the performance-critical verification pipeline.
+The Elixir brain remains the supervision and API layer. Guile adds the
+ability to *reason about* the verification process itself — meta-verification.
+
+== What This Is Not
+
+This is not a proposal to rewrite DYADT in Scheme. The Rust engine and
+Elixir brain are correct choices for their respective roles.
+
+This is a proposal to add a **meta-layer** where the *specification of what
+DYADT verifies* lives in a form that is simultaneously executable, queryable,
+and human-readable. The meta-layer is small (hundreds of lines, not thousands)
+and focused on expressiveness over performance.
+
+The goal is to make the verification specification a *living document* that
+cannot drift from the implementation — because the specification *is* the
+implementation of the meta-level checks.

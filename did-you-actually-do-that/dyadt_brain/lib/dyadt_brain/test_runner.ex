@@ -37,13 +37,15 @@ defmodule DyadtBrain.TestRunner do
   Returns a list of `{framework, command}` tuples.
   """
   def detect_framework(repo_path) when is_binary(repo_path) do
+    # Commands stored as {executable, [args]} tuples to avoid naive string splitting.
+    # This prevents command injection and correctly handles arguments with spaces/quotes.
     detectors = [
-      {"rust", "Cargo.toml", "cargo test"},
-      {"elixir", "mix.exs", "mix test"},
-      {"julia", "Project.toml", "julia --project=. -e 'using Pkg; Pkg.test()'"},
-      {"rescript", "rescript.json", "deno task test"},
-      {"chapel", "Makefile", "make test"},
-      {"node", "package.json", "deno task test"}
+      {"rust", "Cargo.toml", {"cargo", ["test"]}},
+      {"elixir", "mix.exs", {"mix", ["test"]}},
+      {"julia", "Project.toml", {"julia", ["--project=.", "-e", "using Pkg; Pkg.test()"]}},
+      {"rescript", "rescript.json", {"deno", ["task", "test"]}},
+      {"chapel", "Makefile", {"make", ["test"]}},
+      {"node", "package.json", {"deno", ["task", "test"]}}
     ]
 
     detectors
@@ -125,10 +127,8 @@ defmodule DyadtBrain.TestRunner do
 
   # Private
 
-  defp execute_tests(repo_path, framework, command, _timeout) do
+  defp execute_tests(repo_path, framework, {cmd, args}, _timeout) do
     start_time = System.monotonic_time(:millisecond)
-
-    [cmd | args] = String.split(command, " ")
 
     case System.cmd(cmd, args, cd: repo_path, stderr_to_stdout: true) do
       {output, 0} ->

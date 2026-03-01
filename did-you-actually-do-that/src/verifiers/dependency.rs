@@ -65,11 +65,15 @@ fn check_manifest(path: &str) -> (Verdict, Option<String>) {
         );
     }
 
-    let name = Path::new(path)
-        .file_name()
-        .unwrap()
-        .to_string_lossy()
-        .to_string();
+    let name = match Path::new(path).file_name() {
+        Some(f) => f.to_string_lossy().to_string(),
+        None => {
+            return (
+                Verdict::Unverifiable,
+                Some("Path has no filename component".to_string()),
+            );
+        }
+    };
 
     match name.as_str() {
         "Cargo.toml" => validate_cargo_toml(path),

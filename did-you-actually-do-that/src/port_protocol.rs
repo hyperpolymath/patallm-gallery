@@ -132,6 +132,7 @@ fn handle_request(
         "evaluate_slm" => handle_evaluate_slm(ensemble, request),
         "evaluate_got" => handle_evaluate_got(request),
         "evaluate_moe" => handle_evaluate_moe(request),
+        "verify_attestation" => handle_verify_attestation(request),
         "ping" => PortResponse::ok(request.id.clone(), serde_json::json!({"pong": true})),
         _ => PortResponse::err(
             request.id.clone(),
@@ -300,6 +301,44 @@ fn handle_evaluate_moe(request: &PortRequest) -> PortResponse {
             request.id.clone(),
             -32602,
             format!("Invalid evaluation context: {}", e),
+        ),
+    }
+}
+
+/// Handle a `verify_attestation` request from the Elixir brain.
+///
+/// Expects params: `{ attestation_path, report_path, public_key? }`.
+/// Returns the `AttestationVerdict` from the attestation verifier.
+fn handle_verify_attestation(request: &PortRequest) -> PortResponse {
+    #[derive(Deserialize)]
+    struct AttestParams {
+        attestation_path: String,
+        report_path: String,
+        #[serde(default)]
+        public_key: Option<String>,
+    }
+
+    match serde_json::from_value::<AttestParams>(request.params.clone()) {
+        Ok(params) => {
+            let evidence = crate::EvidenceSpec::PanicAttackAttestation {
+                attestation_path: params.attestation_path,
+                report_path: params.report_path,
+                public_key: params.public_key,
+            };
+            let (layer, result) = verifiers::check_evidence_by_layer(&evidence);
+            let layer_result = LayerResult {
+                layer,
+                evidence_result: result,
+            };
+            match serde_json::to_value(&layer_result) {
+                Ok(val) => PortResponse::ok(request.id.clone(), val),
+                Err(e) => PortResponse::err(request.id.clone(), -1, e.to_string()),
+            }
+        }
+        Err(e) => PortResponse::err(
+            request.id.clone(),
+            -32602,
+            format!("Invalid attestation params: {}", e),
         ),
     }
 }

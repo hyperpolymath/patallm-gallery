@@ -7,26 +7,51 @@
 - Rust engine (layers 1-9, 11) communicates with Elixir brain (layers 5, 10, 12) via Erlang Port Protocol.
 - ABI defined in Idris2 (`src/abi/`), FFI implemented in Zig (`ffi/zig/`).
 - Triple API: REST + GraphQL (port 4200), gRPC (port 4201).
+- Attestation chain: three-phase (intent→evidence→seal) cryptographic binding for tool verification.
+- Code identity via VerisimDB octad model (8 modalities: Document, Semantic, Graph, Temporal, Provenance, Vector, Tensor, Spatial).
 
 ## Critical Invariants
 - SCM files ONLY in `.machine_readable/` — never in repo root.
 - All code uses SPDX-License-Identifier: PMPL-1.0-or-later.
 - Container files are "Containerfile" not "Dockerfile".
 - Rejection votes get 1.5x weight (asymmetric cognitive-gating).
+- Zero `believe_me`, `Admitted`, `sorry`, `todo!()` in attestation code (INV-10).
+- Narrative annotations must match code behaviour (INV-11).
 
 ## Canonical File Locations
 - Rust engine: `src/` (lib.rs, verifiers/, slm/, claim_extractor.rs, port_protocol.rs)
 - Elixir brain: `dyadt_brain/` (Phoenix-less Plug app)
-- ABI: `src/abi/` (Types.idr, Layout.idr, Foreign.idr)
+- ABI: `src/abi/` (Types.idr, Layout.idr, Foreign.idr, Attestation.idr)
 - FFI: `ffi/zig/` (main.zig, build.zig)
 - Container: `Containerfile`, `selur-compose.toml`
 - Machine-readable: `.machine_readable/` (STATE.scm, META.scm, ECOSYSTEM.scm)
+- Contractiles: `contractiles/` (must/, trust/, dust/, lust/, k9/, anti/)
+- Blueprint: `contractiles/trust/blueprint.a2ml` (12 invariants, 4 hash layers, 10 limits)
+- Documentation: `docs/` (design docs, taxonomy, VerisimDB identity, AOP mapping, meta-layer)
+
+## Documentation Map
+- `docs/design/DESIGN-2026-03-01-verification-philosophy.adoc` — Master design document (START HERE)
+- `docs/CLADISTIC-TAXONOMY.adoc` — 5-phylum LLM failure classification
+- `docs/VERISIMDB-CODE-IDENTITY.adoc` — Code identity via octad model
+- `docs/AOP-CONTRACTILE-MAPPING.adoc` — Contractiles as Aspect-Oriented Programming
+- `docs/LISP-META-LAYER.adoc` — Why Guile Scheme for the meta-layer
+- `docs/LLM-PROCRASTINATION-PATTERNS.adoc` — Observed LLM procrastination patterns
+- `docs/design/PLAN-OF-ACTION-2026-03-01.adoc` — Current action plan
+
+## Contractile Types (6)
+- **Mustfile** (must/): Correctness invariants — build, test, lint
+- **Trustfile** (trust/): Security & integrity — hashes, signatures, attestation
+- **Dustfile** (dust/): Resilience — rollback, recovery, graceful degradation
+- **Intentfile** (lust/): Architecture — design decisions, rationale, roadmap
+- **K9** (k9/): Enforcement weaver — Kennel (pure data), Yard (contracts), Hunt (execution)
+- **Antifile** (anti/): Known-bad patterns — structural antipatterns + LLM forensic signatures
 
 ## Workflow
 1. Read `.machine_readable/STATE.scm` for current status and next actions.
-2. Run `cargo test` and `cd dyadt_brain && mix test` to verify changes.
-3. After edits, update STATE.scm with outcomes.
-4. Commit with concise, imperative messages.
+2. Read `docs/design/PLAN-OF-ACTION-2026-03-01.adoc` for pending work.
+3. Run `cargo test` and `cd dyadt_brain && mix test` to verify changes.
+4. After edits, update STATE.scm with outcomes.
+5. Commit with concise, imperative messages.
 
 ## Architecture Notes
 - DyadtBrain.Verifications is the single context module (Stacks pattern).
@@ -34,3 +59,6 @@
 - Port protocol: 4-byte big-endian length prefix + JSON payload.
 - GoT uses pessimistic union (any rejection = rejection).
 - MoE routes to experts based on PolicyOracle violation signals.
+- Attestation chain: AttestationChainBuilder::begin() → accumulator() → seal()
+- K9 cascade: Kennel (structure) → Yard (contracts) → Hunt (execution)
+- Hash layers: L0 (document) → L1 (parts) → L2 (interactions) → L3 (phase)
