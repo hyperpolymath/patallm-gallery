@@ -188,6 +188,9 @@ fn print_report(report: &VerificationReport) {
                 format!("Env {}={}", name, expected)
             }
             EvidenceSpec::Custom { name, .. } => format!("Custom check: {}", name),
+            EvidenceSpec::PanicAttackAttestation { attestation_path, report_path, .. } => {
+                format!("Attestation: {} (report: {})", attestation_path, report_path)
+            }
         };
 
         println!("{} {}", icon, evidence_desc);
@@ -314,6 +317,7 @@ fn output_sarif(reports: &[VerificationReport]) {
                     EvidenceSpec::FileModifiedAfter { .. } => "file-modified-after",
                     EvidenceSpec::EnvVar { .. } => "env-var",
                     EvidenceSpec::Custom { .. } => "custom",
+                    EvidenceSpec::PanicAttackAttestation { .. } => "attestation",
                 };
 
                 Some(serde_json::json!({
@@ -476,6 +480,9 @@ fn get_evidence_path(spec: &EvidenceSpec) -> Option<String> {
         EvidenceSpec::CommandSucceeds { command, .. } => Some(command.clone()),
         EvidenceSpec::EnvVar { name, .. } => Some(format!("${}", name)),
         EvidenceSpec::Custom { name, .. } => Some(name.clone()),
+        EvidenceSpec::PanicAttackAttestation { attestation_path, .. } => {
+            Some(attestation_path.clone())
+        }
     }
 }
 
@@ -507,6 +514,11 @@ fn format_evidence_name(spec: &EvidenceSpec) -> String {
         }
         EvidenceSpec::EnvVar { name, expected } => format!("EnvVar {}={}", name, expected),
         EvidenceSpec::Custom { name, .. } => format!("Custom: {}", name),
+        EvidenceSpec::PanicAttackAttestation {
+            attestation_path,
+            report_path,
+            ..
+        } => format!("Attestation: {} (report: {})", attestation_path, report_path),
     }
 }
 
