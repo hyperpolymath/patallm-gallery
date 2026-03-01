@@ -1,0 +1,47 @@
+[package]
+name = "llm-unify-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "llm-unify"
+path = "src/main.rs"
+
+[dependencies]
+llm-unify-core = { workspace = true }
+llm-unify-storage = { workspace = true }
+llm-unify-parser = { workspace = true }
+llm-unify-search = { workspace = true }
+llm-unify-tui = { workspace = true }
+clap = { workspace = true }
+tokio = { workspace = true }
+anyhow = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+
+# Packaging metadata for cargo-deb
+[package.metadata.deb]
+maintainer = "hyperpolymath <packages@hyperpolymath.dev>"
+copyright = "2025, hyperpolymath"
+license-file = ["../../LICENSE.txt", "0"]
+extended-description = """
+LLM Unify provides a unified interface for managing conversations across
+multiple LLM platforms (Claude, GPT, Gemini, etc.). Import, search, and
+analyze your AI conversation history from a single tool.
+"""
+depends = "$auto"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/llm-unify", "usr/bin/", "755"],
+    ["../../README.adoc", "usr/share/doc/llm-unify/README.adoc", "644"],
+]
+
+[package.metadata.generate-rpm]
+assets = [
+    { source = "target/release/llm-unify", dest = "/usr/bin/llm-unify", mode = "755" },
+]

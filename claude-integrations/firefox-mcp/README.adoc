@@ -1,0 +1,182 @@
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+
+== License & Philosophy
+
+This project must declare **MPL-2.0-or-later** for platform/tooling compatibility.
+
+Philosophy: **Palimpsest**. The Palimpsest-MPL (PMPL) text is provided in `license/PMPL-1.0.txt`, and the canonical source is the palimpsest-license repository.
+
+// SPDX-License-Identifier: MPL-2.0-or-later
+= Claude Firefox MCP
+
+
+
+:toc:
+:icons: font
+
+MCP (Model Context Protocol) server that enables Claude Code CLI to control Firefox browser.
+
+== Overview
+
+This project bridges Claude Code and Firefox, allowing Claude to:
+
+* Take screenshots
+* Navigate to URLs
+* Read page content (accessibility tree)
+* Click elements
+* Type text
+* Fill forms
+* Manage tabs
+
+== Architecture
+
+[source]
+----
+┌─────────────┐     stdio      ┌──────────────────┐   WebSocket   ┌─────────────────┐
+│ Claude Code │ ◄────────────► │  MCP Server      │ ◄───────────► │ Firefox         │
+│    CLI      │     (MCP)      │  (Deno)          │   (localhost) │ Extension       │
+└─────────────┘                └──────────────────┘               └─────────────────┘
+----
+
+== Requirements
+
+* https://deno.land[Deno] runtime
+* Firefox 78+
+* Claude Code CLI
+
+== Installation
+
+[source,bash]
+----
+# Clone
+git clone https://github.com/hyperpolymath/claude-firefox-mcp.git
+cd claude-firefox-mcp
+
+# Install
+./scripts/install.sh
+----
+
+=== Load Firefox Extension
+
+1. Open Firefox and go to `about:debugging`
+2. Click "This Firefox"
+3. Click "Load Temporary Add-on"
+4. Select `extension/manifest.json`
+
+=== Configure Claude Code
+
+Add to `~/.claude/settings.json`:
+
+[source,json]
+----
+{
+  "mcpServers": {
+    "firefox": {
+      "command": "claude-firefox-mcp",
+      "args": []
+    }
+  }
+}
+----
+
+== Available Tools
+
+[cols="1,2"]
+|===
+|Tool |Description
+
+|`screenshot`
+|Capture current tab as PNG
+
+|`navigate`
+|Go to URL, or 'back'/'forward'
+
+|`read_page`
+|Get accessibility tree of page elements
+
+|`click`
+|Click at [x, y] coordinates
+
+|`type`
+|Type text into focused element
+
+|`scroll`
+|Scroll up/down/left/right
+
+|`execute_js`
+|Run JavaScript in page context
+
+|`find`
+|Find elements by text or CSS selector
+
+|`form_input`
+|Set form field value
+
+|`tabs_list`
+|List open tabs
+
+|`tabs_create`
+|Create new tab
+
+|`tabs_close`
+|Close a tab
+
+|`get_page_text`
+|Get page text content
+|===
+
+== Usage Example
+
+Once configured, Claude Code can control Firefox:
+
+[source]
+----
+User: Open Firefox and search for "Deno runtime"
+
+Claude: I'll navigate to Google and search for that.
+[uses navigate tool to go to google.com]
+[uses type tool to enter search query]
+[uses click tool to click search button]
+----
+
+== Development
+
+=== Run Server Manually
+
+[source,bash]
+----
+deno run --allow-net --allow-read --allow-env host/server.ts
+----
+
+=== Extension Development
+
+The extension auto-reconnects to the MCP server. Click the extension icon to manually trigger reconnection.
+
+== Comparison with Claude in Chrome
+
+[cols="1,1,1"]
+|===
+|Feature |Claude Firefox MCP |Claude in Chrome
+
+|Browser
+|Firefox, Thunderbird, SeaMonkey
+|Chrome only
+
+|Protocol
+|MCP over stdio + WebSocket
+|MCP over native messaging
+
+|Code
+|~800 LOC
+|Proprietary
+
+|License
+|PMPL-1.0-or-later
+|Proprietary
+|===
+
+== License
+
+PMPL-1.0-or-later
+
+This is an independent project. Not affiliated with Anthropic or Mozilla.

@@ -1,0 +1,69 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+
+# AI Assistant Specification — DYADT
+
+## Machine-Readable Artefacts
+
+The `.machine_readable/` directory contains structured metadata:
+
+- `STATE.scm`: Current project state, milestones, and progress.
+- `META.scm`: Architecture decisions, development methodology, and rationale.
+- `ECOSYSTEM.scm`: Ecosystem placement and relationships.
+
+Additional artefacts:
+
+- `AI.a2ml`: AI agent operational instructions.
+- `AI.djot`: This file — detailed specification.
+
+## Repository Structure
+
+- **Rust engine** (`src/`): 12-layer verification pipeline, SLM ensemble, claim extractor, port protocol
+- **Elixir brain** (`dyadt_brain/`): Tier 3 arbiter, PatternLearner, RegressionBaseline, triple API
+- **ABI** (`src/abi/`): Idris2 formal type definitions with proofs
+- **FFI** (`ffi/zig/`): Zig C-compatible implementation
+- **Container** (`Containerfile`, `selur-compose.toml`): Chainguard-based images
+
+## API Surfaces
+
+### REST (port 4200)
+- POST `/api/verify` — verify a claim
+- POST `/api/verify/batch` — verify multiple claims
+- GET `/api/health` — health check
+- GET `/api/claims` — list claims
+- GET `/api/stats` — system statistics
+- POST `/api/slm/evaluate` — SLM ensemble evaluation
+
+### GraphQL (port 4200, path /api/graphql)
+- Queries: `report`, `claims`, `health`, `stats`
+- Mutations: `verifyClaim`, `verifyBatch`, `evaluateSlm`
+
+### gRPC (port 4201)
+- Methods: VerifyClaim, VerifyBatch, GetReport, EvaluateSlm, Health, GetStats, ListClaims
+
+## SLM Architecture
+
+### Tier 1: Policy Oracle
+Deterministic rule-based checking. 12 violation categories from cognitive-gating.
+
+### Tier 2: SLM Backends
+- **Graph-of-Thought**: 3 adversarial paths (AssumeGenuine, AssumeFabricated, AssumeIncomplete)
+- **Mixture-of-Experts**: 4 expert types routed by violation signals
+
+### Tier 3: Consensus Arbiter (Elixir)
+Asymmetric weighted voting: reject=1.5x, approve=1.0x.
+
+## Language Policy
+
+| Language | Use Case |
+|----------|----------|
+| Rust | Verification engine, SLM ensemble, CLI |
+| Elixir | Brain, API, pattern learning, regression |
+| Idris2 | ABI formal definitions |
+| Zig | FFI C-compatible implementation |
+
+## Security Requirements
+
+- SPDX headers on all files (PMPL-1.0-or-later)
+- SHA-256 for content hashing
+- No hardcoded secrets
+- Pin all dependencies

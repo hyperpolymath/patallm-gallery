@@ -1,0 +1,36 @@
+= llm-verify - Citation Guide
+:toc:
+
+== BibTeX
+
+[source,bibtex]
+----
+@software{llm-verify_2025,
+  author = {Polymath, Hyper},
+  title = {llm-verify},
+  year = {2025},
+  url = {https://github.com/hyperpolymath/llm-verify},
+  license = {AGPL-3.0-or-later}
+}
+----
+
+== Harvard Style
+
+Polymath, H. (2025) _llm-verify_ [Computer software]. Available at: https://github.com/hyperpolymath/llm-verify
+
+== OSCOLA
+
+Hyper Polymath, 'llm-verify' (2025) <https://github.com/hyperpolymath/llm-verify>
+
+== MLA
+
+Polymath, Hyper. "llm-verify." 2025, github.com/hyperpolymath/llm-verify.
+
+== APA 7
+
+Polymath, H. (2025). _llm-verify_ [Computer software]. GitHub. https://github.com/hyperpolymath/llm-verify
+
+== See Also
+
+* link:../CITATION.cff[CITATION.cff]
+* link:../codemeta.json[codemeta.json]

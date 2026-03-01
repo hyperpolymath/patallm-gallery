@@ -1,0 +1,212 @@
+# GitLab CI/CD configuration for llm-antidote
+
+stages:
+  - validate
+  - test
+  - compliance
+  - documentation
+
+variables:
+  PYTHON_VERSION: "3.11"
+
+# Cache Python dependencies (none currently, but good practice)
+cache:
+  paths:
+    - .cache/pip
+
+# Validate Python files
+validate:python:
+  stage: validate
+  image: python:${PYTHON_VERSION}
+  script:
+    - echo "Validating Python files..."
+    - python -m py_compile tools/*.py tests/*.py
+    - echo "✅ All Python files valid"
+
+# Validate Scheme artifacts
+validate:scheme:
+  stage: validate
+  image: alpine:latest
+  script:
+    - echo "Checking Scheme artifacts..."
+    - find artifacts -name "*.scm" -type f
+    - echo "✅ Scheme artifacts present"
+
+# Validate JavaScript artifacts
+validate:javascript:
+  stage: validate
+  image: node:lts-alpine
+  script:
+    - echo "Checking JavaScript artifacts..."
+    - find artifacts -name "*.js" -type f
+    - echo "✅ JavaScript artifacts present"
+
+# Run test suite
+test:suite:
+  stage: test
+  image: python:${PYTHON_VERSION}
+  script:
+    - echo "Running test suite..."
+    - python tests/test_suite.py list
+    - echo "✅ Test suite loaded"
+    - python tests/test_suite.py export test_suite.json
+    - cat test_suite.json
+  artifacts:
+    paths:
+      - test_suite.json
+    expire_in: 1 week
+
+# RSR compliance check
+compliance:rsr:
+  stage: compliance
+  image: python:${PYTHON_VERSION}
+  script:
+    - echo "Checking RSR compliance..."
+    - python tools/rsr-compliance.py --verbose
+    - python tools/rsr-compliance.py --report > RSR_COMPLIANCE.md
+    - cat RSR_COMPLIANCE.md
+  artifacts:
+    paths:
+      - RSR_COMPLIANCE.md
+    expire_in: 1 month
+
+# Verify documentation exists
+documentation:check:
+  stage: documentation
+  image: alpine:latest
+  script:
+    - echo "Verifying documentation..."
+    - |
+      for file in README.md LICENSE CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md MAINTAINERS.md CHANGELOG.md; do
+        if [ -f "$file" ]; then
+          echo "✅ $file exists"
+        else
+          echo "❌ $file missing"
+          exit 1
+        fi
+      done
+    - echo "Verifying .well-known directory..."
+    - |
+      for file in .well-known/security.txt .well-known/ai.txt .well-known/humans.txt; do
+        if [ -f "$file" ]; then
+          echo "✅ $file exists"
+        else
+          echo "⚠️ $file missing (optional)"
+        fi
+      done
+
+# Verify security.txt (RFC 9116)
+documentation:security-txt:
+  stage: documentation
+  image: alpine:latest
+  script:
+    - echo "Validating security.txt..."
+    - |
+      if [ -f ".well-known/security.txt" ]; then
+        grep -q "Contact:" .well-known/security.txt && echo "✅ Contact field present"
+        grep -q "Expires:" .well-known/security.txt && echo "✅ Expires field present"
+        grep -q "Canonical:" .well-known/security.txt && echo "✅ Canonical field present"
+      else
+        echo "❌ security.txt missing"
+        exit 1
+      fi
+
+# Count artifacts and tools
+statistics:
+  stage: documentation
+  image: alpine:latest
+  script:
+    - echo "Repository statistics:"
+    - echo "Reset artifacts:"
+    - find artifacts -type f | wc -l
+    - echo ""
+    - echo "Tools:"
+    - find tools -name "*.py" | wc -l
+    - echo ""
+    - echo "Examples:"
+    - find examples -name "*.md" | wc -l
+    - echo ""
+    - echo "Documentation:"
+    - find . -name "*.md" | wc -l
+
+# Validate tools are executable
+tools:cli:
+  stage: test
+  image: python:${PYTHON_VERSION}
+  script:
+    - echo "Testing CLI tool..."
+    - python tools/llm-cli.py list
+    - echo "✅ CLI tool works"
+
+tools:diagnostic:
+  stage: test
+  image: python:${PYTHON_VERSION}
+  script:
+    - echo "Testing diagnostic tool..."
+    - python tools/llm-diagnostic.py memory
+    - echo "✅ Diagnostic tool works"
+
+tools:benchmark:
+  stage: test
+  image: python:${PYTHON_VERSION}
+  script:
+    - echo "Testing benchmark tool..."
+    - python tools/benchmark.py types
+    - echo "✅ Benchmark tool works"
+
+# Security scan (basic)
+security:scan:
+  stage: compliance
+  image: alpine:latest
+  script:
+    - echo "Scanning for potential secrets..."
+    - |
+      # Check for common secret patterns
+      if grep -r "sk_live_" artifacts/ tools/ 2>/dev/null; then
+        echo "❌ Found potential secret"
+        exit 1
+      fi
+    - echo "✅ No obvious secrets found"
+
+# Generate distribution archive
+build:dist:
+  stage: compliance
+  image: alpine:latest
+  script:
+    - echo "Creating distribution archive..."
+    - tar czf llm-antidote-$(cat VERSION).tar.gz \
+        --exclude='.git' \
+        --exclude='*.tar.gz' \
+        --exclude='__pycache__' \
+        --exclude='*.pyc' \
+        .
+    - ls -lh llm-antidote-*.tar.gz
+    - echo "✅ Distribution archive created"
+  artifacts:
+    paths:
+      - llm-antidote-*.tar.gz
+    expire_in: 1 month
+  only:
+    - main
+    - tags
+
+# Lines of code statistics
+statistics:loc:
+  stage: documentation
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache coreutils
+  script:
+    - echo "Lines of Code:"
+    - echo ""
+    - echo "Python:"
+    - find tools tests -name "*.py" -exec wc -l {} \; | awk '{sum+=$1} END {print sum}'
+    - echo ""
+    - echo "Scheme:"
+    - find artifacts -name "*.scm" -exec wc -l {} \; | awk '{sum+=$1} END {print sum}'
+    - echo ""
+    - echo "JavaScript:"
+    - find artifacts -name "*.js" -exec wc -l {} \; | awk '{sum+=$1} END {print sum}'
+    - echo ""
+    - echo "Documentation:"
+    - find . -name "*.md" -exec wc -l {} \; | awk '{sum+=$1} END {print sum}'

@@ -1,0 +1,160 @@
+{
+  "conversations": [
+    {
+      "id": "conv-chatgpt-001",
+      "title": "Rust Async Programming Help",
+      "create_time": 1735200000.0,
+      "update_time": 1735203600.0,
+      "mapping": {
+        "node-001": {
+          "message": {
+            "id": "msg-001",
+            "author": { "role": "user" },
+            "create_time": 1735200000.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["How do I use async/await in Rust with tokio?"]
+            }
+          }
+        },
+        "node-002": {
+          "message": {
+            "id": "msg-002",
+            "author": { "role": "assistant" },
+            "create_time": 1735200060.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["To use async/await in Rust with tokio, first add tokio to your Cargo.toml with the 'full' feature. Then you can create an async main function using the #[tokio::main] macro. Inside async functions, you can use .await on futures to wait for their completion without blocking the thread."]
+            }
+          }
+        },
+        "node-003": {
+          "message": {
+            "id": "msg-003",
+            "author": { "role": "user" },
+            "create_time": 1735200120.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["Can you show me a simple example of spawning multiple tasks?"]
+            }
+          }
+        },
+        "node-004": {
+          "message": {
+            "id": "msg-004",
+            "author": { "role": "assistant" },
+            "create_time": 1735200180.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["Here's an example of spawning concurrent tasks with tokio::spawn. You can use JoinSet or tokio::join! to wait for multiple futures concurrently. Each spawned task runs independently on the tokio runtime's thread pool."]
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "conv-chatgpt-002",
+      "title": "SQLite Full-Text Search Guide",
+      "create_time": 1735100000.0,
+      "update_time": 1735103600.0,
+      "mapping": {
+        "node-010": {
+          "message": {
+            "id": "msg-010",
+            "author": { "role": "user" },
+            "create_time": 1735100000.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["How do I implement full-text search in SQLite using FTS5?"]
+            }
+          }
+        },
+        "node-011": {
+          "message": {
+            "id": "msg-011",
+            "author": { "role": "assistant" },
+            "create_time": 1735100060.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["SQLite FTS5 is a virtual table module that provides full-text search capabilities. Create a virtual table with CREATE VIRTUAL TABLE using fts5, then use the MATCH operator to search. FTS5 supports phrase queries, prefix queries, and column filters."]
+            }
+          }
+        },
+        "node-012": {
+          "message": {
+            "id": "msg-012",
+            "author": { "role": "user" },
+            "create_time": 1735100120.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["What about ranking and snippets?"]
+            }
+          }
+        },
+        "node-013": {
+          "message": {
+            "id": "msg-013",
+            "author": { "role": "assistant" },
+            "create_time": 1735100180.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["Use the bm25() function for relevance ranking and snippet() for highlighted excerpts. The rank special column provides built-in BM25 scoring. For snippets, specify the column index, highlight markers, and maximum length."]
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "conv-chatgpt-003",
+      "title": "Terminal UI with Ratatui",
+      "create_time": 1735000000.0,
+      "update_time": 1735007200.0,
+      "mapping": {
+        "node-020": {
+          "message": {
+            "id": "msg-020",
+            "author": { "role": "user" },
+            "create_time": 1735000000.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["I want to build a terminal UI in Rust. What library should I use?"]
+            }
+          }
+        },
+        "node-021": {
+          "message": {
+            "id": "msg-021",
+            "author": { "role": "assistant" },
+            "create_time": 1735000060.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["Ratatui is the most popular choice for building terminal UIs in Rust. It's a fork of tui-rs that's actively maintained. You'll pair it with a backend like crossterm for cross-platform terminal handling. The library provides widgets like List, Table, Paragraph, and Block."]
+            }
+          }
+        },
+        "node-022": {
+          "message": {
+            "id": "msg-022",
+            "author": { "role": "user" },
+            "create_time": 1735000120.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["How do I handle keyboard input and navigation?"]
+            }
+          }
+        },
+        "node-023": {
+          "message": {
+            "id": "msg-023",
+            "author": { "role": "assistant" },
+            "create_time": 1735000180.0,
+            "content": {
+              "content_type": "text",
+              "parts": ["Use crossterm's event module to read keyboard events. Common patterns include vim-style j/k navigation, arrow keys, and 'q' to quit. Handle events in your main loop after drawing each frame. Consider using a state machine pattern for complex interactions."]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

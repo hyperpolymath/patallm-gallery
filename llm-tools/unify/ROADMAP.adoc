@@ -1,0 +1,486 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 LLM Unify Contributors
+= LLM Unify Roadmap
+:toc: macro
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
+
+*Strategic development roadmap for LLM Unify - a local-first, privacy-focused LLM conversation manager*
+
+toc::[]
+
+== Project Overview
+
+LLM Unify is a production-ready Rust application providing unified access to AI conversation history across multiple platforms (ChatGPT, Claude, Gemini, Copilot). Built on principles of user autonomy, privacy-by-design, and local-first data ownership.
+
+=== Current State (v0.1.0)
+
+[cols="1,3"]
+|===
+|Component|Status
+
+|**Architecture**
+|6-crate Rust workspace with clear separation of concerns
+
+|**Core Types**
+|`Provider` enum, `Conversation`/`Message` structs, typed metadata
+
+|**Storage**
+|SQLite with WAL mode, FTS5 full-text search, connection pooling, schema versioning
+
+|**Parsers**
+|All four major providers: ChatGPT, Claude, Gemini, GitHub Copilot
+
+|**CLI**
+|14 commands: import, list, show, search, delete, export, stats, validate, backup, restore, init, schema, tui, version
+
+|**TUI**
+|Ratatui-based browser with vim bindings, search mode
+
+|**Backup/Restore**
+|SHA-256 checksums, atomic operations, integrity verification
+
+|**Security**
+|Zero unsafe code, parameterized queries, input validation
+
+|**Compliance**
+|RSR Silver (51/55), AGPL-3.0 + Palimpsest, RFC 9116
+|===
+
+=== Code Inventory
+
+[source]
+----
+crates/
+├── llm-unify-core/     # 179 lines - Domain models, traits, error types
+├── llm-unify-storage/  # 322 lines - SQLite persistence, migrations
+├── llm-unify-parser/   # 246 lines - Provider import parsers
+├── llm-unify-search/   # 130 lines - FTS5 search engine
+├── llm-unify-cli/      # 261 lines - Command-line interface
+└── llm-unify-tui/      # 216 lines - Terminal UI
+                        ─────────
+                        1,354 lines total (zero unsafe blocks)
+----
+
+== Release Timeline
+
+=== v0.1.x - Stability & Polish (Current)
+
+*Focus:* Bug fixes, performance tuning, documentation
+
+[cols="1,2,1"]
+|===
+|Version|Scope|Status
+
+|v0.1.0
+|Initial release with ChatGPT import, search, TUI
+|✅ Released 2025-11-28
+
+|v0.1.1
+|Bug fixes from community feedback
+|📋 Planned
+
+|v0.1.2
+|Performance optimization for large databases
+|📋 Planned
+|===
+
+=== v0.2.0 - Security & Quality
+
+*Focus:* Security hardening and test coverage
+
+==== Provider Parsers
+
+[cols="1,2,1"]
+|===
+|Provider|Implementation Notes|Status
+
+|**ChatGPT**
+|JSON export with nested mapping structure
+|✅ Complete
+
+|**Claude**
+|Anthropic export format (JSON) with chat_messages
+|✅ Complete
+
+|**Gemini**
+|Multiple formats: Gem Chat Exporter, ai-chat-exporter
+|✅ Complete
+
+|**Copilot**
+|VS Code export format with requests/responses
+|✅ Complete
+
+|**Other**
+|Generic JSON/Markdown import
+|📋 Planned
+|===
+
+==== Security Enhancements
+
+* [ ] **SQLCipher integration** - Encrypt database at rest
+* [ ] **age/GPG export encryption** - Encrypted backup files
+* [ ] **Memory protection** - Zeroize sensitive data
+* [ ] **Secure deletion** - Overwrite deleted conversations
+
+==== Quality Improvements
+
+* [ ] **Test coverage 80%+** - Parser, CLI, TUI tests
+* [ ] **Property-based testing** - Fuzz core types
+* [ ] **Integration tests** - Full CLI command coverage
+
+=== v0.3.0 - Enhanced TUI
+
+*Focus:* Rich terminal experience
+
+==== TUI Features
+
+* [ ] **Message detail view** - Full conversation reading
+* [ ] **Syntax highlighting** - Code blocks in messages
+* [ ] **Search within conversation** - Filter messages
+* [ ] **Export from TUI** - Interactive export
+* [ ] **Themes** - Light/dark/custom color schemes
+* [ ] **Mouse support** - Click navigation
+
+==== Accessibility
+
+* [ ] **Screen reader compatibility** - ARIA-like announcements
+* [ ] **High contrast mode** - Visibility enhancement
+* [ ] **Configurable keybindings** - Customizable shortcuts
+
+=== v0.4.0 - Analysis & Insights
+
+*Focus:* Understanding your AI conversations
+
+==== Analytics
+
+* [ ] **Usage statistics** - Message counts, tokens, time series
+* [ ] **Topic extraction** - Automatic conversation tagging
+* [ ] **Provider comparison** - Side-by-side analysis
+* [ ] **Export reports** - PDF/HTML summaries
+
+==== Search Enhancements
+
+* [ ] **Semantic search** - Meaning-based retrieval (local embeddings)
+* [ ] **Advanced filters** - Date ranges, roles, providers
+* [ ] **Saved searches** - Bookmark frequent queries
+* [ ] **Search history** - Quick access to past searches
+
+=== v0.5.0 - Sync & Backup
+
+*Focus:* Data portability and resilience
+
+==== Sync Options
+
+* [ ] **Multi-device sync** - Syncthing/Resilio integration
+* [ ] **Git-based backup** - Version-controlled exports
+* [ ] **Incremental backup** - Efficient delta exports
+* [ ] **Scheduled backups** - Automated protection
+
+==== Import Improvements
+
+* [ ] **Watch folders** - Auto-import new exports
+* [ ] **Merge strategies** - Deduplicate across imports
+* [ ] **Conflict resolution** - Handle overlapping data
+
+=== v1.0.0 - Production Ready
+
+*Focus:* Stability, performance, ecosystem
+
+==== Milestones
+
+* [ ] **RSR Gold compliance** (55/55 points)
+* [ ] **External security audit** completed
+* [ ] **Performance benchmarks** documented
+* [ ] **API stability guarantee** (SemVer contract)
+* [ ] **Package distribution** (crates.io, Guix, Nix)
+
+== Feature Backlog
+
+=== Core Functionality
+
+[cols="1,3,1,1"]
+|===
+|Feature|Description|Priority|Complexity
+
+|Batch import
+|Import multiple files/directories at once
+|High
+|Low
+
+|Export formats
+|Markdown, HTML, PDF export options
+|High
+|Medium
+
+|Conversation merge
+|Combine split conversations
+|Medium
+|Medium
+
+|Duplicate detection
+|Identify and merge duplicate imports
+|Medium
+|High
+
+|Message editing
+|Correct/annotate imported messages
+|Low
+|Medium
+
+|Conversation splitting
+|Divide long conversations by topic
+|Low
+|High
+|===
+
+=== Provider Support
+
+[cols="1,2,1"]
+|===
+|Provider|Notes|Status
+
+|ChatGPT
+|JSON export format with nested mappings
+|✅ Complete
+
+|Claude
+|Anthropic export format (JSON with chat_messages)
+|✅ Complete
+
+|Gemini
+|Gem Chat Exporter, ai-chat-exporter formats
+|✅ Complete
+
+|Copilot
+|VS Code Chat: Export Chat... format
+|✅ Complete
+
+|Perplexity
+|Research-focused conversations
+|📋 Planned
+
+|Poe
+|Multi-model aggregator
+|📋 Planned
+
+|Local LLMs
+|Ollama, LM Studio history
+|📋 Planned
+
+|Custom
+|User-defined JSON schema
+|📋 Planned
+|===
+
+=== Integration
+
+[cols="1,3,1"]
+|===
+|Integration|Description|Priority
+
+|Obsidian plugin
+|Sync conversations to markdown vault
+|High
+
+|VS Code extension
+|Quick search from editor
+|Medium
+
+|Alfred/Raycast
+|macOS quick search
+|Medium
+
+|dmenu/rofi
+|Linux quick search
+|Medium
+
+|Zotero connector
+|Export as research sources
+|Low
+
+|Logseq/Roam
+|Bidirectional sync
+|Low
+|===
+
+=== Platform Support
+
+[cols="1,2,1"]
+|===
+|Platform|Notes|Status
+
+|Linux (x86_64)
+|Primary development platform
+|✅ Supported
+
+|macOS (Intel)
+|Full support
+|✅ Supported
+
+|macOS (Apple Silicon)
+|Native ARM build
+|✅ Supported
+
+|Windows
+|Native Windows build
+|📋 Planned
+
+|FreeBSD
+|BSD compatibility
+|📋 Planned
+
+|Android (Termux)
+|Mobile terminal access
+|📋 Planned
+
+|Web (WASM)
+|Browser-based TUI
+|🔬 Research
+|===
+
+== Technical Debt
+
+=== Current Issues
+
+[cols="1,3,1"]
+|===
+|Issue|Description|Priority
+
+|Test coverage
+|Add unit tests for parsers, storage, search (target 80%)
+|High
+
+|Error messages
+|Improve user-facing error text
+|Medium
+
+|Documentation
+|API docs for library users
+|Medium
+
+|Performance
+|Large database optimization
+|Medium
+|===
+
+=== Architecture Improvements
+
+* [ ] **Plugin system** - Dynamic parser loading
+* [ ] **Configuration file** - User preferences
+* [ ] **Logging framework** - Structured logging
+* [ ] **Metrics collection** - Performance monitoring
+
+== Compliance Roadmap
+
+=== RSR Path to Gold
+
+Current: **Silver (51/55)**
+Target: **Gold (55/55)**
+
+[cols="1,1,2"]
+|===
+|Category|Gap|Actions
+
+|Test Coverage
+|+2 points
+|Reach 80% coverage (currently 30%)
+
+|Community
+|+1 point
+|Attract 3+ regular contributors
+
+|Security
+|+1 point
+|Complete external security audit
+|===
+
+=== Standards Compliance
+
+* [x] **RFC 9116** - security.txt
+* [x] **REUSE** - SPDX license headers
+* [x] **Keep a Changelog** - CHANGELOG.md format
+* [x] **Semantic Versioning** - Version numbering
+* [ ] **RFC 8615** - .well-known directory (partial)
+* [ ] **OpenSSF Scorecard** - Supply chain security
+
+== Community Development
+
+=== Governance
+
+* **Model:** Consensus-seeking with voting fallback
+* **Maintainers:** See MAINTAINERS.md
+* **TPCF Perimeter:** 3 (Community Sandbox)
+
+=== Contribution Priorities
+
+1. **Test coverage** - Unit and integration tests for parsers, storage, search
+2. **Documentation** - API docs, tutorials, examples
+3. **Accessibility** - Screen reader, high contrast
+4. **Platform support** - Windows, WASM
+5. **Additional providers** - Perplexity, Poe, local LLMs
+
+=== Getting Involved
+
+[source,bash]
+----
+# Clone and build
+git clone https://github.com/Hyperpolymath/llm-unify.git
+cd llm-unify
+just build
+
+# Run tests
+just test
+
+# See available tasks
+just --list
+----
+
+See link:CONTRIBUTING.md[CONTRIBUTING.md] for detailed contribution guidelines.
+
+== Appendix
+
+=== Version Numbering
+
+Following Semantic Versioning (SemVer):
+
+* **MAJOR** (1.x.x): Breaking API changes
+* **MINOR** (x.1.x): New features, backward compatible
+* **PATCH** (x.x.1): Bug fixes only
+
+=== Decision Log
+
+[cols="1,1,3"]
+|===
+|Date|Decision|Rationale
+
+|2025-11-28
+|SQLite for storage
+|Local-first, zero network deps, FTS5 built-in
+
+|2025-11-28
+|Ratatui for TUI
+|Active development, modern async, no unsafe
+
+|2025-11-28
+|AGPL-3.0 license
+|Strong copyleft, user freedom, SaaS protection
+
+|2025-11-28
+|Workspace architecture
+|Clear separation, independent versioning, smaller binaries
+|===
+
+=== Related Documents
+
+* link:README.adoc[README.adoc] - Project overview
+* link:CHANGELOG.md[CHANGELOG.md] - Release history
+* link:RSR-COMPLIANCE.md[RSR-COMPLIANCE.md] - Compliance report
+* link:CONTRIBUTING.md[CONTRIBUTING.md] - How to contribute
+* link:SECURITY.md[SECURITY.md] - Security policy
+
+---
+
+_Last updated: 2025-12-27_
+_Next review: Quarterly with releases_

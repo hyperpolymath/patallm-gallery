@@ -1,0 +1,50 @@
+{
+  "manifest_version": 2,
+  "name": "Claude Firefox MCP",
+  "version": "1.0.0",
+  "description": "Claude Code browser automation for Firefox via MCP",
+  "author": "hyperpolymath",
+  "homepage_url": "https://github.com/hyperpolymath/claude-firefox-mcp",
+
+  "applications": {
+    "gecko": {
+      "id": "claude-mcp@hyperpolymath.org",
+      "strict_min_version": "78.0"
+    }
+  },
+
+  "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  },
+
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "contextMenus",
+    "nativeMessaging",
+    "storage",
+    "<all_urls>"
+  ],
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/bridge.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+
+  "browser_action": {
+    "default_icon": {
+      "48": "icons/icon-48.png"
+    },
+    "default_title": "Claude MCP"
+  }
+}

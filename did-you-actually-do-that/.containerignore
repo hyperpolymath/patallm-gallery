@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Build artifacts
+target/
+dyadt_brain/_build/
+dyadt_brain/deps/
+dyadt_brain/.elixir_ls/
+
+# Git
+.git/
+.gitattributes
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs (not needed in container)
+docs/
+*.md
+*.adoc
+*.html
+LICENSE
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+SECURITY.md
+MAINTAINERS.adoc
+RSR_OUTLINE.adoc
+ROADMAP.adoc
+AI.djot
+AI.a2ml
+
+# Test/dev artifacts
+fuzz/
+benches/
+examples/
+.clusterfuzzlite/
+ai-cli-crash-capture/
+contractiles/
+.bot_directives/
+.machines_readable/
+.github/
+
+# Container meta (avoid recursion)
+Containerfile
+.containerignore
+selur-compose.toml

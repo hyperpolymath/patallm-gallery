@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "strict": true
+  },
+  "imports": {
+    "@anthropic-ai/sdk": "npm:@anthropic-ai/sdk@^0.30.0",
+    "express": "npm:express@^5.0.1",
+    "zod": "npm:zod@^3.22.4",
+    "dotenv": "npm:dotenv@^16.3.1",
+    "rescript": "npm:rescript@^12.0.2",
+    "@rescript/core": "npm:@rescript/core@^1.0.0"
+  },
+  "tasks": {
+    "dev": "deno run --allow-net --allow-read --allow-env --watch src/Main.res.js",
+    "build": "rescript build",
+    "clean": "rescript clean",
+    "test": "deno test --allow-all tests/",
+    "test:watch": "deno test --allow-all --watch tests/",
+    "test:coverage": "deno test --allow-all --coverage=coverage tests/",
+    "lint": "deno lint src/",
+    "fmt": "deno fmt src/ tests/",
+    "check": "deno check src/Main.res.js"
+  },
+  "fmt": {
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "semiColons": false
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "test": {
+    "include": ["tests/**/*.test.ts"]
+  }
+}

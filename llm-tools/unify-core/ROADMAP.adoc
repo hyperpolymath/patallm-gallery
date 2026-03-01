@@ -1,0 +1,161 @@
+= LLM Unify Core Roadmap
+:toc: auto
+:toclevels: 2
+
+Development roadmap for the `llm-unify-core` library.
+
+== Current State (v0.1.0)
+
+=== Implemented
+
+[cols="1,2,1"]
+|===
+|Component |Description |Status
+
+|`Provider` enum
+|ChatGPT, Claude, Gemini, Copilot, Other with Display/serde
+|Complete
+
+|`MessageRole` enum
+|User, Assistant, System roles with Display/serde
+|Complete
+
+|`Message` struct
+|Full message model with id, role, content, timestamp, metadata
+|Complete
+
+|`Conversation` struct
+|Conversation container with messages, provider, timestamps
+|Complete
+
+|`Metadata` struct
+|Flexible HashMap-based key-value storage
+|Complete
+
+|`ProviderTrait`
+|Interface for custom provider implementations (parse, name, validate)
+|Complete
+
+|`Error` enum
+|Comprehensive error types with thiserror integration
+|Complete
+
+|Serde support
+|Full JSON serialization/deserialization
+|Complete
+|===
+
+== Phase 1: Core Enhancements
+
+=== Additional Providers
+
+* [ ] `Provider::Ollama` - Local Ollama instances
+* [ ] `Provider::OpenRouter` - OpenRouter API
+* [ ] `Provider::Mistral` - Mistral AI
+* [ ] `Provider::Cohere` - Cohere
+* [ ] `Provider::Perplexity` - Perplexity AI
+* [ ] `Provider::Custom(String)` - Named custom providers
+
+=== Message Enhancements
+
+* [ ] `Message::builder()` - Builder pattern for message construction
+* [ ] `MessageContent` enum - Support text, images, files, tool calls
+* [ ] `Attachment` struct - File/image attachments with mime types
+* [ ] Token counting utilities
+
+=== Conversation Utilities
+
+* [ ] `Conversation::builder()` - Builder pattern
+* [ ] `Conversation::filter_by_role()` - Filter messages by role
+* [ ] `Conversation::search()` - Full-text search within messages
+* [ ] `Conversation::split_at()` - Split conversation at message boundary
+* [ ] `Conversation::merge()` - Combine conversations
+* [ ] Thread/branch support for conversation trees
+
+== Phase 2: Provider Implementations
+
+=== Built-in Parsers
+
+Implement `ProviderTrait` for each provider's export format:
+
+* [ ] `ChatGptProvider` - Parse ChatGPT JSON exports
+* [ ] `ClaudeProvider` - Parse Claude conversation exports
+* [ ] `GeminiProvider` - Parse Google Gemini exports
+* [ ] `CopilotProvider` - Parse Microsoft Copilot exports
+
+=== Export Capabilities
+
+* [ ] `ExportTrait` - Interface for exporting to provider formats
+* [ ] Markdown export
+* [ ] JSON Lines streaming format
+* [ ] SQLite export
+
+== Phase 3: Advanced Features
+
+=== Async Support
+
+* [ ] `async-trait` integration for async provider operations
+* [ ] `ProviderTraitAsync` - Async version of ProviderTrait
+* [ ] Streaming message support
+
+=== Storage Backends
+
+* [ ] `StorageTrait` - Abstract storage interface
+* [ ] In-memory storage
+* [ ] File-based storage (JSON, JSONL)
+* [ ] SQLite storage
+* [ ] Optional: Redis, PostgreSQL
+
+=== Search & Indexing
+
+* [ ] Full-text search index
+* [ ] Semantic search support (embedding vectors)
+* [ ] Conversation tagging and categorization
+
+== Phase 4: Ecosystem Integration
+
+=== Format Support
+
+* [ ] CBOR serialization (serde_cbor)
+* [ ] MessagePack (rmp-serde)
+* [ ] Protocol Buffers schema
+
+=== Interoperability
+
+* [ ] OpenAI API message format compatibility
+* [ ] Anthropic API message format compatibility
+* [ ] LangChain message format compatibility
+
+=== Feature Flags
+
+* [ ] `async` - Enable async traits
+* [ ] `storage` - Enable storage backends
+* [ ] `search` - Enable search indexing
+* [ ] `all-providers` - Include all provider parsers
+
+== API Stability
+
+[cols="1,2"]
+|===
+|Version |Commitment
+
+|0.x.x
+|API may change between minor versions
+
+|1.0.0
+|Stable core types (Provider, Message, Conversation, Metadata)
+
+|1.x.x
+|Backwards-compatible additions only
+|===
+
+== Contributing
+
+See the main https://github.com/hyperpolymath/llm-unify[llm-unify] repository for contribution guidelines.
+
+Priorities:
+
+1. Core type refinements
+2. Provider parser implementations
+3. Storage backend implementations
+4. Documentation and examples

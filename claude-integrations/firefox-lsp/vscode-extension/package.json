@@ -1,0 +1,102 @@
+{
+  "name": "claude-firefox-lsp",
+  "displayName": "Claude Firefox LSP",
+  "description": "Firefox browser automation via Language Server Protocol",
+  "version": "0.1.0",
+  "publisher": "hyperpolymath",
+  "license": "PMPL-1.0-or-later",
+  "author": "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyperpolymath/claude-firefox-lsp"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Testing",
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:claude-firefox-lsp.navigate",
+    "onCommand:claude-firefox-lsp.click",
+    "onCommand:claude-firefox-lsp.typeText",
+    "onCommand:claude-firefox-lsp.screenshot",
+    "onCommand:claude-firefox-lsp.executeJs",
+    "onCommand:claude-firefox-lsp.getContent",
+    "onCommand:claude-firefox-lsp.detectBrowsers"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "claude-firefox-lsp.navigate",
+        "title": "Firefox: Navigate to URL"
+      },
+      {
+        "command": "claude-firefox-lsp.click",
+        "title": "Firefox: Click Element"
+      },
+      {
+        "command": "claude-firefox-lsp.typeText",
+        "title": "Firefox: Type Text"
+      },
+      {
+        "command": "claude-firefox-lsp.screenshot",
+        "title": "Firefox: Take Screenshot"
+      },
+      {
+        "command": "claude-firefox-lsp.executeJs",
+        "title": "Firefox: Execute JavaScript"
+      },
+      {
+        "command": "claude-firefox-lsp.getContent",
+        "title": "Firefox: Get Page Content"
+      },
+      {
+        "command": "claude-firefox-lsp.detectBrowsers",
+        "title": "Firefox: Detect Available Browsers"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Claude Firefox LSP",
+      "properties": {
+        "claude-firefox-lsp.serverPath": {
+          "type": "string",
+          "default": "claude-firefox-lsp",
+          "description": "Path to the claude-firefox-lsp executable"
+        },
+        "claude-firefox-lsp.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.75.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.0"
+  }
+}

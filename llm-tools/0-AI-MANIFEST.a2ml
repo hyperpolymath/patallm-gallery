@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# 0-AI-MANIFEST.a2ml - Universal AI Agent Entry Point
+# Repository: llm-tools
+# Author: Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+
+(ai-manifest
+  (version "1.0")
+  (repository "llm-tools")
+  (description "Unified monorepo for LLM tooling: context management, conversation unification, and code verification")
+
+  (canonical-locations
+    (scm-files ".machine_readable/")
+    (license "LICENSE")
+    (readme "README.adoc")
+    (build "justfile"))
+
+  (critical-invariants
+    (rule "SCM files ONLY in .machine_readable/ directory")
+    (rule "Never create STATE.scm, META.scm, or ECOSYSTEM.scm in repository root")
+    (rule "License is PMPL-1.0-or-later")
+    (rule "Author is Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"))
+
+  (structure
+    (component "antidote" (path "antidote/") (language "guile-scheme") (description "LLM semantic reset artifacts"))
+    (component "unify" (path "unify/") (language "rust") (description "Multi-LLM conversation manager"))
+    (component "unify-core" (path "unify-core/") (language "rust") (description "Core conversation data model library"))
+    (component "verify" (path "verify/") (language "haskell") (description "LLM code verification via ECHIDNA")))
+
+  (lifecycle
+    (on-enter
+      (read "0-AI-MANIFEST.a2ml")
+      (read ".machine_readable/STATE.scm")
+      (read ".machine_readable/META.scm")
+      (read ".machine_readable/ECOSYSTEM.scm"))
+    (on-exit
+      (update ".machine_readable/STATE.scm"))))

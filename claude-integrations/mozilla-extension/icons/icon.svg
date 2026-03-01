@@ -1,0 +1,12 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#D97757"/>
+
+  <!-- Claude-inspired shape -->
+  <path d="M40 48C40 42.4772 44.4772 38 50 38H78C83.5228 38 88 42.4772 88 48V80C88 85.5228 83.5228 90 78 90H50C44.4772 90 40 85.5228 40 80V48Z" fill="white"/>
+
+  <!-- Inner detail -->
+  <circle cx="56" cy="58" r="6" fill="#D97757"/>
+  <circle cx="72" cy="58" r="6" fill="#D97757"/>
+  <path d="M52 72C52 72 58 80 64 80C70 80 76 72 76 72" stroke="#D97757" stroke-width="4" stroke-linecap="round"/>
+</svg>

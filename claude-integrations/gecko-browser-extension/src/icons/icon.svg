@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#1a1a1a" stroke="#d4a574" stroke-width="4"/>
+
+  <!-- Stylized 'C' for Claude -->
+  <path d="M 85 40
+           A 35 35 0 1 0 85 88"
+        fill="none"
+        stroke="#d4a574"
+        stroke-width="12"
+        stroke-linecap="round"/>
+
+  <!-- Gecko/Firefox accent - small lizard tail curl -->
+  <path d="M 88 44
+           Q 100 35 105 45
+           Q 110 55 100 52"
+        fill="none"
+        stroke="#ff9500"
+        stroke-width="4"
+        stroke-linecap="round"/>
+
+  <!-- Small dot accent -->
+  <circle cx="92" cy="85" r="6" fill="#d4a574"/>
+</svg>

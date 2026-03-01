@@ -1,0 +1,56 @@
+{
+  "conversations": [
+    {
+      "uuid": "conv-claude-001",
+      "name": "Understanding Ownership in Rust",
+      "created_at": "2024-12-25T10:00:00Z",
+      "updated_at": "2024-12-25T11:30:00Z",
+      "chat_messages": [
+        {
+          "uuid": "msg-c001",
+          "sender": "human",
+          "created_at": "2024-12-25T10:00:00Z",
+          "text": "Can you explain Rust ownership and borrowing?"
+        },
+        {
+          "uuid": "msg-c002",
+          "sender": "assistant",
+          "created_at": "2024-12-25T10:00:30Z",
+          "text": "Ownership is Rust's key memory management feature. Each value has exactly one owner. When the owner goes out of scope, the value is dropped. Borrowing allows references without transferring ownership - immutable with &T or mutable with &mut T."
+        },
+        {
+          "uuid": "msg-c003",
+          "sender": "human",
+          "created_at": "2024-12-25T10:01:00Z",
+          "text": "What are the borrowing rules?"
+        },
+        {
+          "uuid": "msg-c004",
+          "sender": "assistant",
+          "created_at": "2024-12-25T10:01:30Z",
+          "text": "The two main borrowing rules are: 1) You can have either one mutable reference OR any number of immutable references at a time. 2) References must always be valid - no dangling references. These rules are enforced at compile time by the borrow checker."
+        }
+      ]
+    },
+    {
+      "uuid": "conv-claude-002",
+      "name": "Building CLI Applications",
+      "created_at": "2024-12-24T14:00:00Z",
+      "updated_at": "2024-12-24T15:00:00Z",
+      "chat_messages": [
+        {
+          "uuid": "msg-c010",
+          "sender": "human",
+          "created_at": "2024-12-24T14:00:00Z",
+          "text": "What's the best way to build a CLI in Rust?"
+        },
+        {
+          "uuid": "msg-c011",
+          "sender": "assistant",
+          "created_at": "2024-12-24T14:00:30Z",
+          "text": "Clap is the de facto standard for Rust CLIs. Use the derive macro for declarative argument parsing. Combine with anyhow for error handling and env_logger for logging. Structure your CLI with subcommands for complex applications."
+        }
+      ]
+    }
+  ]
+}

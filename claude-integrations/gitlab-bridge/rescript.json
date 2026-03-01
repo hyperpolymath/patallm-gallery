@@ -1,0 +1,25 @@
+{
+  "name": "claude-gitlab-bridge",
+  "version": "2.0.0",
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    },
+    {
+      "dir": "tests",
+      "subdirs": true,
+      "type": "dev"
+    }
+  ],
+  "package-specs": {
+    "module": "es6",
+    "in-source": true
+  },
+  "suffix": ".res.js",
+  "dependencies": ["@rescript/core"],
+  "warnings": {
+    "error": "+101+5"
+  },
+  "bsc-flags": ["-bs-super-errors"]
+}

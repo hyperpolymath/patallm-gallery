@@ -1,0 +1,31 @@
+{
+  "title": "Test Gemini Conversation",
+  "tags": ["test", "gemini"],
+  "author": "gemini",
+  "count": 2,
+  "exporter": "test-exporter",
+  "date": "2025-01-15T10:30:00Z",
+  "url": "https://gemini.google.com/share/test123",
+  "messages": [
+    {
+      "id": "msg-001",
+      "author": "user",
+      "content": "What is the capital of France?"
+    },
+    {
+      "id": "msg-002",
+      "author": "ai",
+      "content": "The capital of France is Paris. Paris is the largest city in France and serves as the country's political, economic, and cultural center."
+    },
+    {
+      "id": "msg-003",
+      "author": "user",
+      "content": "What is the population?"
+    },
+    {
+      "id": "msg-004",
+      "author": "ai",
+      "content": "The population of Paris proper is approximately 2.1 million people. The greater Paris metropolitan area, known as Île-de-France, has a population of about 12 million, making it one of the largest metropolitan areas in Europe."
+    }
+  ]
+}

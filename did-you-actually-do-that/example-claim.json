@@ -1,0 +1,12 @@
+{
+    "description": "Example: Verify this repository was actually created",
+    "evidence": [
+        { "type": "FileExists", "spec": { "path": "Cargo.toml" } },
+        { "type": "FileExists", "spec": { "path": "src/lib.rs" } },
+        { "type": "FileExists", "spec": { "path": "src/main.rs" } },
+        { "type": "FileContains", "spec": { "path": "Cargo.toml", "substring": "did-you-actually-do-that" } },
+        { "type": "FileContains", "spec": { "path": "src/lib.rs", "substring": "pub struct Claim" } },
+        { "type": "DirectoryExists", "spec": { "path": "src" } }
+    ],
+    "source": "claude-opus-4-5"
+}

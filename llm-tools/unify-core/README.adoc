@@ -1,0 +1,291 @@
+= LLM Unify Core
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc: auto
+:toclevels: 3
+:source-highlighter: rouge
+:icons: font
+
+Core Rust library for managing LLM conversations across multiple providers.
+
+== Overview
+
+`llm-unify-core` provides foundational types and abstractions for building applications that work with multiple Large Language Model providers. It offers a unified data model for conversations, messages, and provider-specific metadata.
+
+=== Design Philosophy
+
+* **Provider-Agnostic**: Single data model works across ChatGPT, Claude, Gemini, Copilot, and custom providers
+* **Extensible**: `ProviderTrait` enables custom provider implementations
+* **Serializable**: Full serde support for JSON interchange and persistence
+* **Type-Safe**: Rust's type system ensures correctness at compile time
+* **Minimal**: Focused core (~180 lines) without unnecessary dependencies
+
+== What's Implemented
+
+=== Core Types
+
+[cols="1,3"]
+|===
+|Type |Purpose
+
+|`Provider`
+|Enum identifying LLM providers (ChatGPT, Claude, Gemini, Copilot, Other)
+
+|`MessageRole`
+|Enum for message roles (User, Assistant, System)
+
+|`Message`
+|Single message with id, role, content, timestamp, and metadata
+
+|`Conversation`
+|Container for messages with provider association and timestamps
+
+|`Metadata`
+|Flexible key-value storage using `HashMap<String, serde_json::Value>`
+
+|`Error`
+|Comprehensive error types with context preservation
+
+|`ProviderTrait`
+|Interface for implementing custom provider parsers
+|===
+
+=== Provider Enum
+
+[source,rust]
+----
+pub enum Provider {
+    ChatGpt,   // OpenAI ChatGPT
+    Claude,    // Anthropic Claude
+    Gemini,    // Google Gemini
+    Copilot,   // Microsoft Copilot
+    Other,     // Custom/unknown providers
+}
+----
+
+=== Message Structure
+
+[source,rust]
+----
+pub struct Message {
+    pub id: String,
+    pub conversation_id: String,
+    pub role: MessageRole,        // User | Assistant | System
+    pub content: String,
+    pub timestamp: DateTime<Utc>,
+    pub metadata: Metadata,
+}
+----
+
+=== Conversation Container
+
+[source,rust]
+----
+pub struct Conversation {
+    pub id: String,
+    pub title: String,
+    pub provider: Provider,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+    pub messages: Vec<Message>,
+    pub metadata: Metadata,
+}
+----
+
+=== ProviderTrait Interface
+
+[source,rust]
+----
+pub trait ProviderTrait {
+    /// Parse provider-specific export format
+    fn parse(&self, data: &[u8]) -> Result<Vec<Conversation>>;
+
+    /// Get provider name
+    fn name(&self) -> &'static str;
+
+    /// Validate conversation data
+    fn validate(&self, conversation: &Conversation) -> Result<()>;
+}
+----
+
+=== Error Handling
+
+[source,rust]
+----
+pub enum Error {
+    Provider(String),           // Provider-specific errors
+    InvalidConversation(String), // Malformed conversation data
+    InvalidMessage(String),      // Malformed message data
+    Serialization(serde_json::Error),
+    Io(std::io::Error),
+    Other(String),
+}
+----
+
+== Installation
+
+Add to your `Cargo.toml`:
+
+[source,toml]
+----
+[dependencies]
+llm-unify-core = "0.1"
+----
+
+Or via cargo:
+
+[source,bash]
+----
+cargo add llm-unify-core
+----
+
+== Usage Examples
+
+=== Creating a Conversation
+
+[source,rust]
+----
+use llm_unify_core::{Conversation, Message, MessageRole, Provider, Metadata};
+use chrono::Utc;
+
+// Create a new conversation
+let mut conversation = Conversation::new(
+    "conv-123".into(),
+    "Rust Ownership Questions".into(),
+    Provider::Claude,
+);
+
+// Add a user message
+let user_msg = Message {
+    id: "msg-1".into(),
+    conversation_id: "conv-123".into(),
+    role: MessageRole::User,
+    content: "What is ownership in Rust?".into(),
+    timestamp: Utc::now(),
+    metadata: Metadata::new(),
+};
+conversation.add_message(user_msg);
+
+// Add an assistant response
+let assistant_msg = Message {
+    id: "msg-2".into(),
+    conversation_id: "conv-123".into(),
+    role: MessageRole::Assistant,
+    content: "Ownership is Rust's memory management system...".into(),
+    timestamp: Utc::now(),
+    metadata: Metadata::new(),
+};
+conversation.add_message(assistant_msg);
+
+println!("Messages: {}", conversation.message_count()); // 2
+----
+
+=== Implementing a Custom Provider
+
+[source,rust]
+----
+use llm_unify_core::{ProviderTrait, Conversation, Result, Error};
+
+struct LocalLlamaProvider;
+
+impl ProviderTrait for LocalLlamaProvider {
+    fn parse(&self, data: &[u8]) -> Result<Vec<Conversation>> {
+        // Parse your provider's export format
+        let json: serde_json::Value = serde_json::from_slice(data)?;
+        // Transform to Conversation structs...
+        Ok(vec![])
+    }
+
+    fn name(&self) -> &'static str {
+        "local-llama"
+    }
+
+    fn validate(&self, conversation: &Conversation) -> Result<()> {
+        if conversation.messages.is_empty() {
+            return Err(Error::InvalidConversation(
+                "Conversation must have at least one message".into()
+            ));
+        }
+        Ok(())
+    }
+}
+----
+
+=== JSON Serialization
+
+[source,rust]
+----
+use llm_unify_core::{Conversation, Provider};
+
+let conversation = Conversation::new(
+    "conv-1".into(),
+    "Test".into(),
+    Provider::ChatGpt,
+);
+
+// Serialize to JSON
+let json = serde_json::to_string_pretty(&conversation)?;
+
+// Deserialize from JSON
+let loaded: Conversation = serde_json::from_str(&json)?;
+----
+
+=== Using Metadata
+
+[source,rust]
+----
+use llm_unify_core::Metadata;
+use serde_json::json;
+
+let mut metadata = Metadata::new();
+
+// Store arbitrary data
+metadata.insert("model".into(), json!("gpt-4"));
+metadata.insert("temperature".into(), json!(0.7));
+metadata.insert("tokens_used".into(), json!(1500));
+
+// Retrieve data
+if let Some(model) = metadata.get("model") {
+    println!("Model: {}", model);
+}
+----
+
+== Dependencies
+
+[cols="1,1,2"]
+|===
+|Crate |Version |Purpose
+
+|`serde`
+|1.0
+|Serialization/deserialization with derive macros
+
+|`serde_json`
+|1.0
+|JSON support for Metadata and interchange
+
+|`chrono`
+|0.4
+|Timestamp handling with serde integration
+
+|`thiserror`
+|2.0
+|Ergonomic error type definitions
+
+|`anyhow`
+|1.0
+|Error context and propagation
+|===
+
+== Related Projects
+
+* https://github.com/hyperpolymath/llm-unify[llm-unify] - Full application using this library
+
+== License
+
+Dual licensed under MIT OR PMPL-1.0-or-later.
+
+See link:LICENSE.txt[LICENSE.txt] for details including the Palimpsest Philosophical Overlay.

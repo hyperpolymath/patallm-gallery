@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# AI Policy Declaration for LLM Unify
+# Generated from .config/well-known.scm
+
+Name: LLM Unify
+Description: Local-first LLM conversation management tool
+AI-Usage: This project uses AI-assisted development
+Training-Opt-Out: true
+Scraping-Policy: See robots.txt
+Data-Retention: local-only
+
+# This project consolidates LLM conversation history locally.
+# No user data is transmitted to external services.
+# All processing happens on the user's machine.

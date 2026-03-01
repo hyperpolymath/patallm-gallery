@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+[package]
+name = "did-you-actually-do-that-fuzz"
+version = "0.0.0"
+authors = ["Automatically generated"]
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+arbitrary = { version = "1", features = ["derive"] }
+serde_json = "1.0"
+
+[dependencies.did-you-actually-do-that]
+path = ".."
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "fuzz_claim_parsing"
+path = "fuzz_targets/fuzz_claim_parsing.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_evidence_spec"
+path = "fuzz_targets/fuzz_evidence_spec.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_hook_input"
+path = "fuzz_targets/fuzz_hook_input.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_claim_extractor"
+path = "fuzz_targets/fuzz_claim_extractor.rs"
+test = false
+doc = false
+bench = false

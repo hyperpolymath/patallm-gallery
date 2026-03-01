@@ -189,3 +189,8 @@ Support this project:
 * https://github.com/sponsors/hyperpolymath[GitHub Sponsors]
 * https://ko-fi.com/hyperpolymath[Ko-fi]
 * https://liberapay.com/hyperpolymath[Liberapay]
+
+
+== Architecture
+
+See link:TOPOLOGY.md[TOPOLOGY.md] for a visual architecture map and completion dashboard.

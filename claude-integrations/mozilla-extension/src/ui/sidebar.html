@@ -1,0 +1,112 @@
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude</title>
+  <link rel="stylesheet" href="sidebar.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Setup Screen -->
+    <div id="setup-screen" class="screen">
+      <div class="logo">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="22" fill="#D97757" />
+          <path d="M16 20C16 17.7909 17.7909 16 20 16H28C30.2091 16 32 17.7909 32 20V28C32 30.2091 30.2091 32 28 32H20C17.7909 32 16 30.2091 16 28V20Z" fill="white"/>
+        </svg>
+      </div>
+      <h1>Claude for Mozilla</h1>
+      <p>Enter your Anthropic API key to get started</p>
+      <form id="api-key-form">
+        <input type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off" required>
+        <button type="submit">Save & Continue</button>
+      </form>
+      <p class="hint">Get your API key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chat-screen" class="screen hidden">
+      <header>
+        <button id="new-chat-btn" title="New conversation">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
+          </svg>
+        </button>
+        <select id="model-select">
+          <option value="claude-sonnet-4-20250514">Sonnet 4</option>
+          <option value="claude-opus-4-20250514">Opus 4</option>
+          <option value="claude-haiku-3-5-20241022">Haiku 3.5</option>
+        </select>
+        <button id="settings-btn" title="Settings">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </header>
+
+      <div id="messages"></div>
+
+      <div id="context-bar" class="hidden">
+        <span id="context-text"></span>
+        <button id="clear-context">×</button>
+      </div>
+
+      <form id="chat-form">
+        <div class="input-wrapper">
+          <textarea id="message-input" placeholder="Message Claude..." rows="1"></textarea>
+          <button type="submit" id="send-btn" title="Send">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+            </svg>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="settings-screen" class="screen hidden">
+      <header>
+        <button id="back-btn">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+        <h2>Settings</h2>
+      </header>
+
+      <div class="settings-content">
+        <div class="setting-group">
+          <label for="settings-api-key">API Key</label>
+          <input type="password" id="settings-api-key" placeholder="sk-ant-...">
+          <button id="save-api-key">Update</button>
+        </div>
+
+        <div class="setting-group">
+          <label for="system-prompt">System Prompt</label>
+          <textarea id="system-prompt" placeholder="Custom instructions for Claude..." rows="4"></textarea>
+        </div>
+
+        <div class="setting-group">
+          <label>
+            <input type="checkbox" id="streaming-toggle" checked>
+            Enable streaming responses
+          </label>
+        </div>
+
+        <div class="setting-group">
+          <label for="max-tokens">Max Tokens</label>
+          <input type="number" id="max-tokens" value="4096" min="1" max="100000">
+        </div>
+
+        <button id="clear-data" class="danger">Clear All Data</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../core/api.js"></script>
+  <script src="../core/storage.js"></script>
+  <script src="sidebar.js"></script>
+</body>
+</html>

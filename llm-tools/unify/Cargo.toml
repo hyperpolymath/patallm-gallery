@@ -1,0 +1,53 @@
+[workspace]
+members = [
+    "crates/llm-unify-core",
+    "crates/llm-unify-storage",
+    "crates/llm-unify-parser",
+    "crates/llm-unify-search",
+    "crates/llm-unify-cli",
+    "crates/llm-unify-tui",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+authors = ["LLM Unify Contributors"]
+repository = "https://github.com/Hyperpolymath/llm-unify"
+homepage = "https://github.com/Hyperpolymath/llm-unify"
+
+[workspace.dependencies]
+# Core dependencies
+anyhow = "1.0"
+thiserror = "2.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+sha2 = "0.10"
+uuid = { version = "1.6", features = ["v4"] }
+
+# Storage
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite"] }
+tokio = { version = "1.49", features = ["full"] }
+
+# CLI
+clap = { version = "4.4", features = ["derive", "cargo"] }
+
+# TUI
+ratatui = "0.30"
+crossterm = "0.29"
+
+# Internal crates
+llm-unify-core = { path = "crates/llm-unify-core" }
+llm-unify-storage = { path = "crates/llm-unify-storage" }
+llm-unify-parser = { path = "crates/llm-unify-parser" }
+llm-unify-search = { path = "crates/llm-unify-search" }
+llm-unify-cli = { path = "crates/llm-unify-cli" }
+llm-unify-tui = { path = "crates/llm-unify-tui" }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true

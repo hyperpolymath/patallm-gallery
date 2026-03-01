@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "Claude for Gecko",
+  "version": "0.1.0",
+  "description": "Unofficial Claude AI assistant for Firefox and Gecko-based browsers",
+  "author": "hyperpolymath",
+  "homepage_url": "https://github.com/hyperpolymath/claude-gecko-browser-extension",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "claude-gecko@hyperpolymath.dev",
+      "strict_min_version": "115.0"
+    }
+  },
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus"
+  ],
+
+  "host_permissions": [
+    "https://api.anthropic.com/*"
+  ],
+
+  "action": {
+    "default_icon": {
+      "16": "src/icons/icon-16.png",
+      "32": "src/icons/icon-32.png",
+      "48": "src/icons/icon-48.png",
+      "128": "src/icons/icon-128.png"
+    },
+    "default_title": "Claude for Gecko",
+    "default_popup": "src/popup/popup.html"
+  },
+
+  "background": {
+    "scripts": ["src/background/background.js"],
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/content.js"],
+      "css": ["src/content/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "options_ui": {
+    "page": "src/popup/options.html",
+    "open_in_tab": true
+  },
+
+  "icons": {
+    "16": "src/icons/icon-16.png",
+    "32": "src/icons/icon-32.png",
+    "48": "src/icons/icon-48.png",
+    "128": "src/icons/icon-128.png"
+  }
+}

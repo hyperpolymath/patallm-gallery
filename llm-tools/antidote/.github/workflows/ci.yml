@@ -1,0 +1,190 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Validate Python files
+        run: |
+          python -m py_compile tools/*.py tests/*.py
+          echo "✅ All Python files valid"
+
+      - name: Check Scheme files exist
+        run: |
+          find artifacts -name "*.scm" -type f
+          echo "✅ Scheme artifacts present"
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: List tests
+        run: |
+          python tests/test_suite.py list
+          echo "✅ Test suite loaded"
+
+      - name: Export test suite
+        run: |
+          python tests/test_suite.py export test_suite.json
+          cat test_suite.json
+          echo "✅ Test suite exported"
+
+  rsr-compliance:
+    name: RSR Compliance Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Check RSR compliance
+        run: |
+          python tools/rsr-compliance.py --verbose
+
+      - name: Generate compliance report
+        run: |
+          python tools/rsr-compliance.py --report > RSR_COMPLIANCE.md
+          cat RSR_COMPLIANCE.md
+
+      - name: Upload compliance report
+        uses: actions/upload-artifact@v3
+        with:
+          name: rsr-compliance-report
+          path: RSR_COMPLIANCE.md
+
+  documentation:
+    name: Check Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Verify required docs
+        run: |
+          for file in README.md LICENSE CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md MAINTAINERS.md CHANGELOG.md; do
+            if [ -f "$file" ]; then
+              echo "✅ $file exists"
+            else
+              echo "❌ $file missing"
+              exit 1
+            fi
+          done
+
+      - name: Verify .well-known directory
+        run: |
+          for file in .well-known/security.txt .well-known/ai.txt .well-known/humans.txt; do
+            if [ -f "$file" ]; then
+              echo "✅ $file exists"
+            else
+              echo "⚠️ $file missing (optional)"
+            fi
+          done
+
+      - name: Check security.txt validity
+        run: |
+          if [ -f ".well-known/security.txt" ]; then
+            grep -q "Contact:" .well-known/security.txt && echo "✅ Contact field present"
+            grep -q "Expires:" .well-known/security.txt && echo "✅ Expires field present"
+          fi
+
+  artifacts:
+    name: Validate Artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Count artifacts
+        run: |
+          echo "Reset artifacts:"
+          find artifacts -type f | wc -l
+
+          echo ""
+          echo "Tools:"
+          find tools -name "*.py" | wc -l
+
+          echo ""
+          echo "Examples:"
+          find examples -name "*.md" | wc -l
+
+      - name: Validate artifact structure
+        run: |
+          python tools/llm-cli.py list
+
+  statistics:
+    name: Repository Statistics
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Count lines of code
+        run: |
+          echo "Python:"
+          find tools tests -name "*.py" | xargs wc -l | tail -1
+
+          echo ""
+          echo "Scheme:"
+          find artifacts -name "*.scm" | xargs wc -l | tail -1
+
+          echo ""
+          echo "JavaScript:"
+          find artifacts -name "*.js" | xargs wc -l | tail -1
+
+          echo ""
+          echo "Documentation:"
+          find . -name "*.md" | xargs wc -l | tail -1
+
+  security:
+    name: Security Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check for secrets in code
+        run: |
+          # Basic check for common secret patterns
+          ! grep -r "sk_live_" artifacts/ tools/ || (echo "❌ Found potential secret" && exit 1)
+          ! grep -r "api_key.*=" artifacts/ tools/ || (echo "⚠️ Found API key pattern" && exit 0)
+          echo "✅ No obvious secrets found"
+
+      - name: Verify SECURITY.md
+        run: |
+          if [ -f "SECURITY.md" ]; then
+            grep -q "security" SECURITY.md && echo "✅ SECURITY.md contains security information"
+          fi

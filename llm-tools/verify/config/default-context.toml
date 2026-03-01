@@ -1,0 +1,122 @@
+# Claude Context Configuration
+# ============================
+#
+# This file configures how claude-verify interacts with your project.
+# Place this file in your project root as `.claude-context.toml`.
+#
+# Claude will read this file (when using claude-verify) to understand:
+# - What language(s) your project uses
+# - What safety level is required
+# - Known issues to avoid
+# - What verification checks are mandatory
+# - Paths to formal specifications
+
+[project]
+# Project name (used in reports and feedback tracking)
+name = "my-project"
+
+# Languages used in this project
+# Supported: rust, haskell, ada, elixir, ocaml
+languages = ["rust"]
+
+# Safety level determines default verification rigor
+# - low: Just compilation and basic lints
+# - standard: Plus type checking and tests
+# - high: Plus static analysis and security audits
+# - critical: Plus formal verification with multiple provers
+safety_level = "standard"
+
+[known_issues]
+# Things Claude has gotten wrong before on THIS project.
+# These get injected into Claude's context to prevent repeat mistakes.
+#
+# Format: Simple strings describing the issue and guidance
+items = [
+    # Example entries (uncomment and modify as needed):
+    # "Off-by-one in pagination - always use Range not manual arithmetic",
+    # "This project uses no_std - don't assume alloc is available",
+    # "DateTime handling must use chrono with explicit timezone, never NaiveDateTime",
+    # "The Vec::remove method panics if index >= len - always bounds check first",
+]
+
+[verification]
+# Checks that MUST pass before Claude says "done"
+required = [
+    "compile",   # Code must compile without errors
+    "lint",      # Linter (clippy, hlint, etc.) must pass
+    "test",      # Test suite must pass
+]
+
+# Checks that are nice-to-have but not blocking
+optional = [
+    "audit",     # Security audit (cargo-audit, npm audit)
+    "doc",       # Documentation builds without warnings
+    "miri",      # Miri undefined behavior detection (Rust)
+    "dialyzer",  # Dialyzer type checking (Elixir)
+]
+
+[formal_specs]
+# Paths to formal specifications that code should conform to.
+# claude-verify will check these with appropriate provers.
+
+# TLA+ specifications (checked with TLC)
+tla_plus = [
+    # "specs/consensus.tla",
+    # "specs/state_machine.tla",
+]
+
+# Alloy specifications (checked with Alloy Analyzer)
+alloy = [
+    # "specs/access_control.als",
+    # "specs/data_model.als",
+]
+
+# Lean 4 specifications (checked with Lean)
+lean = [
+    # "specs/invariants.lean",
+]
+
+# Coq specifications (checked with Coq)
+coq = [
+    # "specs/proofs.v",
+]
+
+[echidna]
+# ECHIDNA-specific configuration
+
+# Default provers to use (in order of preference)
+# Available: z3, cvc5, lean4, coq, agda, isabelle, hollight, mizar, vampire, eprover, tlc, alloy
+default_provers = ["z3", "cvc5"]
+
+# Timeout per prover in milliseconds
+timeout_ms = 30000
+
+# Portfolio strategy
+# - sequential: Try provers one at a time
+# - parallel: Run N provers in parallel
+# - racing: First success wins
+# - voting: Require N provers to agree
+# - cascade: Try fast provers first, escalate to thorough
+strategy = "cascade"
+
+# Enable neurosymbolic assessment (DeepProbLog + OpenCyc)
+neurosymbolic = true
+
+[feedback]
+# Feedback loop configuration
+
+# Store feedback locally (always true, required for operation)
+store_local = true
+
+# Path to local feedback database (default: ~/.claude-verify/feedback.db)
+# database_path = "~/.claude-verify/feedback.db"
+
+# Automatically inject recent feedback into Claude sessions
+inject_recent = true
+
+# Number of recent feedback items to inject
+inject_limit = 10
+
+# Share anonymized feedback with Anthropic for model improvement
+# This requires explicit opt-in for each project
+share_with_anthropic = false

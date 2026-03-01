@@ -1,0 +1,179 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Plan of Action: Attestation Chain + Verification Philosophy
+:author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+:date: 2026-03-01
+:toc:
+
+== Status Summary
+
+=== What Exists (Code — Implemented but Uncommitted)
+
+All 5 phases of the attestation chain have been implemented across both repos:
+
+**panic-attacker** (attestation core):
+
+- `src/attestation/mod.rs` — Module declarations
+- `src/attestation/intent.rs` — Pre-execution commitment
+- `src/attestation/evidence.rs` — Rolling hash accumulator
+- `src/attestation/seal.rs` — Post-execution binding
+- `src/attestation/envelope.rs` — A2ML envelope wrapper
+- `src/attestation/chain.rs` — Three-phase orchestrator (heavily annotated, INV-11)
+
+**did-you-actually-do-that** (consumption + verification):
+
+- `src/verifiers/attestation.rs` — Rust runtime verifier (Layer 12)
+- `src/abi/Attestation.idr` — Idris2 dependent type proofs
+- `dyadt_brain/lib/dyadt_brain/attestation.ex` — Elixir brain module
+- `contractiles/trust/PanicAttackTrustfile.hs` — 7-step Haskell verifier
+- `contractiles/trust/blueprint.a2ml` — Full specification (12 invariants, 4 hash layers, 10 limits)
+- `contractiles/k9/panic-attack-report.k9.ncl` — Kennel tier
+- `contractiles/k9/panic-attack-attested.k9.ncl` — Yard tier
+- `contractiles/k9/panic-attack-verified.k9.ncl` — Hunt tier
+
+=== What Exists (Documentation — Created This Session)
+
+- `docs/design/DESIGN-2026-03-01-verification-philosophy.adoc` — Master design document
+- `docs/CLADISTIC-TAXONOMY.adoc` — 5-phylum LLM failure classification
+- `docs/VERISIMDB-CODE-IDENTITY.adoc` — Octad model for code identity
+- `docs/AOP-CONTRACTILE-MAPPING.adoc` — Contractiles as AOP
+- `docs/LISP-META-LAYER.adoc` — Why Guile Scheme for the meta-layer
+- `contractiles/anti/README.adoc` — Antifile specification
+
+== Action Items
+
+=== Priority 1: Commit the Implementation (Blocked)
+
+Both repos have mixed changes from multiple sessions. The attestation
+code is interleaved with unrelated changes in files like `main.rs`,
+`lib.rs`, `analyzer.rs`, and `storage/mod.rs`.
+
+**Required steps**:
+
+1. **panic-attacker**: Use interactive staging (`git add -p`) to separate
+   attestation-only changes from other changes. The `src/attestation/`
+   directory is clean (entirely new files), but modified files in `src/`
+   root have mixed changes.
+
+2. **did-you-actually-do-that**: Similarly separate attestation changes
+   from pre-existing modifications.
+
+3. Commit attestation code in sequence:
+   a. panic-attacker attestation core (Phase 1)
+   b. K9 contractiles (Phase 2)
+   c. DYADT Rust verifier + EvidenceSpec (Phase 3)
+   d. DYADT Elixir brain module (Phase 4)
+   e. Trustfile + Idris2 ABI proofs (Phase 5)
+
+4. Commit documentation separately:
+   f. blueprint.a2ml + chain.rs annotations
+   g. Design documents (this session's docs/)
+   h. Antifile contractile
+
+**Human action needed**: Interactive staging requires human-driven
+`git add -p` because the AI tool cannot use interactive commands.
+
+=== Priority 2: Wire VerisimDB Integration
+
+The design documents describe how VerisimDB's octad model stores code
+identity and antipattern catalogs. This needs implementation:
+
+1. Define the octad schema for code identity entries
+2. Define the octad schema for antipattern catalog entries
+3. Create a DYADT → VerisimDB bridge (probably via the Elixir brain,
+   since VerisimDB has an API)
+4. Implement cross-modal query functions for the detection queries
+   described in `VERISIMDB-CODE-IDENTITY.adoc`
+
+**Dependency**: VerisimDB API must be stable enough to integrate against.
+Check current status of VerisimDB in `nextgen-databases/verisimdb/`.
+
+=== Priority 3: Implement the Antifile System
+
+Currently only the specification exists (`contractiles/anti/README.adoc`).
+Implementation requires:
+
+1. Create `contractiles/anti/Antifile.a2ml` with initial pattern catalog
+2. Integrate with panic-attack's `assail` scan (custom pattern support)
+3. Create K9 contractiles for Antifile validation (kennel/yard/hunt)
+4. Wire into VerisimDB for vector similarity search
+5. Add temporal forensic queries (burst coding detection)
+
+=== Priority 4: Build the Guile Meta-Layer
+
+Currently only the rationale document exists (`docs/LISP-META-LAYER.adoc`).
+Implementation requires:
+
+1. Create `meta/` directory with initial Guile Scheme files
+2. Express the 12 invariants as evaluable s-expressions
+3. Connect miniKanren relational queries to VerisimDB cross-modal queries
+4. Wire into the existing Rust engine via Zig FFI → C FFI → Guile C API
+
+**This is the longest-term item.** The Guile meta-layer adds reflective
+capability but is not required for the core verification pipeline to function.
+
+=== Priority 5: Resolve Known Gaps
+
+1. **Ed25519 stub** (`attestation.rs:285`): The `ed25519-dalek` integration
+   is stubbed behind the `signing` feature flag. Complete the implementation.
+
+2. **Hash layer tooling**: The blueprint describes 4 hash layers but no
+   tooling exists to compute them. Create a `just verify-blueprint` recipe
+   that computes Layer 0-3 hashes.
+
+3. **CI/CD**: Neither repo has GitHub Actions workflows for the attestation
+   system. Add:
+   - `cargo test` for attestation modules
+   - `idris2 --check` for ABI proofs
+   - K9 validation run
+   - Trustfile execution
+
+4. **Update STATE.scm and ECOSYSTEM.scm**: Both need updating to reflect
+   the attestation chain, VerisimDB integration plans, and new documentation.
+
+== Open Questions for Tomorrow
+
+1. **VerisimDB identity question**: You asked whether 8 modalities truly
+   capture code identity or just store 8 separate things next to each other.
+   The answer is in `VERISIMDB-CODE-IDENTITY.adoc` — identity emerges from
+   cross-modal *queries*, not from storage. But this needs further
+   discussion about whether the cross-modal query language is expressive
+   enough.
+
+2. **Antifile scope**: How many initial patterns should the Antifile contain?
+   Start with the 8 structural + 7 forensic patterns listed in the README,
+   or be more comprehensive?
+
+3. **Guile integration depth**: Should the meta-layer be a separate process
+   that DYADT calls, or embedded via FFI? Separate process is simpler;
+   embedded is faster.
+
+4. **Blueprint self-hashing**: Should `blueprint.a2ml` contain its own
+   Layer 0 hash (which would need updating every time the file changes)?
+   Or should the hash live in a separate sidecar?
+
+== Document Map
+
+For reference, here is how all the documentation fits together:
+
+[source,text]
+----
+docs/
+├── design/
+│   ├── DESIGN-2026-03-01-verification-philosophy.adoc  ← Master doc (start here)
+│   └── PLAN-OF-ACTION-2026-03-01.adoc                  ← This file
+├── CLADISTIC-TAXONOMY.adoc                              ← LLM failure classification
+├── VERISIMDB-CODE-IDENTITY.adoc                         ← Code identity via octad
+├── AOP-CONTRACTILE-MAPPING.adoc                         ← Contractiles as AOP
+├── LISP-META-LAYER.adoc                                 ← Guile Scheme rationale
+├── LLM-PROCRASTINATION-PATTERNS.adoc                    ← Pre-existing (2026-02-09)
+└── CITATIONS.adoc                                       ← Academic references
+
+contractiles/
+├── trust/blueprint.a2ml                                 ← Formal specification
+├── anti/README.adoc                                     ← Antifile spec (NEW)
+└── k9/                                                  ← K9 enforcement tiers
+----
+
+The master document (`DESIGN-2026-03-01-verification-philosophy.adoc`)
+references all others and provides the narrative thread connecting them.
+Start there and follow the references.

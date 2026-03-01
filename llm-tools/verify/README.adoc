@@ -1,0 +1,215 @@
+= LLM-verify
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+Real verification for LLM-generated code via ECHIDNA integration.
+
+== The Problem
+
+When Claude "validates" code, it's doing pattern matching against training data:
+
+| What It Looks Like | What's Actually Happening |
+|-------------------|---------------------------|
+| "This code is correct" | High confidence from patterns |
+| "I notice this bug" | Pattern recognition |
+| "The types match" | Internalised grammar patterns |
+| "This compiles" | Syntax familiarity prediction |
+
+*Claude is not running:*
+- Pratt parsers
+- SMT solvers
+- Model checkers
+- Theorem provers
+- Type inference algorithms
+
+Claude makes educated guesses. It's often right, but can and does make mistakes.
+
+== The Solution
+
+`claude-verify` provides *actual* verification by integrating with [ECHIDNA](https://github.com/Hyperpolymath/echidna), a neurosymbolic theorem proving platform that provides access to 12 provers:
+
+- *SMT Solvers*: Z3, CVC5
+- *Theorem Provers*: Lean 4, Coq, Agda, Isabelle, HOL Light, Mizar
+- *First-Order ATP*: Vampire, E
+- *Model Checkers*: TLC (TLA+), Alloy Analyzer
+
+Plus neurosymbolic integration via DeepProbLog and OpenCyc.
+
+== Quick Start
+
+```bash
+= Install (requires GHC 9.4+)
+
+cabal install claude-verify
+
+= Initialize project configuration
+
+claude-verify init
+
+= Verify files
+
+claude-verify verify src/*.rs
+
+= Record feedback when Claude is wrong
+
+claude-verify feedback record \
+    --output "for i in 0..=n" \
+    --issue "Off-by-one: should be 0..n" \
+    --correction "for i in 0..n"
+
+= View known issues
+
+claude-verify feedback list
+```
+
+== Configuration
+
+Create `.claude-context.toml` in your project root:
+
+```toml
+[project]
+name = "my-project"
+languages = ["rust"]
+safety_level = "high"
+
+[known_issues]
+items = [
+    "Off-by-one in pagination - use exclusive upper bounds",
+    "This project uses no_std - don't assume alloc",
+]
+
+[verification]
+required = ["compile", "clippy", "test"]
+optional = ["miri", "audit"]
+
+[formal_specs]
+tla_plus = ["specs/consensus.tla"]
+lean = ["specs/invariants.lean"]
+```
+
+== Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                  │
+│   Claude Output (probabilistic)                                  │
+│         │                                                        │
+│         ▼                                                        │
+│   ┌─────────────────┐                                            │
+│   │  claude-verify  │  Haskell orchestrator                      │
+│   │                 │  - Multi-language parsing                  │
+│   │                 │  - VC extraction                           │
+│   │                 │  - Feedback capture                        │
+│   └─────────────────┘                                            │
+│         │                                                        │
+│         ▼                                                        │
+│   ┌─────────────────┐                                            │
+│   │    ECHIDNA      │  Neurosymbolic platform                    │
+│   │                 │  - 12 theorem provers                      │
+│   │                 │  - DeepProbLog                             │
+│   │                 │  - OpenCyc                                 │
+│   └─────────────────┘                                            │
+│         │                                                        │
+│         ▼                                                        │
+│   ACTUAL VERIFICATION                                            │
+│         │                                                        │
+│         ▼                                                        │
+│   ┌─────────────────┐                                            │
+│   │    Feedback     │  For future sessions                       │
+│   │     Loop        │                                            │
+│   └─────────────────┘                                            │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+== Commands
+
+```
+claude-verify verify [FILES]     Verify with ECHIDNA provers
+claude-verify check [FILES]      Quick checks (no formal verification)
+claude-verify feedback record    Record a correction
+claude-verify feedback list      Show recent feedback
+claude-verify feedback export    Export for session injection
+claude-verify init               Create .claude-context.toml
+claude-verify stats              Show verification statistics
+```
+
+== Pre-commit Hook
+
+```bash
+#!/bin/bash
+= .git/hooks/pre-commit
+
+claude-verify check --staged --fail-on-error
+```
+
+== CI/CD Integration
+
+```yaml
+= .github/workflows/verify.yml
+
+- uses: hyperpolymath/claude-verify-action@v1
+  with:
+    echidna-version: 'latest'
+    fail-on: ['counterexample', 'error']
+```
+
+== Feedback Loop
+
+The key innovation is the *feedback loop*: when verification fails or a user corrects Claude, the issue is captured with full provenance and injected into future sessions.
+
+```
+User corrects Claude → Feedback captured → Stored in DB
+                                              ↓
+Next Claude session ← Known issues injected ←┘
+```
+
+See [docs/feedback-loop-spec.md](docs/feedback-loop-spec.md) for details.
+
+== Building from Source
+
+Requires:
+- GHC 9.4+
+- cabal-install 3.8+
+- Z3 (optional, for local SMT solving)
+
+```bash
+git clone https://github.com/Hyperpolymath/llm-verify
+cd llm-verify
+cabal build
+cabal test
+cabal install
+```
+
+Or with just:
+```bash
+just build
+just test
+just install
+```
+
+== Related Projects
+
+- [ECHIDNA](https://github.com/Hyperpolymath/echidna) - The neurosymbolic theorem proving platform
+- [Echomesh](https://github.com/Hyperpolymath/echomesh) - Cross-session context persistence
+
+== License
+
+MIT
+
+== What This Doesn't Do
+
+- Make Claude actually understand code (still pattern matching)
+- Guarantee absence of all bugs (verification is incomplete)
+- Replace human review (humans understand requirements)
+- Verify arbitrary properties (needs specifications)
+
+== What This Does
+
+- Provide actual verification instead of guessing
+- Capture and persist correction feedback
+- Integrate real provers (Z3, CVC5, Lean, etc.)
+- Give confidence levels with evidence
+- Enable learning from mistakes

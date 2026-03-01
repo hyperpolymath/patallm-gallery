@@ -1,0 +1,42 @@
+; SPDX-License-Identifier: PMPL-1.0-or-later
+; SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+;
+; AI Manifest for claude-integrations
+; Universal entry point for all AI agents.
+
+(ai-manifest
+  (version "1.0")
+  (name "claude-integrations")
+  (description "Unified monorepo for all Claude browser and service integrations")
+  (author "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>")
+  (license "PMPL-1.0-or-later")
+
+  (canonical-locations
+    (scm-files ".machine_readable/")
+    (license "LICENSE")
+    (readme "README.adoc")
+    (build "justfile"))
+
+  (critical-invariants
+    (rule "SCM files ONLY in .machine_readable/ - NEVER in repository root")
+    (rule "License is PMPL-1.0-or-later")
+    (rule "Each component directory is self-contained with its own README")
+    (rule "No TypeScript - use ReScript or Deno JavaScript")
+    (rule "No npm/bun - use Deno where JS runtime needed"))
+
+  (structure
+    (component "firefox-lsp" "LSP for Firefox via Marionette" "Elixir")
+    (component "firefox-mcp" "MCP server for Firefox control" "Deno")
+    (component "gecko-browser-extension" "Gecko browser extension" "JavaScript")
+    (component "gitlab-bridge" "GitLab integration bridge" "ReScript")
+    (component "mozilla-extension" "Mozilla products extension" "JavaScript"))
+
+  (lifecycle
+    (on-enter
+      (read "AI.a2ml")
+      (read ".machine_readable/STATE.scm")
+      (read ".machine_readable/META.scm")
+      (read ".machine_readable/ECOSYSTEM.scm")
+      (acknowledge "This is a monorepo - identify which component is relevant"))
+    (on-exit
+      (update ".machine_readable/STATE.scm" "if tasks completed"))))

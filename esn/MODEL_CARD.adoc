@@ -1,0 +1,466 @@
+// SPDX-FileCopyrightText: 2024 Jonathan D.A. Jewell
+// SPDX-License-Identifier: PMPL-1.0-or-later
+
+= ESN Model Card
+:author: Jonathan D.A. Jewell (hyperpolymath)
+:toc: macro
+:toclevels: 2
+:icons: font
+:sectanchors:
+
+A model card documenting the Echo State Network implementation, its intended uses, limitations, and data requirements.
+
+toc::[]
+
+== Model Details
+
+=== Overview
+
+[cols="1,3"]
+|===
+| Property | Value
+
+| *Model Name*
+| Echo State Network (ESN)
+
+| *Model Type*
+| Reservoir Computing / Recurrent Neural Network
+
+| *Version*
+| 0.1.0
+
+| *License*
+| MIT OR AGPL-3.0-or-later
+
+| *Repository*
+| https://github.com/hyperpolymath/esn
+
+| *Implementation Language*
+| Rust
+|===
+
+=== Architecture
+
+The ESN consists of three components:
+
+1. **Input Layer**: Linear projection from input space to reservoir
+2. **Reservoir**: Sparse, randomly connected recurrent network (fixed weights)
+3. **Readout Layer**: Linear projection from reservoir to output (trained weights)
+
+[source]
+----
+Input → [Input Weights] → Reservoir → [Trained Readout] → Output
+         (random, fixed)   (random,      (ridge regression)
+                            fixed)
+----
+
+=== Key Characteristics
+
+* **Training Method**: Ridge regression (closed-form solution)
+* **Trainable Parameters**: Output weights only
+* **Non-trainable Parameters**: Input weights, reservoir weights
+* **Computational Complexity**: O(n²) for reservoir, O(n³) for training
+* **Memory Requirement**: O(n²) where n = reservoir size
+
+== Intended Use
+
+=== Primary Use Cases
+
+[cols="1,3"]
+|===
+| Use Case | Description
+
+| *Time Series Prediction*
+| Forecasting future values from historical sequences (1-step or multi-step ahead)
+
+| *Sequence Classification*
+| Classifying temporal patterns (gesture recognition, activity detection)
+
+| *Anomaly Detection*
+| Learning normal patterns to detect deviations
+
+| *Chaotic System Modeling*
+| Capturing dynamics of complex systems (Lorenz, Mackey-Glass, etc.)
+
+| *Sensor Fusion*
+| Integrating multiple sensor streams with different temporal characteristics
+
+| *Signal Processing*
+| Filtering, denoising, and transforming temporal signals
+|===
+
+=== Out-of-Scope Uses
+
+* **Image classification** (no spatial structure handling)
+* **Natural language processing** (use transformers/LLMs instead)
+* **Real-time control with hard latency guarantees** (training is batch-only)
+* **Very long sequences** (>10,000 steps without hierarchical structure)
+
+== Dataset Expectations
+
+=== Input Data Format
+
+ESN expects temporal data in the following format:
+
+[source,rust]
+----
+// Single input: 1D array of f32 values
+let input: Array1<f32> = Array1::from_vec(vec![0.1, 0.2, 0.3]);
+
+// Training inputs: Vector of 1D arrays (time series)
+let inputs: Vec<Array1<f32>> = vec![
+    Array1::from_vec(vec![0.1, 0.2]),  // t=0
+    Array1::from_vec(vec![0.3, 0.4]),  // t=1
+    Array1::from_vec(vec![0.5, 0.6]),  // t=2
+    // ...
+];
+
+// Training targets: Vector of 1D arrays (corresponding outputs)
+let targets: Vec<Array1<f32>> = vec![
+    Array1::from_vec(vec![0.2]),  // target for t=0
+    Array1::from_vec(vec![0.4]),  // target for t=1
+    Array1::from_vec(vec![0.6]),  // target for t=2
+    // ...
+];
+----
+
+=== Data Requirements
+
+[cols="1,1,3"]
+|===
+| Requirement | Recommended | Notes
+
+| *Data Type*
+| `f32`
+| Single-precision floating point
+
+| *Value Range*
+| [-1, 1] or [0, 1]
+| Normalize data before training for best results
+
+| *Minimum Samples*
+| 500+
+| More samples generally improve generalization
+
+| *Sequence Length*
+| 100-10,000
+| Very long sequences may require hierarchical ESN
+
+| *Washout Period*
+| 50-200 samples
+| Discard initial transients; ~10% of training data
+
+| *Input Dimensions*
+| 1-100
+| Higher dimensions require larger reservoirs
+|===
+
+=== Data Preprocessing
+
+==== Required Steps
+
+1. **Handle Missing Values**: Interpolate or forward-fill gaps
+2. **Convert to f32**: All inputs must be single-precision floats
+3. **Normalize**: Scale to [-1, 1] or [0, 1] range
+
+==== Recommended Steps
+
+1. **Detrend**: Remove linear trends for stationary modeling
+2. **Standardize**: Zero mean, unit variance normalization
+3. **Smooth**: Optional low-pass filtering for noisy data
+
+==== Example Preprocessing
+
+[source,rust]
+----
+/// Normalize data to zero mean and unit variance
+fn normalize(data: &[f64]) -> (Vec<f64>, f64, f64) {
+    let mean: f64 = data.iter().sum::<f64>() / data.len() as f64;
+    let variance: f64 = data.iter()
+        .map(|x| (x - mean).powi(2))
+        .sum::<f64>() / data.len() as f64;
+    let std_dev = variance.sqrt();
+
+    let normalized: Vec<f64> = data.iter()
+        .map(|x| (x - mean) / std_dev)
+        .collect();
+
+    (normalized, mean, std_dev)
+}
+
+// To denormalize predictions:
+// prediction_original = prediction_normalized * std_dev + mean
+----
+
+=== Train/Test Split
+
+[cols="1,1,3"]
+|===
+| Split | Ratio | Purpose
+
+| *Training*
+| 60-80%
+| Fit readout weights
+
+| *Validation*
+| 0-20%
+| Hyperparameter tuning (optional)
+
+| *Test*
+| 20-40%
+| Final evaluation
+|===
+
+IMPORTANT: For time series, splits must be **temporal** (not random). Training data comes before test data chronologically.
+
+=== Benchmark Datasets
+
+The following datasets are commonly used to evaluate ESN performance:
+
+[cols="1,1,2,1"]
+|===
+| Dataset | Type | Description | Typical NRMSE
+
+| *Mackey-Glass*
+| Chaotic
+| Delayed differential equation, τ=17
+| 0.01-0.05
+
+| *Lorenz System*
+| Chaotic
+| 3D chaotic attractor
+| 0.02-0.10
+
+| *NARMA-10*
+| Nonlinear
+| 10th-order nonlinear autoregressive
+| 0.10-0.20
+
+| *Santa Fe Laser*
+| Real-world
+| Laser intensity time series
+| 0.05-0.15
+
+| *Sunspot*
+| Real-world
+| Monthly sunspot numbers
+| 0.10-0.30
+|===
+
+== Training Procedure
+
+=== Algorithm
+
+1. **Initialization**: Random sparse reservoir and input weights
+2. **Warm-up (Washout)**: Run reservoir on initial samples, discard states
+3. **State Collection**: Record reservoir states for remaining samples
+4. **Ridge Regression**: Compute output weights via closed-form solution
+
+=== Hyperparameters
+
+[cols="2,1,1,3"]
+|===
+| Parameter | Range | Default | Tuning Guidance
+
+| `reservoir_size`
+| 100-2000
+| 500
+| Larger = more capacity, slower training
+
+| `spectral_radius`
+| 0.5-0.99
+| 0.95
+| Higher = longer memory, risk of instability
+
+| `leaking_rate`
+| 0.1-1.0
+| 0.3
+| Lower = slower dynamics, longer memory
+
+| `input_scale`
+| 0.1-2.0
+| 0.5
+| Task-dependent; affects nonlinearity
+
+| `sparsity`
+| 0.8-0.99
+| 0.9
+| Higher = faster computation, less capacity
+
+| `ridge_param`
+| 1e-8 to 1e-2
+| 1e-6
+| Higher = more regularization, less overfitting
+
+| `noise_level`
+| 0 to 1e-2
+| 1e-4
+| Small noise can improve robustness
+
+| `washout`
+| 50-500
+| 100
+| Longer for slow dynamics
+|===
+
+=== Training Time
+
+Approximate training times on modern hardware (single-threaded):
+
+[cols="1,1,1"]
+|===
+| Reservoir Size | 1000 Samples | 10000 Samples
+
+| 100 neurons
+| <10 ms
+| ~50 ms
+
+| 500 neurons
+| ~100 ms
+| ~500 ms
+
+| 1000 neurons
+| ~500 ms
+| ~2 s
+
+| 2000 neurons
+| ~2 s
+| ~10 s
+|===
+
+== Evaluation
+
+=== Metrics
+
+[cols="1,2,2"]
+|===
+| Metric | Formula | Interpretation
+
+| *MSE*
+| mean((y - ŷ)²)
+| Lower is better; scale-dependent
+
+| *RMSE*
+| sqrt(MSE)
+| Same units as target
+
+| *NRMSE*
+| RMSE / std(y)
+| Normalized; <0.1 is excellent
+
+| *MAE*
+| mean(\|y - ŷ\|)
+| Robust to outliers
+
+| *R²*
+| 1 - MSE/Var(y)
+| 1.0 is perfect; can be negative
+|===
+
+=== Benchmark Results
+
+Performance on Mackey-Glass (τ=17) with default configuration:
+
+[cols="1,1"]
+|===
+| Metric | Value
+
+| Training MSE
+| ~1.7e-4
+
+| Test MSE
+| ~2.6e-4
+
+| Test NRMSE
+| ~0.016
+
+| Training Time
+| ~300 ms
+
+| Prediction Time
+| ~0.15 ms/sample
+|===
+
+Run the benchmark yourself:
+[source,bash]
+----
+cargo run --release --example benchmark
+----
+
+== Limitations
+
+=== Technical Limitations
+
+* **No online learning**: Readout weights trained in batch mode only
+* **Fixed reservoir**: Cannot adapt to distribution shift after training
+* **Linear readout**: May underfit highly nonlinear input-output mappings
+* **Memory bound**: Long-term dependencies limited by spectral radius
+* **No uncertainty quantification**: Point predictions only (no confidence intervals)
+
+=== Known Failure Modes
+
+1. **Spectral radius too high**: Reservoir becomes unstable, outputs diverge
+2. **Insufficient washout**: Transients contaminate training data
+3. **Overfitting**: Small datasets with large reservoirs need higher ridge parameter
+4. **Scale mismatch**: Unnormalized data causes poor performance
+5. **Non-stationary data**: Performance degrades on regime changes
+
+=== Mitigation Strategies
+
+* Use spectral radius ≤ 0.99 (default 0.95 is conservative)
+* Set washout to at least 10% of training samples
+* Increase `ridge_param` for small datasets
+* Always normalize inputs to [-1, 1] or [0, 1]
+* Retrain periodically for non-stationary applications
+
+== Ethical Considerations
+
+=== Appropriate Use
+
+ESN is a general-purpose time series model suitable for:
+
+* Scientific research and experimentation
+* Industrial monitoring and prediction
+* Educational purposes
+
+=== Risk Considerations
+
+* **Not for safety-critical decisions**: No uncertainty quantification
+* **Bias in data**: Model will reproduce biases present in training data
+* **Interpretability**: Reservoir states are not easily interpretable
+
+=== Environmental Impact
+
+* Low computational cost compared to deep learning alternatives
+* No GPU required for training or inference
+* Training is one-shot (no iterative optimization)
+
+== Citation
+
+If you use this implementation in research, please cite:
+
+[source,bibtex]
+----
+@software{esn_rust,
+  author = {Jewell, Jonathan D.A.},
+  title = {ESN: Echo State Networks in Rust},
+  year = {2024},
+  url = {https://github.com/hyperpolymath/esn}
+}
+----
+
+=== Original ESN References
+
+* Jaeger, H. (2001). "The echo state approach to analysing and training recurrent neural networks". GMD Report 148.
+* Lukoševičius, M. (2012). "A practical guide to applying echo state networks". Neural Networks: Tricks of the Trade.
+
+== Version History
+
+[cols="1,1,3"]
+|===
+| Version | Date | Changes
+
+| 0.1.0
+| 2024
+| Initial release with core ESN and hierarchical ESN
+|===

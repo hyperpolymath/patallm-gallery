@@ -1,0 +1,255 @@
+= Migration Guide: TypeScript to ReScript
+:toc:
+:toclevels: 3
+
+== Overview
+
+Claude GitLab Bridge has been migrated from TypeScript to ReScript, following the hyperpolymath language policy. This document explains the changes and how to use the new codebase.
+
+== What Changed
+
+=== Language Stack
+
+[cols="1,1,1"]
+|===
+|Component |Old |New
+
+|Language
+|TypeScript
+|ReScript
+
+|Runtime
+|Node.js
+|Deno
+
+|Package Manager
+|npm
+|Deno imports
+
+|Build Tool
+|tsc
+|rescript
+
+|Module System
+|CommonJS/ESM
+|ES6 modules
+|===
+
+=== Project Structure
+
+----
+src/
+├── Main.res              # Main entry point (was index.ts)
+├── auth/
+│   ├── Auth.res          # Auth module index
+│   ├── Types.res         # Type definitions (was types.ts)
+│   ├── Errors.res        # Error types (was errors.ts)
+│   ├── TokenValidator.res # Token validation (was token-validator.ts)
+│   └── PermissionChecker.res # Permission checking (was permission-checker.ts)
+└── bindings/
+    ├── Anthropic.res     # Anthropic SDK bindings
+    └── Express.res       # Express bindings
+----
+
+=== Configuration Files
+
+* `rescript.json` - ReScript compiler configuration
+* `deno.json` - Deno runtime and task configuration (replaces package.json scripts)
+* `package.json` - Still present for npm dependencies used by Deno
+
+== Breaking Changes
+
+=== 1. Module Syntax
+
+**Old (TypeScript):**
+[source,typescript]
+----
+import { ClaudeGitLabBridge } from 'claude-gitlab-bridge'
+
+const bridge = new ClaudeGitLabBridge({
+  gitlabToken: process.env.GITLAB_TOKEN,
+  anthropicKey: process.env.ANTHROPIC_API_KEY
+})
+----
+
+**New (ReScript):**
+[source,rescript]
+----
+let bridge = Main.make(~config={
+  gitlabToken: Env.gitlabToken,
+  gitlabUrl: "https://gitlab.com",
+  anthropicApiKey: Env.anthropicApiKey,
+  webhookSecret: None,
+  port: 3000,
+})
+----
+
+=== 2. Error Handling
+
+**Old (TypeScript):**
+[source,typescript]
+----
+try {
+  const analysis = await bridge.analyzeIssue(params)
+} catch (error) {
+  console.error(error)
+}
+----
+
+**New (ReScript):**
+[source,rescript]
+----
+let result = await bridge->Main.analyzeIssue(~params)
+switch result {
+| Ok(analysis) => Console.log(analysis.summary)
+| Error(err) => Console.error(err)
+}
+----
+
+=== 3. Type Definitions
+
+**Old (TypeScript):**
+[source,typescript]
+----
+interface IssueParams {
+  projectId: string
+  issueId: number
+}
+----
+
+**New (ReScript):**
+[source,rescript]
+----
+type issueParams = {
+  projectId: string,
+  issueId: int,
+}
+----
+
+== Installation & Setup
+
+=== Prerequisites
+
+1. Install Deno:
+[source,bash]
+----
+curl -fsSL https://deno.land/install.sh | sh
+----
+
+2. Install ReScript:
+[source,bash]
+----
+deno install npm:rescript@^12.0.2
+----
+
+=== Building the Project
+
+[source,bash]
+----
+# Clean build artifacts
+deno task clean
+
+# Build ReScript code
+deno task build
+
+# Run in development mode
+deno task dev
+----
+
+=== Running Tests
+
+[source,bash]
+----
+# Run all tests
+deno task test
+
+# Run with coverage
+deno task test:coverage
+
+# Watch mode
+deno task test:watch
+----
+
+== API Changes
+
+=== Authentication Module
+
+The auth module has been restructured:
+
+[source,rescript]
+----
+// Import auth types
+open Auth.Types
+
+// Validate token
+let result = TokenValidator.validateTokenFormat(token)
+switch result {
+| Ok(tokenInfo) => Console.log(tokenInfo.maskedToken)
+| Error(error) => Console.error(error.message)
+}
+
+// Check permissions
+let permResult = PermissionChecker.checkOperationPermission(
+  ~operation="repository:read",
+  ~availableScopes=[Api, ReadRepository],
+)
+if permResult.allowed {
+  Console.log("Permission granted")
+}
+----
+
+=== Bridge API
+
+[source,rescript]
+----
+// Create bridge instance
+let bridge = Main.make(~config)
+
+// Analyze issue
+let analysis = await bridge->Main.analyzeIssue(~params={
+  projectId: "12345",
+  issueId: 42,
+})
+
+// Review MR
+let review = await bridge->Main.reviewMR(~params={
+  projectId: "12345",
+  mergeRequestId: 10,
+})
+
+// Handle webhook
+let _ = await bridge->Main.handleWebhook(~event={
+  eventType: "issue",
+  projectId: "12345",
+  payload: someJSON,
+})
+----
+
+== Benefits of ReScript
+
+1. **Type Safety**: Stronger type system than TypeScript
+2. **No Runtime Exceptions**: Pattern matching ensures exhaustive handling
+3. **Fast Compilation**: Much faster than TypeScript compiler
+4. **Better Inference**: Less type annotations needed
+5. **Interop**: Easy integration with existing JavaScript libraries
+
+== Gradual Migration
+
+If you need to use both TypeScript and ReScript during transition:
+
+1. ReScript compiles to clean JavaScript
+2. Compiled `.res.js` files can be imported from TypeScript
+3. Use `gentypeconfig` in `rescript.json` for TypeScript definitions
+
+== Resources
+
+* https://rescript-lang.org/docs/manual/latest/introduction[ReScript Documentation]
+* https://deno.com/manual[Deno Manual]
+* link:CLAUDE.md[Project-specific guidelines]
+
+== Support
+
+For migration issues:
+
+* Open an issue: https://github.com/hyperpolymath/claude-gitlab-bridge/issues
+* Discussion: https://github.com/hyperpolymath/claude-gitlab-bridge/discussions

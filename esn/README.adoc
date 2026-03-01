@@ -1,0 +1,457 @@
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+// SPDX-FileCopyrightText: 2024 Jonathan D.A. Jewell
+// SPDX-License-Identifier: PMPL-1.0-or-later
+
+= ESN: Echo State Networks in Rust
+
+
+
+
+:author: Jonathan D.A. Jewell (hyperpolymath)
+:toc: macro
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+:sectanchors:
+:sectlinks:
+:experimental:
+
+A production-grade Rust implementation of **Echo State Networks** (reservoir computing) for time series prediction, classification, and temporal pattern recognition.
+
+toc::[]
+
+== Overview
+
+ESN implements the reservoir computing paradigm—a computationally efficient approach to recurrent neural networks where only the output layer is trained, while the internal "reservoir" of neurons remains fixed after random initialization.
+
+=== Key Advantages
+
+* **Fast Training**: Only the output weights are learned via ridge regression (closed-form solution)
+* **Temporal Memory**: Reservoir dynamics naturally capture temporal dependencies
+* **Low Computational Cost**: No backpropagation through time required
+* **Hierarchical Processing**: Stack multiple reservoirs for complex pattern extraction
+
+== Architecture
+
+[source]
+----
+                    ┌─────────────────────────────────────┐
+                    │         ECHO STATE NETWORK          │
+                    ├─────────────────────────────────────┤
+   Input            │                                     │
+  ───────────────►  │   ┌───────────────────────────┐     │
+  (input_dim)       │   │      RESERVOIR            │     │   Output
+                    │   │  (sparse recurrent RNN)   │─────┼──────────►
+                    │   │                           │     │  (output_dim)
+                    │   │  • Sparse connections     │     │
+                    │   │  • Leaky integrator       │     │
+                    │   │  • Spectral radius < 1    │     │
+                    │   └───────────────────────────┘     │
+                    │              │                      │
+                    │              ▼                      │
+                    │   ┌───────────────────────────┐     │
+                    │   │   READOUT (trained)       │     │
+                    │   │   Ridge regression        │     │
+                    │   └───────────────────────────┘     │
+                    └─────────────────────────────────────┘
+----
+
+== Features
+
+=== Core Capabilities
+
+[cols="1,3"]
+|===
+| Feature | Description
+
+| **Sparse Reservoir**
+| Randomly connected recurrent network with configurable sparsity (default 90%)
+
+| **Leaky Integrator Neurons**
+| Continuous-time dynamics with configurable leaking rate for temporal smoothing
+
+| **Spectral Radius Control**
+| Automatic scaling of reservoir weights to ensure echo state property
+
+| **Ridge Regression Training**
+| Regularized linear readout training with closed-form solution
+
+| **Feedback Connections**
+| Optional output-to-reservoir feedback for generative tasks
+
+| **State History**
+| Automatic tracking of reservoir states for temporal context
+
+| **Hierarchical ESN**
+| Stack multiple reservoirs for multi-scale temporal feature extraction
+|===
+
+=== Activation Functions
+
+[source,rust]
+----
+pub enum Activation {
+    Tanh,           // Standard hyperbolic tangent
+    Sigmoid,        // Logistic sigmoid (0-1 range)
+    ReLU,           // Rectified linear unit
+    LeakyReLU(f32), // Leaky ReLU with configurable slope
+    Identity,       // Linear pass-through
+}
+----
+
+== Installation
+
+Add to your `Cargo.toml`:
+
+[source,toml]
+----
+[dependencies]
+esn = "0.1"
+----
+
+Or via command line:
+
+[source,bash]
+----
+cargo add esn
+----
+
+== Quick Start
+
+=== Basic Usage
+
+[source,rust]
+----
+use esn::{EchoStateNetwork, EsnConfig, Activation};
+use ndarray::Array1;
+
+// Configure the ESN
+let config = EsnConfig {
+    reservoir_size: 500,     // Number of reservoir neurons
+    spectral_radius: 0.95,   // Echo state property guarantee
+    leaking_rate: 0.3,       // Temporal dynamics speed
+    input_scale: 0.5,        // Input weight scaling
+    ..Default::default()
+};
+
+// Create the network
+let mut esn = EchoStateNetwork::new(config, 10, Activation::Tanh)?;
+
+// Process input (returns reservoir state)
+let input = Array1::from_vec(vec![0.5; 10]);
+let state = esn.step(&input);
+
+// Train on collected data
+let mse = esn.train(&inputs, &targets, washout)?;
+
+// Predict using trained readout
+let output = esn.predict()?;
+----
+
+=== Hierarchical ESN
+
+Stack multiple reservoirs for complex temporal patterns:
+
+[source,rust]
+----
+use esn::{HierarchicalEsn, EsnConfig, Activation};
+
+let configs = vec![
+    EsnConfig { reservoir_size: 100, ..Default::default() },
+    EsnConfig { reservoir_size: 50, ..Default::default() },
+];
+
+let mut h_esn = HierarchicalEsn::new(
+    configs,
+    input_dim,
+    vec![Activation::Tanh, Activation::Tanh]
+)?;
+
+// Process through all layers
+let output = h_esn.step(&input);
+
+// Get combined state from all layers (150 neurons total)
+let combined = h_esn.get_combined_state();
+----
+
+== Configuration Reference
+
+[cols="2,1,1,4"]
+|===
+| Parameter | Type | Default | Description
+
+| `reservoir_size`
+| `usize`
+| 500
+| Number of neurons in the reservoir
+
+| `spectral_radius`
+| `f32`
+| 0.95
+| Controls memory/stability tradeoff. Must be < 1 for echo state property
+
+| `leaking_rate`
+| `f32`
+| 0.3
+| Neuron update rate (0-1). Lower = longer memory, slower dynamics
+
+| `input_scale`
+| `f32`
+| 0.5
+| Scaling factor for input weights
+
+| `feedback_scale`
+| `f32`
+| 0.0
+| Feedback connection strength (0 = disabled)
+
+| `sparsity`
+| `f32`
+| 0.9
+| Reservoir connectivity (0-1). Higher = sparser matrix
+
+| `ridge_param`
+| `f64`
+| 1e-6
+| Ridge regression regularization strength
+
+| `use_bias`
+| `bool`
+| true
+| Include bias term in readout layer
+
+| `noise_level`
+| `f32`
+| 1e-4
+| Gaussian noise added to reservoir state
+|===
+
+== Use Cases
+
+=== Time Series Prediction
+Forecast future values from historical sequences (stock prices, weather, sensor data).
+
+=== Anomaly Detection
+Learn normal patterns; deviations indicate anomalies.
+
+=== Speech/Audio Processing
+Temporal pattern recognition for speech, music, or acoustic signals.
+
+=== Chaotic System Modeling
+Capture dynamics of complex systems (Lorenz attractor, Mackey-Glass).
+
+=== Sensor Fusion
+Integrate multiple sensor streams with different temporal characteristics.
+
+=== Sequence Classification
+Classify time series patterns (gesture recognition, activity detection).
+
+== Data Requirements
+
+ESN expects temporal data as sequences of `Array1<f32>` vectors.
+
+=== Quick Reference
+
+[cols="1,2,2"]
+|===
+| Requirement | Value | Notes
+
+| *Data type*
+| `f32`
+| Single-precision float
+
+| *Value range*
+| [-1, 1] or [0, 1]
+| Normalize before training
+
+| *Minimum samples*
+| 500+
+| More is better
+
+| *Washout*
+| ~10% of training
+| Discard initial transients
+|===
+
+=== Input Format
+
+[source,rust]
+----
+// Training data: Vec of time steps
+let inputs: Vec<Array1<f32>> = vec![
+    Array1::from_vec(vec![0.1, 0.2]),  // t=0
+    Array1::from_vec(vec![0.3, 0.4]),  // t=1
+    // ...
+];
+
+let targets: Vec<Array1<f32>> = vec![
+    Array1::from_vec(vec![0.5]),  // target at t=0
+    Array1::from_vec(vec![0.6]),  // target at t=1
+    // ...
+];
+----
+
+For detailed data preprocessing guidelines, benchmark datasets, and evaluation metrics, see link:MODEL_CARD.adoc[Model Card].
+
+== API Reference
+
+=== `EchoStateNetwork`
+
+[cols="1,3"]
+|===
+| Method | Description
+
+| `new(config, input_dim, activation)`
+| Create a new ESN with given configuration
+
+| `step(&mut self, input) -> Array1<f32>`
+| Process one input step, return reservoir state
+
+| `train(&mut self, inputs, targets, washout) -> Result<f64>`
+| Train readout weights via ridge regression, return MSE
+
+| `predict(&self) -> Result<Array1<f32>>`
+| Generate output from current state using trained weights
+
+| `reset(&mut self)`
+| Reset reservoir state to zeros
+
+| `set_feedback(output_dim)`
+| Enable feedback connections
+
+| `get_state() -> &Array1<f32>`
+| Get current reservoir state
+
+| `get_history() -> &VecDeque<Array1<f32>>`
+| Get reservoir state history
+
+| `size() -> usize`
+| Get reservoir size
+
+| `is_trained() -> bool`
+| Check if readout weights are set
+|===
+
+=== `HierarchicalEsn`
+
+[cols="1,3"]
+|===
+| Method | Description
+
+| `new(configs, input_dim, activations)`
+| Create hierarchical ESN with multiple layers
+
+| `step(&mut self, input) -> Array1<f32>`
+| Process input through all layers
+
+| `reset(&mut self)`
+| Reset all layer states
+
+| `get_combined_state() -> Array1<f32>`
+| Concatenate states from all layers
+|===
+
+== Technical Details
+
+=== Echo State Property
+
+The ESN maintains the **echo state property**: the reservoir state is uniquely determined by the input history, regardless of initial conditions. This is ensured by:
+
+1. Spectral radius < 1 (reservoir weights scaled appropriately)
+2. Leaky integrator dynamics
+3. Sparse connectivity
+
+=== Training Algorithm
+
+Training uses **ridge regression** (Tikhonov regularization):
+
+[stem]
+++++
+\mathbf{W}_{out} = (\mathbf{X}^T \mathbf{X} + \lambda \mathbf{I})^{-1} \mathbf{X}^T \mathbf{Y}
+++++
+
+Where:
+
+* **X** = collected reservoir states
+* **Y** = target outputs
+* **λ** = ridge regularization parameter
+
+=== Washout Period
+
+The initial `washout` samples are discarded during training to allow the reservoir to "wash out" initial transients and reach a representative operating regime.
+
+== Dependencies
+
+[source,toml]
+----
+ndarray = { version = "0.15", features = ["rayon", "serde"] }
+rand = "0.8"
+rand_distr = "0.4"
+rayon = "1.10"        # Parallel computation
+serde = "1.0"         # Serialization
+thiserror = "2.0"     # Error handling
+tracing = "0.1"       # Structured logging
+----
+
+== Documentation
+
+[cols="1,3"]
+|===
+| Document | Description
+
+| link:MODEL_CARD.adoc[Model Card]
+| Dataset expectations, training procedure, evaluation metrics, limitations
+
+| link:ROADMAP.adoc[Roadmap]
+| Development plans and future features
+
+| link:SECURITY.md[Security]
+| Security policy and vulnerability reporting
+|===
+
+== Benchmark
+
+Run the reproducible Mackey-Glass benchmark:
+
+[source,bash]
+----
+cargo run --release --example benchmark
+----
+
+Expected output (NRMSE ~0.016):
+[source]
+----
+═══════════════════════════════════════════════════════════════
+                        RESULTS SUMMARY
+═══════════════════════════════════════════════════════════════
+  Total time:         ~600ms
+  Training MSE:       ~1.7e-4
+  Test MSE:           ~2.6e-4
+  Test NRMSE:         ~0.016
+  Status:             EXCELLENT (NRMSE < 0.1)
+----
+
+== References
+
+* Jaeger, H. (2001). _"The echo state approach to analysing and training recurrent neural networks"_. GMD Report 148.
+* Lukoševičius, M. (2012). _"A practical guide to applying echo state networks"_. Neural Networks: Tricks of the Trade.
+* Jaeger, H. & Haas, H. (2004). _"Harnessing nonlinearity: Predicting chaotic systems and saving energy in wireless communication"_. Science.
+
+== License
+
+Dual-licensed under your choice of:
+
+* **Palimpsest-MPL License v1.0 (PMPL-1.0)** — permissive, attribution required
+* **PMPL-1.0-or-later** — copyleft, network use triggers distribution
+
+See link:LICENSE.txt[LICENSE.txt] for details.
+
+== Contributing
+
+This project adheres to the **Hyperpolymath Standard** for language and tooling policy. See link:.claude/CLAUDE.md[CLAUDE.md] for details.
+
+* **Rust** — all core functionality
+* **No TypeScript/Node.js/Go** — use Rust or ReScript alternatives
+* **Deno** — for any JavaScript tooling needs

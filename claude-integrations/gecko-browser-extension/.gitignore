@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: MIT
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-*
+
+# Build artifacts
+*.zip
+*.xpi
+web-ext-artifacts/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies (if any added later)
+node_modules/
+
+# Secrets (should never be committed)
+*.key
+*.pem
+secrets.json

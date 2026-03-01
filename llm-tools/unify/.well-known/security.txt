@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# RFC 9116 Security Contact Information
+# Generated from .config/well-known.scm
+
+Contact: mailto:security@hyperpolymath.dev
+Expires: 2026-12-31T23:59:59Z
+Preferred-Languages: en
+Canonical: https://github.com/hyperpolymath/llm-unify/.well-known/security.txt
+Policy: https://github.com/hyperpolymath/llm-unify/blob/main/SECURITY.md
+Acknowledgments: https://github.com/hyperpolymath/llm-unify/blob/main/SECURITY.md#acknowledgments

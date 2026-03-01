@@ -1,0 +1,126 @@
+= Contributing to elegant-STATE
+:toc:
+:icons: font
+
+Thank you for your interest in contributing to elegant-STATE!
+
+== Development Setup
+
+=== Prerequisites
+
+* Rust (latest stable)
+* Guix (recommended) or cargo
+* pandoc (for document conversion)
+* tesseract (for OCR)
+* nickel (for configuration)
+
+=== Getting Started
+
+[source,bash]
+----
+# Clone the repository
+git clone https://github.com/Hyperpolymath/elegant-STATE
+cd elegant-STATE
+
+# Enter development environment
+guix shell
+# or
+just dev
+
+# Build
+just build
+
+# Run tests
+just test
+
+# Run lints
+just lint
+----
+
+== Code Style
+
+=== Formatting
+
+We use `rustfmt` with the configuration in `rustfmt.toml`.
+
+[source,bash]
+----
+just fmt
+----
+
+=== Linting
+
+We use `clippy` with strict settings defined in `.clippy.toml`.
+
+[source,bash]
+----
+just lint-clippy
+----
+
+=== Pre-commit Hooks
+
+Install git hooks:
+
+[source,bash]
+----
+just install-hooks
+----
+
+== Making Changes
+
+=== Branching
+
+* Create a feature branch from `main`
+* Use descriptive branch names: `feature/add-semantic-search`, `fix/voting-timeout`
+
+=== Commits
+
+* Write clear, concise commit messages
+* Use conventional commits format:
+  - `feat:` for new features
+  - `fix:` for bug fixes
+  - `docs:` for documentation
+  - `refactor:` for refactoring
+  - `test:` for tests
+  - `chore:` for maintenance
+
+=== Testing
+
+[source,bash]
+----
+# Run all tests
+just test
+
+# Run specific test
+just test-one test_name
+
+# Run with coverage
+just test-coverage
+----
+
+=== Documentation
+
+* Update documentation for any user-facing changes
+* Use AsciiDoc format for documentation
+* Generate and check docs:
+
+[source,bash]
+----
+just doc
+just doc-man
+----
+
+== Pull Requests
+
+1. Ensure all tests pass: `just check-all`
+2. Update documentation if needed
+3. Add entry to CHANGELOG if applicable
+4. Request review from maintainers
+
+== Architecture
+
+See link:ARCHITECTURE.adoc[ARCHITECTURE.adoc] for technical details.
+
+== License
+
+By contributing, you agree that your contributions will be licensed under the MIT License.
