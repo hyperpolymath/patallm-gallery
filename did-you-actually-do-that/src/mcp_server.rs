@@ -471,7 +471,8 @@ impl McpServer {
             }).collect::<Vec<_>>()
         });
 
-        Ok(serde_json::to_string_pretty(&summary).unwrap())
+        serde_json::to_string_pretty(&summary)
+            .map_err(|e| format!("Failed to serialize summary: {e}"))
     }
 }
 
@@ -542,6 +543,14 @@ fn format_evidence(spec: &EvidenceSpec) -> String {
         }
         EvidenceSpec::EnvVar { name, expected } => format!("Env {}={}", name, expected),
         EvidenceSpec::Custom { name, .. } => format!("Custom check: {}", name),
+        EvidenceSpec::PanicAttackAttestation {
+            attestation_path,
+            report_path,
+            ..
+        } => format!(
+            "Panic-attack attestation: {} (report: {})",
+            attestation_path, report_path
+        ),
     }
 }
 

@@ -224,6 +224,22 @@ pub enum EvidenceSpec {
         name: String,
         params: HashMap<String, String>,
     },
+
+    /// Panic-attack attestation chain verification.
+    ///
+    /// Verifies a panic-attack `.attestation.json` sidecar file against
+    /// the corresponding scan report. Checks hash chain integrity, nonce
+    /// consistency, temporal ordering, plausibility metrics, and optionally
+    /// the Ed25519 signature.
+    PanicAttackAttestation {
+        /// Path to the `.attestation.json` sidecar file.
+        attestation_path: String,
+        /// Path to the corresponding scan report JSON.
+        report_path: String,
+        /// Optional hex-encoded Ed25519 public key for signature verification.
+        #[serde(default)]
+        public_key: Option<String>,
+    },
 }
 
 /// A claim that some action was performed
