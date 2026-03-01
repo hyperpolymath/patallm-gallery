@@ -1,0 +1,255 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= VerisimDB and the Identity of Code
+:author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+:date: 2026-03-01
+:toc:
+:toclevels: 3
+
+== The Question
+
+Is a function's identity its bytes? Its name? Its behaviour? Its tests?
+Its commit history? Its documentation? Its callers?
+
+The answer is: all of these, simultaneously. Code has *identity* — not in
+the philosophical sense of personal identity, but in the practical sense
+that distinguishes "this specific function, in this context, with this
+history" from any other function that happens to have the same source text.
+
+Two functions with identical bytes can have different identities if one has
+comprehensive tests and the other has none. If one was incrementally
+developed over weeks and the other was generated in a burst. If one has
+annotations explaining every design choice and the other is bare code.
+
+This is what VerisimDB's octad model makes possible. Not "8 separate
+entries stored next to each other," but 8 modalities through which a
+single entity's identity is *constituted*. The identity emerges from the
+cross-modal coherence between them.
+
+== The Octad Model Applied to Code
+
+=== Modality 1: Document
+
+The source code itself. Functions, types, modules, imports. The syntactic
+skeleton that compilers and linters can parse.
+
+**What it captures**: Structure, syntax, literal content.
+
+**What it misses**: Meaning, intent, history, quality.
+
+**DYADT mapping**: Layers 1-3 (File Existence, Claim Extraction, Syntactic)
+
+=== Modality 2: Semantic
+
+What the code *means*. Not its bytes, but the concepts it encodes. A
+function that "validates a SHA-256 hash" has semantic content independent
+of whether it's written in Rust, Haskell, or Zig.
+
+**What it captures**: Purpose, domain, relationships between concepts.
+
+**What it misses**: Correctness (the semantics could be *wrong* semantics).
+
+**DYADT mapping**: Layer 4 (Semantic verification)
+
+=== Modality 3: Graph
+
+The call graph, dependency graph, module graph, import graph, and
+cross-reference network. How code *connects*. An isolated utility function
+and a deeply-connected orchestrator have fundamentally different identities
+even if their source text is similar.
+
+**What it captures**: Connectivity, centrality, coupling, cohesion.
+
+**What it misses**: Temporal evolution (the graph is a snapshot).
+
+**DYADT mapping**: Layer 7-8 (Dependency), Layer 10 (Cross-Reference)
+
+=== Modality 4: Temporal
+
+When code was written, how long it took, the order of edits, the rhythm
+of development. Burst coding (14,000 lines in under an hour) has a
+temporal signature categorically distinct from incremental development
+(50 lines per day over 9 months).
+
+**What it captures**: Pace, rhythm, ordering, session structure.
+
+**What it misses**: *Why* the pace was what it was.
+
+**DYADT mapping**: Attestation chain (INV-4 temporal ordering, evidence
+wall_clock_ms), Antifile forensic signatures
+
+=== Modality 5: Provenance
+
+Who wrote it, what tool generated it, which session, which commit, which
+CI run verified it. The chain of custody from creation to deployment.
+
+**What it captures**: Authorship, tooling, verification history.
+
+**What it misses**: Whether the recorded provenance is truthful (LIMIT-1).
+
+**DYADT mapping**: Attestation chain (all three phases), Layer 12
+
+=== Modality 6: Vector
+
+The code's position in semantic embedding space. Code snippets that do
+similar things cluster together in vector space, regardless of language
+or style. This enables similarity search: "find me all functions that
+look like known stub patterns."
+
+**What it captures**: Semantic similarity, clustering, anomaly detection.
+
+**What it misses**: Context (similar code can have very different purposes).
+
+**DYADT mapping**: SLM ensemble (Mixture-of-Experts routing), Antifile
+vector similarity queries
+
+=== Modality 7: Tensor
+
+Multi-dimensional relationships that cannot be reduced to a flat graph.
+How a function relates to its tests, its documentation, its error handling,
+and its security properties *simultaneously*. Not a list of pairwise
+relationships but a multi-dimensional tensor of co-occurring attributes.
+
+**What it captures**: Cross-cutting quality attributes, multi-axis coherence.
+
+**What it misses**: Causal relationships (correlation, not causation).
+
+**DYADT mapping**: Layer 11 (Completeness Audit — checks for the
+co-occurrence of code + tests + docs), INV-11 (Narrative Coherence —
+the code/prose tensor)
+
+=== Modality 8: Spatial
+
+Geospatial coordinates, physical location. The least obviously relevant
+modality for code, but not irrelevant:
+
+- Which CI runner executed the tests (datacenter, region)
+- Which timezone the author works in (forensic — is a 3am commit plausible?)
+- Where the deployment target is (latency implications, jurisdiction)
+- Physical location of the signing key (hardware security module location)
+
+**What it captures**: Physical context of digital artefacts.
+
+**What it misses**: Most things (this is the weakest modality for code).
+
+**DYADT mapping**: Not currently used. Reserved for future CI runner
+attestation and key management context.
+
+== Cross-Modal Queries: Where Identity Emerges
+
+The value of the octad model is not in storing 8 things. It is in
+*querying across them*. Cross-modal queries are what distinguish VerisimDB
+from "a database with 8 tables."
+
+=== Detection Query Examples
+
+**Detecting hollow shells** (Structural Phylum, Class Skeletal):
+[source]
+----
+Document: function body contains only `return true`
+  AND Semantic: function description says "verifies hash integrity"
+  AND Graph: function has 3 callers in security-critical paths
+→ ALERT: Hollow shell in security-critical position
+----
+
+**Detecting burst-generated stubs** (Behavioral Phylum, Class Incomplete):
+[source]
+----
+Temporal: 500+ lines created in < 5 minutes
+  AND Provenance: author is AI tool
+  AND Vector: embedding clusters with known stub patterns
+  AND Tensor: zero test co-occurrence
+→ ALERT: Burst-generated code without verification
+----
+
+**Detecting stale references** (Semantic Phylum, Class Referential):
+[source]
+----
+Document: imports library X version 2.x
+  AND Temporal: last modified > 6 months ago
+  AND Graph: calls deprecated API methods
+  AND Semantic: domain tag matches "authentication"
+→ ALERT: Security-relevant code using outdated dependency
+----
+
+**Detecting cross-session contradiction** (Contextual Phylum, Class Amnestic):
+[source]
+----
+Temporal(session N): function F marked as "completed"
+  AND Temporal(session N+1): function F not present in file
+  AND Provenance: no delete commit between sessions
+→ ALERT: Function claimed complete but disappeared
+----
+
+=== The Identity Emerges
+
+None of these queries work with a single modality. A document-only database
+cannot tell you about temporal patterns. A graph-only database cannot tell
+you about semantic meaning. A vector-only database cannot tell you about
+provenance.
+
+The identity of code is the *intersection* of all eight modalities. When
+all eight agree — the code exists (document), means what it claims (semantic),
+connects properly (graph), was developed at a plausible pace (temporal),
+has trustworthy provenance (provenance), doesn't look like known bad
+patterns (vector), has coherent cross-cutting quality (tensor), and was
+produced in a plausible physical context (spatial) — then we have high
+confidence in its identity.
+
+When they disagree, the *specific disagreement* tells us exactly what kind
+of failure we're looking at. That's the diagnostic power of cross-modal
+queries.
+
+== Integration Architecture
+
+[source,text]
+----
+                 ┌──────────────┐
+                 │  DYADT       │
+                 │  (verifier)  │
+                 └──────┬───────┘
+                        │
+           ┌────────────┼────────────┐
+           │            │            │
+           ▼            ▼            ▼
+    ┌──────────┐ ┌──────────┐ ┌──────────┐
+    │ Attestn  │ │ Antifile │ │ SLM      │
+    │ chain    │ │ patterns │ │ ensemble │
+    └────┬─────┘ └────┬─────┘ └────┬─────┘
+         │            │            │
+         └────────────┼────────────┘
+                      │
+                      ▼
+              ┌───────────────┐
+              │   VerisimDB   │
+              │   (octad)     │
+              │               │
+              │  Doc Sem Gra  │
+              │  Tem Pro Vec  │
+              │  Ten Spa      │
+              └───────────────┘
+----
+
+Each attestation chain writes to VerisimDB across relevant modalities.
+Each antipattern query reads from VerisimDB across modalities.
+The SLM ensemble uses vector and tensor modalities for its expert routing.
+
+== The Honest Answer to "Is This Enough?"
+
+Is 8 modalities enough to capture the identity of code? Honestly: it depends.
+
+For **detecting common LLM failure modes** (stubs, missing files, broken
+references, false completion claims): yes, comprehensively.
+
+For **detecting sophisticated semantic errors** (inverted conditions, wrong
+algorithms, subtle logic bugs): partially. Cross-modal queries catch more
+than any single-modal approach, but ~30-50% detection rate for the hardest
+cases is the honest number.
+
+For **preventing determined adversarial fabrication**: no. A sufficiently
+motivated adversary who controls the environment can fabricate consistent
+data across all 8 modalities. The attestation model assumes honest-but-curious
+participants (LIMIT-6).
+
+The framework does not claim to be perfect. It claims to *raise the floor* —
+to catch the failures that currently slip through unnoticed, and to make
+the remaining failures more expensive to produce.

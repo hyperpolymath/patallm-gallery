@@ -1,0 +1,867 @@
+# Attestation Chain Blueprint (A2ML)
+# SPDX-License-Identifier: PMPL-1.0-or-later
+
+@abstract:
+Blueprint specification for the panic-attack three-phase attestation
+chain. This document is the single source of truth for what constitutes
+a valid attestation. K9 contractiles at Kennel, Yard, and Hunt tiers
+validate conformance to this blueprint. The Trustfile executes the
+verification. The Idris2 ABI proofs formalise the invariants at the
+type level.
+
+This blueprint captures both what CAN be assured (structural and
+cryptographic integrity) and what CANNOT be assured (environmental
+trust, temporal truthfulness, execution authenticity).
+@end
+
+@requires:
+- section: Ontology
+- section: Phases
+- section: Invariants
+- section: Hash-Layers
+- section: Validity-Assurances
+- section: Reliability-Assurances
+- section: Limits
+- section: Verification-Pipeline
+- section: K9-Tier-Map
+- section: Inputs
+- section: Verifications
+@end
+
+## Ontology
+
+The attestation chain answers one question: "Did this tool actually
+perform the work it claims?" It is a structured argument composed of
+three temporal phases, four cryptographic bindings, and one optional
+signature. The argument is NOT a proof of correctness — it is evidence
+of execution.
+
+### Terminology
+
+- **Attestation**: A structured claim that a computation was performed.
+- **Intent**: A pre-execution commitment to what will be done.
+- **Evidence**: Runtime observations accumulated during execution.
+- **Seal**: A post-execution binding that chains all phases together.
+- **Chain hash**: SHA-256(intent_hash || evidence_hash || report_hash).
+- **Session nonce**: 32 random bytes (64 hex chars), shared across all phases.
+- **Envelope**: An A2ML Trustfile-format wrapper carrying the chain.
+- **Sidecar**: The `.attestation.json` file alongside the report.
+- **Blueprint**: This document — the specification of a valid attestation.
+
+## Phases
+
+### Phase 1: Intent (Pre-Execution)
+
+@opaque(lang="json", id="intent-schema"):
+{
+  "session_nonce":     "64 hex chars — 32 random bytes from getrandom",
+  "target_hash":       "64 hex chars — SHA-256 of canonical target path",
+  "target_path":       "string — filesystem path being scanned",
+  "cli_args":          "array of strings — arguments passed to the tool",
+  "tool_version":      "string — semver of the scanning tool",
+  "tool_binary_hash":  "64 hex chars — SHA-256 of the tool's own binary",
+  "timestamp":         "string — ISO 8601 UTC, before execution begins",
+  "commitment_hash":   "64 hex chars — SHA-256(nonce||target_hash||version||timestamp)"
+}
+@end
+
+The intent is created BEFORE any scanning occurs. The commitment_hash
+binds the nonce to the target and timestamp, preventing post-hoc
+fabrication of intent records.
+
+### Phase 2: Evidence (During Execution)
+
+@opaque(lang="json", id="evidence-schema"):
+{
+  "session_nonce":          "64 hex chars — must match intent nonce",
+  "files_read":             "integer > 0 — count of source files read",
+  "bytes_read":             "integer > 0 — total bytes consumed",
+  "directories_traversed":  "integer >= 0 — directories visited",
+  "rolling_content_hash":   "64 hex chars — SHA-256 chain of all file content",
+  "wall_clock_ms":          "integer > 0 — elapsed wall clock time",
+  "cpu_time_ms":            "integer >= 0 — CPU time consumed",
+  "peak_rss":               "integer >= 0 — peak resident memory (bytes)",
+  "checkpoints":            "array — periodic snapshots every 100 files",
+  "languages_detected":     "array of strings — programming languages found",
+  "evidence_hash":          "64 hex chars — SHA-256 binding of evidence fields"
+}
+@end
+
+The evidence accumulator runs concurrently with the scanner. Each file's
+content hash is chained into the rolling hash. Checkpoints provide
+coarse-grained temporal proof that scanning progressed over time.
+
+### Phase 3: Seal (Post-Execution)
+
+@opaque(lang="json", id="seal-schema"):
+{
+  "session_nonce":   "64 hex chars — must match intent and evidence nonce",
+  "report_hash":     "64 hex chars — SHA-256 of the final report JSON",
+  "intent_hash":     "64 hex chars — SHA-256 of the serialised intent",
+  "evidence_hash":   "64 hex chars — SHA-256 of the serialised evidence",
+  "chain_hash":      "64 hex chars — SHA-256(intent_hash||evidence_hash||report_hash)",
+  "sealed_at":       "string — ISO 8601 UTC, must be after intent.timestamp",
+  "signature":       "128 hex chars or null — Ed25519 over chain_hash",
+  "public_key":      "64 hex chars or null — Ed25519 public key"
+}
+@end
+
+The seal is created AFTER scanning completes. The chain_hash
+cryptographically binds all three phases into a single value. If any
+component is modified after sealing, the chain_hash will not match.
+
+### Envelope (A2ML Trustfile Wrapper)
+
+@opaque(lang="json", id="envelope-schema"):
+{
+  "a2ml_version":   "string — must be '1.0.0'",
+  "envelope_type":  "string — must be 'trustfile'",
+  "issuer":         "string — tool identifier, e.g. 'panic-attack/2.0.0'",
+  "issued_at":      "string — ISO 8601 UTC",
+  "decision_hash":  "64 hex chars — must equal seal.report_hash",
+  "attestation": {
+    "intent":   "Phase 1 object",
+    "evidence": "Phase 2 object",
+    "seal":     "Phase 3 object"
+  }
+}
+@end
+
+## Invariants
+
+These are the formal properties that MUST hold for a valid attestation.
+Each maps to a proof term in the Idris2 ABI and a check in the Rust
+verifier.
+
+### INV-1: Hash Format (ValidHash)
+
+All SHA-256 hashes are exactly 64 lowercase hexadecimal characters.
+No uppercase, no 0x prefix, no whitespace.
+
+Idris2: `ValidHash : String -> Type`
+K9 Yard: `Sha256Hash` contract — `std.string.length s == 64`
+Rust: `s.len() == 64 && s.chars().all(|c| c.is_ascii_hexdigit())`
+
+### INV-2: Nonce Format (ValidNonce)
+
+The session nonce is exactly 64 lowercase hexadecimal characters,
+representing 32 cryptographically random bytes from getrandom.
+
+Idris2: `ValidNonce : String -> Type`
+K9 Yard: `SessionNonce` contract — same as Sha256Hash
+Rust: same check as ValidHash
+
+### INV-3: Nonce Consistency (NonceConsistency)
+
+intent.session_nonce == evidence.session_nonce == seal.session_nonce
+
+All three phases MUST use the identical nonce. This binds them to the
+same session. A mismatch means the phases were not produced together.
+
+Idris2: `NonceConsistency : String -> String -> String -> Type`
+         constructible only as `MkNonceConsistency nonce nonce nonce`
+K9 Yard: `nonces_match` predicate
+Trustfile Step 5: `verifyNonceConsistency`
+Rust: string equality across all three
+
+### INV-4: Temporal Order (TemporalOrder)
+
+intent.timestamp < seal.sealed_at
+
+The seal must be created after the intent. ISO 8601 strings are
+lexicographically comparable when in the same timezone (UTC).
+
+Idris2: `TemporalOrder : String -> String -> Type`
+         requires `So (intentTime < sealTime)`
+K9 Yard: `temporal_ordering` predicate
+Trustfile Step 6: `verifyTemporalOrder`
+Rust: string comparison `intent_ts < seal_ts`
+
+### INV-5: Chain Hash Integrity (ChainIntegrity)
+
+chain_hash == SHA-256(intent_hash || evidence_hash || report_hash)
+
+The chain hash is the cryptographic root of the attestation. It binds
+all three phases through their individual hashes.
+
+Idris2: `ChainIntegrity : String -> String -> String -> String -> Type`
+         requires all four hashes to be `ValidHash`
+K9 Hunt: `verify-hashes` recipe — `sha256sum` recomputation
+Trustfile Step 4: `verifySealChain`
+Rust: `Sha256::new().update(ih).update(eh).update(rh).finalize()`
+
+### INV-6: Report Hash Match
+
+SHA-256(report_file_bytes) == seal.report_hash == envelope.decision_hash
+
+The report file on disk must produce the same hash as recorded in
+both the seal and the envelope's decision_hash field.
+
+K9 Hunt: `verify-hashes` recipe
+Trustfile Step 1: `verifyReportHash`
+Rust: `sha256_hex(report_bytes) == seal.report_hash`
+
+### INV-7: Commitment Binding
+
+commitment_hash == SHA-256(nonce || target_hash || version || timestamp)
+
+The intent's commitment hash proves the intent was computed from its
+constituent fields, not fabricated after the fact.
+
+Trustfile Step 2: `verifyIntentCommitment`
+(Not checked by Rust verifier — deferred to Trustfile)
+
+### INV-8: Plausibility
+
+files_read > 0 AND bytes_read > 0 AND wall_clock_ms > 0
+
+A valid scan must have read at least one file, consumed at least one
+byte, and taken at least one millisecond. Zero values indicate the
+scan did not actually occur.
+
+K9 Yard: `plausibility` predicate
+Trustfile: implicit in evidence structure
+Rust: three positive-integer checks
+
+### INV-9: Signature (Optional)
+
+When present: Ed25519.verify(public_key, chain_hash, signature) == true
+
+The signature is over the chain_hash only. Since chain_hash binds all
+three phases, signing the chain_hash is equivalent to signing the
+entire attestation.
+
+K9 Hunt: `verify-signature` recipe — `openssl` Ed25519
+Trustfile Step 7: `verifySignature`
+Rust: `ed25519-dalek` (behind `signing` feature flag)
+
+### INV-10: Implementation Completeness
+
+No incompleteness markers exist in the attestation implementation.
+
+The following tokens are BANNED from attestation code. Their presence
+means a proof, function, or check is not actually implemented:
+
+@opaque(lang="text", id="banned-markers"):
+FORMAL VERIFICATION ESCAPES (proof not discharged):
+  Idris2:   believe_me, assert_total, assert_smaller
+  Coq:      Admitted
+  Lean:     sorry
+  Haskell:  unsafeCoerce, unsafePerformIO
+  OCaml:    Obj.magic, Obj.repr, Obj.obj
+
+RUNTIME STUBS (code not implemented):
+  Rust:     todo!(), unimplemented!(), unreachable!() without comment
+  Haskell:  undefined, error "TODO", error "FIXME"
+  General:  TODO, FIXME, HACK, XXX, STUB, PLACEHOLDER (in comments)
+  Any:      Functions returning hardcoded true/false/0/null/""
+  Any:      Empty match arms, catch-all _ => () that swallow cases
+  Any:      Error handlers that silently discard failures
+
+UNSAFE WITHOUT JUSTIFICATION:
+  Rust:     unsafe {} without // SAFETY: comment
+  Rust:     mem::transmute (banned unless FFI boundary)
+  C/Zig:    void* casts without alignment proof
+@end
+
+A post-hoc scan (which panic-attack itself can perform) must find
+zero instances. Any exception must be explicitly declared in this
+blueprint with a rationale.
+
+**Known exception**: `attestation.rs:285` — Ed25519 verification
+stub (`// TODO: actual Ed25519 verify`). Declared gap pending
+`ed25519-dalek` crate integration behind `signing` feature flag.
+
+**Enforcement**:
+- K9 Hunt recipe: `panic-attack assail src/attestation/`
+- Grep: `grep -rn 'believe_me\|todo!()\|FIXME\|Admitted' src/`
+- Idris2: `idris2 --check` with zero warnings
+- echidnabot: CI bot flags banned markers as CRITICAL
+
+### INV-11: Narrative Coherence
+
+A line-by-line narrative of the attestation implementation must be
+consistent with the actual code.
+
+The narrative serves three audiences simultaneously:
+1. **Verifying LLM** — a second channel to detect code/prose mismatch
+2. **Human readers** — documentation explaining what code does and why
+3. **Future AI agents** — context transfer across sessions
+
+The narrative is embedded directly in the source code as annotations
+(doc comments, module headers, function prologues). It is NOT a
+separate document — it IS the documentation. This means:
+
+- The verification artifact and the documentation artifact are one
+- You do not pay twice for documentation and verification
+- Every function's doc comment is a falsifiable claim about behaviour
+- A reviewing LLM reads the annotations alongside the code and flags
+  any annotation that does not match what the code actually does
+
+**What a reviewing LLM checks**:
+- Does every function described in annotations exist in the code?
+- Does the annotation's description match what the code actually does?
+- Are there code paths not mentioned in annotations? (omission signal)
+- Does the annotation mention caveats or deferred work? (honesty)
+- Do data flow descriptions match the actual call graph?
+- Are there annotations that describe operations the code does not
+  perform? (e.g., "verifies the hash" when the code only checks length)
+
+**Why this catches what code scanning cannot**:
+- `believe_me` is syntactically detectable, but a function that returns
+  hardcoded `true` has no syntactic marker — yet its annotation must
+  either honestly say "returns true unconditionally" (gap exposed) or
+  dishonestly say "verifies the hash chain" (mismatch detectable)
+- An empty error handler has no TODO marker, but its annotation must
+  either say "errors are silently discarded" or lie about handling them
+- A narrative that says "each file's content is incorporated into the
+  rolling hash" is falsifiable — grep for the hash update call
+
+**The asymmetry**: Fabricating consistent code + prose is strictly
+harder than fabricating code alone. Code has a compiler to hide
+behind; prose has a human reader (and a language model) to answer to.
+
+### INV-12: Structural Completeness
+
+Every cross-file reference in the attestation implementation must
+resolve. A `mod x;` must have an `x.rs`. A `use crate::x::Y` must
+find `pub Y` in module `x`. An `import X` in Idris2 must resolve.
+An Elixir `Module.func()` must have a `def func` in the right file.
+
+A pre-compilation scan collects all cross-file references and checks
+each one. Missing references are gaps — even if the rest compiles.
+
+## Hash-Layers
+
+The blueprint is self-verifying through a three-layer hash tree.
+Each layer catches a different class of incompleteness. A program
+that passes all three layers is structurally complete according to
+the specification. A program that fails any layer is incomplete —
+even if everything it DOES have compiles and runs correctly.
+
+### Layer 0: Document Hash
+
+SHA-256 of the entire blueprint file. This is the root commitment.
+
+@opaque(lang="json", id="layer-0"):
+{
+  "layer": 0,
+  "name": "document_hash",
+  "description": "SHA-256 of the complete blueprint.a2ml file",
+  "meaning": "This is the specification. If this hash does not match, the blueprint itself has been modified.",
+  "verification": "sha256sum contractiles/trust/blueprint.a2ml",
+  "failure_means": "The specification document was tampered with or replaced. Nothing downstream can be trusted."
+}
+@end
+
+### Layer 1: Parts Hash
+
+Every section in the blueprint has a GUID. The parts hash is
+SHA-256 of the sorted list of (GUID, section_content_hash) pairs.
+This layer answers: "Are all the parts present?"
+
+@opaque(lang="json", id="layer-1"):
+{
+  "layer": 1,
+  "name": "parts_hash",
+  "description": "SHA-256 of all section GUIDs and their content hashes",
+  "sections": [
+    {"guid": "bp-001", "name": "Phase 1: Intent",           "must_exist": true},
+    {"guid": "bp-002", "name": "Phase 2: Evidence",         "must_exist": true},
+    {"guid": "bp-003", "name": "Phase 3: Seal",             "must_exist": true},
+    {"guid": "bp-004", "name": "Envelope",                  "must_exist": true},
+    {"guid": "bp-005", "name": "INV-1: Hash Format",        "must_exist": true},
+    {"guid": "bp-006", "name": "INV-2: Nonce Format",       "must_exist": true},
+    {"guid": "bp-007", "name": "INV-3: Nonce Consistency",  "must_exist": true},
+    {"guid": "bp-008", "name": "INV-4: Temporal Order",     "must_exist": true},
+    {"guid": "bp-009", "name": "INV-5: Chain Hash",         "must_exist": true},
+    {"guid": "bp-010", "name": "INV-6: Report Hash",        "must_exist": true},
+    {"guid": "bp-011", "name": "INV-7: Commitment Binding", "must_exist": true},
+    {"guid": "bp-012", "name": "INV-8: Plausibility",       "must_exist": true},
+    {"guid": "bp-013", "name": "INV-9: Signature",          "must_exist": true},
+    {"guid": "bp-014", "name": "INV-10: No Stubs",          "must_exist": true},
+    {"guid": "bp-015", "name": "INV-11: Narrative",         "must_exist": true},
+    {"guid": "bp-016", "name": "INV-12: Structural",        "must_exist": true},
+    {"guid": "bp-017", "name": "Validity Assurances",       "must_exist": true},
+    {"guid": "bp-018", "name": "Reliability Assurances",    "must_exist": true},
+    {"guid": "bp-019", "name": "Limits",                    "must_exist": true}
+  ],
+  "verification": "Extract all bp-NNN GUIDs, hash each section's content, sort, concatenate, SHA-256 the result.",
+  "failure_means": "One or more specification sections are missing or have been modified. The incomplete section's GUID identifies exactly what is missing."
+}
+@end
+
+### Layer 2: Interactions Hash
+
+Sections are not independent — they reference each other. The
+interactions hash is SHA-256 of all (source_guid, target_guid,
+relation_type) edges. This layer answers: "Are the connections
+between parts correct?"
+
+@opaque(lang="json", id="layer-2"):
+{
+  "layer": 2,
+  "name": "interactions_hash",
+  "description": "SHA-256 of the cross-reference graph between sections",
+  "edges": [
+    {"from": "bp-001", "to": "bp-002", "relation": "nonce_flows_to",
+     "meaning": "Intent nonce is copied into Evidence accumulator"},
+    {"from": "bp-001", "to": "bp-003", "relation": "nonce_flows_to",
+     "meaning": "Intent nonce is copied into Seal"},
+    {"from": "bp-001", "to": "bp-003", "relation": "hashed_into",
+     "meaning": "Serialised intent is SHA-256'd to produce intent_hash in Seal"},
+    {"from": "bp-002", "to": "bp-003", "relation": "hashed_into",
+     "meaning": "Serialised evidence is SHA-256'd to produce evidence_hash in Seal"},
+    {"from": "bp-003", "to": "bp-004", "relation": "wrapped_by",
+     "meaning": "Seal's report_hash becomes envelope's decision_hash"},
+    {"from": "bp-005", "to": "bp-009", "relation": "required_by",
+     "meaning": "Chain hash integrity requires all component hashes to be ValidHash"},
+    {"from": "bp-006", "to": "bp-007", "relation": "required_by",
+     "meaning": "Nonce consistency requires all nonces to be ValidNonce"},
+    {"from": "bp-001", "to": "bp-008", "relation": "temporally_before",
+     "meaning": "Intent timestamp must precede Seal timestamp"},
+    {"from": "bp-003", "to": "bp-008", "relation": "temporally_after",
+     "meaning": "Seal timestamp must follow Intent timestamp"},
+    {"from": "bp-009", "to": "bp-013", "relation": "signed_by",
+     "meaning": "Ed25519 signature is over the chain_hash from INV-5"},
+    {"from": "bp-002", "to": "bp-012", "relation": "checked_by",
+     "meaning": "Evidence counters are checked for plausibility"}
+  ],
+  "verification": "Parse all cross-references, build edge list, sort by (from, to, relation), concatenate, SHA-256.",
+  "failure_means": "A connection between specification parts is broken. The failing edge identifies which relationship is missing — e.g., if nonce_flows_to from Intent to Seal is absent, the nonce is not being propagated."
+}
+@end
+
+### Layer 3: Phase Hash
+
+The implementation must proceed in a defined order. The phase hash
+is SHA-256 of the ordered phase sequence. This layer answers: "Is
+the temporal structure correct?"
+
+@opaque(lang="json", id="layer-3"):
+{
+  "layer": 3,
+  "name": "phase_hash",
+  "description": "SHA-256 of the ordered implementation phases",
+  "phases": [
+    {"order": 1, "name": "intent_creation",     "before_execution": true},
+    {"order": 2, "name": "evidence_accumulation", "during_execution": true},
+    {"order": 3, "name": "seal_computation",     "after_execution": true},
+    {"order": 4, "name": "envelope_wrapping",    "after_execution": true},
+    {"order": 5, "name": "sidecar_writing",      "after_execution": true}
+  ],
+  "verification": "Verify that the implementation's control flow matches this phase order. Intent creation must precede any file I/O. Evidence recording must occur during file I/O. Seal must occur after all file I/O completes.",
+  "failure_means": "The implementation executes phases in the wrong order — e.g., sealing before scanning, or creating intent after scanning has begun."
+}
+@end
+
+### Cascade Verification
+
+The four layers form a cascade. Each layer is a prerequisite for
+the next. If an earlier layer fails, later layers are meaningless.
+
+@opaque(lang="text", id="cascade"):
+Layer 0: Document Hash
+  │
+  ├── FAIL → blueprint tampered with → STOP
+  │          (nothing downstream can be trusted)
+  │
+  ▼ PASS
+Layer 1: Parts Hash
+  │
+  ├── FAIL → section(s) missing or changed → STOP
+  │          (which GUID failed identifies the gap)
+  │
+  ▼ PASS
+Layer 2: Interactions Hash
+  │
+  ├── FAIL → connection(s) broken → STOP
+  │          (which edge failed identifies the break)
+  │
+  ▼ PASS
+Layer 3: Phase Hash
+  │
+  ├── FAIL → ordering wrong → STOP
+  │          (which phase is out of order)
+  │
+  ▼ PASS
+Proceed to compilation, testing, and runtime verification.
+Even if the code compiles, if any layer above failed, the
+program cannot be the correct implementation of the blueprint.
+@end
+
+### K9 Cascade Enforcement
+
+- **K9 Kennel**: Checks Layer 0 (document hash exists) and Layer 1
+  (all GUIDs present). Pure data — no execution needed. Just parse
+  the blueprint and count sections.
+
+- **K9 Yard**: Checks Layer 2 (interactions). Nickel contracts
+  validate that cross-references between sections are consistent.
+  No I/O — just structural evaluation of the reference graph.
+
+- **K9 Hunt**: Recomputes Layer 0, 1, 2, 3 hashes using sha256sum.
+  Compares against stored values. If any mismatch → FAIL with the
+  specific layer and component that failed.
+
+### Post-Hoc Stub Scan (INV-10 + Layer 1)
+
+After the cascade passes, a final sweep checks for incompleteness
+markers (TODO, FIXME, believe_me, etc.) that might exist within
+sections that are structurally present but not fully implemented.
+
+A section can exist (Layer 1 passes) and connect correctly (Layer 2
+passes) but still contain stub code. The stub scan catches this:
+the section's GUID is present, its hash matches, but inside it
+there is a `todo!()` — meaning the section is a hollow shell.
+
+The combination of Layer 1 (section exists) + INV-10 (no stubs
+inside) + INV-11 (narrative matches code) closes the gap between
+"specification says it should exist" and "it actually works."
+
+## Validity-Assurances
+
+What this blueprint CAN assure about validity (does it measure what
+it claims to measure?):
+
+### Structural Validity
+The attestation envelope has all required fields in the correct types.
+A2ML `@requires` enforces section presence. K9 Kennel enforces field
+schema. K9 Yard enforces type contracts.
+**Assurance level: COMPLETE** — the typed core rejects malformed input.
+
+### Construct Validity
+The three-phase model (intent → evidence → seal) captures the construct
+of "actually performed work". Intent before execution, evidence during,
+seal after. This mirrors the scientific method: hypothesis, observation,
+conclusion.
+**Assurance level: HIGH** — the model is well-motivated but cannot
+distinguish genuine execution from a sufficiently sophisticated
+simulation.
+
+### Internal Validity
+Hash chains prevent tampering after the fact. If any component is
+modified, the chain_hash will not match. The nonce binds phases
+together. The temporal ordering prevents backdating.
+**Assurance level: HIGH** — within the cryptographic assumptions
+(SHA-256 preimage resistance, Ed25519 unforgeability), internal
+consistency is guaranteed.
+
+### Content Validity
+The evidence phase captures comprehensive execution metrics: files
+read, bytes processed, wall clock time, CPU time, memory usage,
+checkpoints, languages detected. The rolling content hash chains
+every file's content.
+**Assurance level: MODERATE** — covers the observable execution
+surface but cannot capture everything (e.g., cache hits, IO wait,
+context switches).
+
+### Criterion Validity
+Attestation results should correlate with actual execution. A genuine
+scan will produce non-zero metrics with a rolling hash that matches
+the files on disk. A fabricated scan would need to guess all hashes.
+**Assurance level: MODERATE** — correlation is strong but not proven
+(no ground truth oracle exists).
+
+### Face Validity
+The attestation chain is readable by humans. JSON format, clear field
+names, ISO 8601 timestamps, hex-encoded hashes. An expert can inspect
+and reason about it.
+**Assurance level: COMPLETE** — by design.
+
+## Reliability-Assurances
+
+What this blueprint CAN assure about reliability (consistent and
+reproducible results?):
+
+### Hash Chain Determinism
+Given identical inputs (same files, same order, same tool version),
+the hash chain will produce identical output. SHA-256 is deterministic.
+**Assurance level: COMPLETE** — cryptographic guarantee.
+
+### Cross-Implementation Agreement
+The same attestation envelope can be verified by:
+- Rust verifier (DYADT `attestation.rs`)
+- Haskell Trustfile (`PanicAttackTrustfile.hs`)
+- K9 Hunt recipes (shell + `sha256sum` + `openssl`)
+- Idris2 type checker (structural invariants)
+All four implementations check the same invariants.
+**Assurance level: HIGH** — multiple independent implementations
+reduce the risk of implementation bugs.
+
+### Temporal Reliability
+ISO 8601 timestamps in UTC are unambiguous and comparable. No timezone
+conversion issues, no daylight saving ambiguity, no epoch overflow
+until the year 9999.
+**Assurance level: HIGH** — format is reliable; clock source is not
+(see Limits).
+
+### Nonce Uniqueness
+32 bytes from `getrandom` (CSPRNG). Collision probability is
+negligible (2^-128 birthday bound).
+**Assurance level: COMPLETE** — cryptographic guarantee under the
+assumption that the CSPRNG is correctly implemented.
+
+## Limits
+
+What this blueprint CANNOT assure — the hard epistemological boundaries:
+
+### LIMIT-1: Execution Truthfulness
+**Cannot prove the scan actually ran.**
+A sufficiently motivated adversary can construct a valid attestation
+chain without running the scanner. They would need to:
+- Generate correct file hashes for the rolling content hash
+- Set plausible metrics (files_read, bytes_read, wall_clock_ms)
+- Produce a valid report JSON
+- Compute the chain_hash correctly
+This is computationally feasible. The attestation proves structural
+consistency, not execution.
+**Mitigation**: Rolling content hash makes fabrication require reading
+all source files anyway (but doesn't prove analysis occurred).
+
+### LIMIT-2: Temporal Truthfulness
+**Cannot prove the timestamps are accurate.**
+The scanner uses the local system clock. An adversary with root access
+can set the clock to any value. There is no trusted timestamping
+authority (RFC 3161 TSA) or blockchain anchor.
+**Mitigation**: Temporal ordering (intent < seal) is checked, but both
+timestamps could be fabricated consistently.
+
+### LIMIT-3: Environmental Integrity
+**Cannot prove the execution environment was uncompromised.**
+No Trusted Execution Environment (TEE), no TPM attestation, no SGX
+enclave. The scanner runs in userspace with no hardware root of trust.
+**Mitigation**: The tool_binary_hash records the scanner's own hash,
+but an adversary can modify the binary and update the hash.
+
+### LIMIT-4: Key Authenticity
+**Cannot prove who owns the signing key.**
+Ed25519 keys are bare — no certificate authority, no PKI hierarchy, no
+Web of Trust. Anyone who possesses the private key can sign. Key
+distribution is out of scope.
+**Mitigation**: Public keys can be pinned in configuration or published
+in a well-known location, but this is a social/operational concern, not
+a cryptographic one.
+
+### LIMIT-5: Replay Protection
+**Cannot prevent replay of a valid attestation.**
+A valid attestation from last week is still valid today. There is no
+time-bounded nonce expiry, no sequence number, no challenge-response
+protocol. An adversary can reuse an old attestation for a new claim.
+**Mitigation**: The report_hash binds the attestation to a specific
+report file. Replaying requires the original report to still be present
+and unchanged.
+
+### LIMIT-6: Collusion Resistance
+**Cannot resist collusion between attestor and verifier.**
+If the entity producing the attestation and the entity verifying it
+are the same (or conspiring), they can fabricate everything. The
+attestation model assumes honest-but-curious participants.
+**Mitigation**: Independent third-party verification (e.g., a CI/CD
+pipeline running the Trustfile) adds separation of concerns.
+
+### LIMIT-7: Scan Correctness
+**Cannot prove the scan results are correct.**
+The attestation proves the scanner ran (modulo LIMIT-1), not that it
+found all vulnerabilities or that its findings are accurate. A scanner
+with bugs will produce an attested-but-wrong report.
+**Mitigation**: Out of scope for attestation. Handled by scanner test
+suites, benchmarks, and independent review.
+
+### LIMIT-8: Quantum Resistance
+**Ed25519 is not post-quantum secure.**
+A sufficiently powerful quantum computer could forge Ed25519 signatures.
+SHA-256 is believed to be quantum-resistant (Grover's algorithm halves
+effective security to 128 bits, still sufficient).
+**Mitigation**: The full Trustfile format supports hybrid
+Ed448+Dilithium5+SPHINCS+ keys. Upgrading the attestation signature
+to a PQ algorithm is a future enhancement.
+
+### LIMIT-9: Provenance of This Blueprint
+**Cannot prove this blueprint itself was not tampered with.**
+This is the meta-level bootstrap problem. Who watches the watchmen
+who wrote the rules for watching the watchmen? The blueprint is a text
+file — it could be modified.
+**Mitigation**: A2ML Attested mode with Idris2 typed core + opaque
+payload attestation (Ed25519 signature over the blueprint's bytes).
+The blueprint can attest itself — but this is ultimately grounded in
+trust of the signing key (see LIMIT-4).
+
+### LIMIT-10: Network Partition / Availability
+**Cannot guarantee the verification service is reachable.**
+All verification is local (no network calls). This is actually a
+strength — but it means there is no central authority that can revoke
+attestations or update the threat model in real time.
+**Mitigation**: Local-only verification is intentional. Revocation
+could be added via a transparency log (RFC 9162).
+
+## Verification-Pipeline
+
+The full verification pipeline, showing which component checks which
+invariant:
+
+@opaque(lang="text", id="pipeline"):
+                    ┌──────────────────────────────────────┐
+                    │          blueprint.a2ml               │
+                    │     (this document — the spec)        │
+                    └──────────────┬───────────────────────┘
+                                   │
+              ┌────────────────────┼────────────────────┐
+              │                    │                     │
+              ▼                    ▼                     ▼
+  ┌───────────────────┐ ┌──────────────────┐ ┌──────────────────┐
+  │  K9 Kennel        │ │  K9 Yard         │ │  K9 Hunt         │
+  │  (Pure Data)      │ │  (Contracts)     │ │  (Execution)     │
+  │                   │ │                  │ │                  │
+  │  ☑ Field presence │ │  ☑ INV-1 format  │ │  ☑ INV-5 chain   │
+  │  ☑ Type schema    │ │  ☑ INV-2 nonce   │ │  ☑ INV-6 report  │
+  │  ☑ JSON structure │ │  ☑ INV-3 consist │ │  ☑ INV-7 commit  │
+  │                   │ │  ☑ INV-4 temporal│ │  ☑ INV-9 Ed25519 │
+  │                   │ │  ☑ INV-8 plausib │ │                  │
+  └───────────────────┘ └──────────────────┘ └──────────────────┘
+              │                    │                     │
+              └────────────────────┼────────────────────┘
+                                   │
+                                   ▼
+                    ┌──────────────────────────────────────┐
+                    │    PanicAttackTrustfile.hs            │
+                    │    (7-step sequential verifier)       │
+                    │                                      │
+                    │    Step 1: INV-6  report hash         │
+                    │    Step 2: INV-7  commitment          │
+                    │    Step 3: INV-1  evidence hash       │
+                    │    Step 4: INV-5  chain hash          │
+                    │    Step 5: INV-3  nonce consistency   │
+                    │    Step 6: INV-4  temporal order      │
+                    │    Step 7: INV-9  signature           │
+                    └──────────────┬───────────────────────┘
+                                   │
+                                   ▼
+                    ┌──────────────────────────────────────┐
+                    │    Attestation.idr                    │
+                    │    (Idris2 Dependent Type Proofs)     │
+                    │                                      │
+                    │    ValidHash        — INV-1          │
+                    │    ValidNonce       — INV-2          │
+                    │    NonceConsistency — INV-3          │
+                    │    TemporalOrder   — INV-4          │
+                    │    ChainIntegrity  — INV-5          │
+                    │    VerifiedAttestation — all of above │
+                    │    (quantity 0 — erased at runtime)   │
+                    └──────────────┬───────────────────────┘
+                                   │
+                                   ▼
+                    ┌──────────────────────────────────────┐
+                    │    DYADT attestation.rs               │
+                    │    (Rust Runtime Verifier)            │
+                    │                                      │
+                    │    ☑ Structure (envelope_type)        │
+                    │    ☑ INV-6  report hash recompute     │
+                    │    ☑ INV-5  chain hash recompute      │
+                    │    ☑ INV-3  nonce consistency         │
+                    │    ☑ INV-4  temporal ordering         │
+                    │    ☑ INV-8  plausibility metrics      │
+                    │    ☑ INV-9  Ed25519 (optional)        │
+                    └──────────────────────────────────────┘
+@end
+
+## K9-Tier-Map
+
+How the three K9 tiers relate to this blueprint:
+
+### Kennel: panic-attack-report.k9.ncl
+- **Leash**: 'Kennel (no execution, no network, no filesystem)
+- **Validates**: Raw AssailReport JSON structure (fields, types, enums)
+- **Blueprint invariants**: None directly — this validates the REPORT, not the attestation
+- **Trust model**: Data-only. Safe to run on untrusted input.
+- **Think of it as**: "Is this valid JSON with the right shape?"
+
+### Yard: panic-attack-attested.k9.ncl
+- **Leash**: 'Yard (Nickel evaluation only, no I/O)
+- **Validates**: Attestation envelope structure + cross-field contracts
+- **Blueprint invariants**: INV-1, INV-2, INV-3, INV-4, INV-8
+- **Trust model**: Validated config. Contracts fire during Nickel eval.
+- **Think of it as**: "Does this attestation LOOK internally consistent?"
+
+### Hunt: panic-attack-verified.k9.ncl
+- **Leash**: 'Hunt (full subprocess execution, signature required)
+- **Validates**: Cryptographic chain via sha256sum + openssl
+- **Blueprint invariants**: INV-5, INV-6, INV-7, INV-9
+- **Trust model**: Full execution. Runs shell commands. Requires signature.
+- **Think of it as**: "Are the HASHES actually correct?"
+
+## Inputs
+
+- attestation_path: path to .attestation.json sidecar file
+- report_path: path to the scan report JSON file
+- public_key: optional Ed25519 public key (hex) for signature verification
+
+## Verifications
+
+### structure-valid
+- description: Envelope has envelope_type "trustfile", non-empty a2ml_version and issuer
+- invariant: structural validity
+- tier: K9 Kennel
+
+### hash-format
+- description: All hash fields are exactly 64 lowercase hex characters
+- invariant: INV-1 (ValidHash)
+- tier: K9 Yard
+
+### nonce-format
+- description: Session nonce is exactly 64 lowercase hex characters
+- invariant: INV-2 (ValidNonce)
+- tier: K9 Yard
+
+### nonce-consistency
+- description: intent.session_nonce == evidence.session_nonce == seal.session_nonce
+- invariant: INV-3 (NonceConsistency)
+- tier: K9 Yard, Trustfile Step 5, Rust verifier
+
+### temporal-ordering
+- description: intent.timestamp < seal.sealed_at (ISO 8601 lexicographic)
+- invariant: INV-4 (TemporalOrder)
+- tier: K9 Yard, Trustfile Step 6, Rust verifier
+
+### chain-hash-integrity
+- description: chain_hash == SHA-256(intent_hash || evidence_hash || report_hash)
+- invariant: INV-5 (ChainIntegrity)
+- tier: K9 Hunt, Trustfile Step 4, Rust verifier
+- command: printf '%s' "${intent_hash}${evidence_hash}${report_hash}" | sha256sum
+
+### report-hash-match
+- description: SHA-256 of report file == seal.report_hash == envelope.decision_hash
+- invariant: INV-6
+- tier: K9 Hunt, Trustfile Step 1, Rust verifier
+- command: sha256sum report.json
+
+### commitment-binding
+- description: commitment_hash == SHA-256(nonce || target_hash || version || timestamp)
+- invariant: INV-7
+- tier: Trustfile Step 2
+- command: printf '%s' "${nonce}${target_hash}${version}${timestamp}" | sha256sum
+
+### plausibility
+- description: files_read > 0, bytes_read > 0, wall_clock_ms > 0
+- invariant: INV-8
+- tier: K9 Yard, Rust verifier
+
+### signature-verification
+- description: Ed25519.verify(public_key, chain_hash, signature) == valid
+- invariant: INV-9 (optional)
+- tier: K9 Hunt, Trustfile Step 7, Rust verifier
+- command: openssl pkeyutl -verify -pubin -inkey pubkey.pem -sigfile signature.bin -rawin -in chain_hash.bin
+
+@refs:
+[1] Attestation Chain Blueprint — this document
+[2] A2ML Specification v0 — standards/a2ml/SPEC.a2ml
+[3] K9 SVC Specification — standards/k9-svc/SPEC.adoc
+[4] Idris2 ABI Proofs — src/abi/Attestation.idr
+[5] Rust Runtime Verifier — src/verifiers/attestation.rs
+[6] Haskell Trustfile — contractiles/trust/PanicAttackTrustfile.hs
+[7] K9 Kennel — contractiles/k9/panic-attack-report.k9.ncl
+[8] K9 Yard — contractiles/k9/panic-attack-attested.k9.ncl
+[9] K9 Hunt — contractiles/k9/panic-attack-verified.k9.ncl
+[10] RFC 3161 — Trusted Timestamping (not yet implemented)
+[11] RFC 9162 — Certificate Transparency / Merkle Tree Logs
+@end

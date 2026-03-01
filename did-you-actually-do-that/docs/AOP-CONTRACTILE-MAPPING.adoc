@@ -1,0 +1,200 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Contractiles as Aspect-Oriented Programming
+:author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+:date: 2026-03-01
+:toc:
+
+== The Mapping
+
+Aspect-Oriented Programming (AOP) addresses **cross-cutting concerns** — concerns
+that span multiple modules but cannot be cleanly encapsulated within any single
+module. Logging, security, transactions, and error handling are classic AOP examples.
+
+The Hyperpolymath contractile system addresses the same problem at the repository
+level. Each contractile file type handles a cross-cutting concern that spans the
+entire codebase. The mapping is structural, not metaphorical.
+
+== AOP Concepts → Contractile Concepts
+
+[cols="1,1,3"]
+|===
+| AOP Concept | Contractile Equivalent | Explanation
+
+| **Aspect**
+| Contractile file type
+| A modular unit addressing one cross-cutting concern (Mustfile = correctness,
+  Trustfile = security, etc.)
+
+| **Pointcut**
+| GUID / section identifier
+| Where in the specification an invariant applies. Blueprint GUIDs (`bp-007`)
+  identify specific join points.
+
+| **Join point**
+| Code location matching a GUID
+| The actual place in the codebase where an invariant is checked — e.g.,
+  the `session_nonce` field in three different structs for INV-3.
+
+| **Advice**
+| Verification check
+| The code that runs at a join point: hash recomputation, nonce comparison,
+  timestamp ordering check.
+
+| **Before advice**
+| Intent phase
+| Runs before execution. Establishes preconditions and commitments.
+
+| **Around advice**
+| Evidence phase
+| Runs during execution. Observes and records behaviour.
+
+| **After advice**
+| Seal phase
+| Runs after execution. Validates postconditions and produces final binding.
+
+| **Weaver**
+| K9
+| The mechanism that combines aspects with base code. K9 weaves all contractile
+  concerns together and enforces them at three trust tiers.
+
+| **Aspect composition**
+| Contractile stacking
+| Multiple contractile files apply to the same codebase simultaneously, each
+  handling its own concern without interference.
+|===
+
+== The Contractile Aspect Taxonomy
+
+=== Existing Contractile Types
+
+[cols="1,1,2"]
+|===
+| Contractile | Cross-Cutting Concern | AOP Analogy
+
+| **Mustfile**
+| Correctness
+| The `@Contract` aspect — preconditions, postconditions, invariants that must
+  always hold. Build passes, tests pass, no banned patterns.
+
+| **Trustfile**
+| Security & Integrity
+| The `@Security` aspect — hash chains valid, signatures verified, secrets
+  managed, access controlled.
+
+| **Dustfile**
+| Resilience & Recovery
+| The `@Transactional` aspect — rollback procedures, backup verification,
+  failure recovery, graceful degradation.
+
+| **Intentfile** (lust/)
+| Architecture & Design
+| The `@Documented` aspect — design decisions recorded, rationale present,
+  roadmap current, architecture aligned with intent.
+
+| **K9**
+| Enforcement (Weaver)
+| The AOP weaver itself — combines all aspects, executes at appropriate tiers,
+  enforces composition rules.
+|===
+
+=== Proposed: Antifile
+
+[cols="1,1,2"]
+|===
+| Contractile | Cross-Cutting Concern | AOP Analogy
+
+| **Antifile**
+| Known-Bad Patterns
+| The `@Validator` aspect — antipatterns catalogued, forensic signatures
+  checked, logic error patterns matched, LLM failure modes flagged.
+|===
+
+See `contractiles/anti/README.adoc` for the Antifile specification.
+
+=== Future Contractile Types
+
+The AOP model suggests additional cross-cutting concerns that could each have
+their own contractile file:
+
+[cols="1,1,2"]
+|===
+| Potential Contractile | Cross-Cutting Concern | What It Would Enforce
+
+| **Accessfile**
+| Accessibility
+| WCAG compliance, screen reader compatibility, keyboard navigation,
+  colour contrast ratios
+
+| **Dependfile**
+| Dependency Health
+| No outdated dependencies, no known CVEs, license compatibility,
+  supply chain integrity
+
+| **Privacyfile**
+| Data Protection
+| GDPR compliance, data minimisation, consent management, retention
+  policies
+
+| **Perffile**
+| Performance
+| Response time budgets, memory limits, algorithmic complexity bounds,
+  no N+1 queries
+|===
+
+Each would follow the same pattern: a specification file declaring invariants
+with GUIDs, a K9 cascade for enforcement (Kennel validates structure, Yard
+validates contracts, Hunt executes verification), and an optional Trustfile
+for cryptographic binding.
+
+== The Attestation Chain as AOP Advice
+
+The three-phase attestation chain maps precisely to AOP advice types:
+
+[source,text]
+----
+┌──────────────────────────────────────────────────────────┐
+│                    AOP Advice Types                       │
+│                                                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
+│  │ BEFORE        │  │ AROUND        │  │ AFTER         │  │
+│  │               │  │               │  │               │  │
+│  │ Establish     │  │ Observe       │  │ Validate      │  │
+│  │ preconditions │  │ execution     │  │ postconditions│  │
+│  │               │  │               │  │               │  │
+│  │ ═══════════   │  │ ═══════════   │  │ ═══════════   │  │
+│  │               │  │               │  │               │  │
+│  │ INTENT        │  │ EVIDENCE      │  │ SEAL          │  │
+│  │               │  │               │  │               │  │
+│  │ - Nonce gen   │  │ - File hashes │  │ - Chain hash  │  │
+│  │ - Target hash │  │ - Byte counts │  │ - Signature   │  │
+│  │ - Commitment  │  │ - Timing      │  │ - Envelope    │  │
+│  │ - Timestamp   │  │ - Checkpoints │  │ - Sidecar     │  │
+│  └──────────────┘  └──────────────┘  └──────────────┘  │
+└──────────────────────────────────────────────────────────┘
+----
+
+This is not a metaphor. The attestation chain is literally:
+- **Before** the scan: create a commitment (intent)
+- **During** the scan: observe what happens (evidence accumulator)
+- **After** the scan: validate and bind (seal)
+
+== Composition Rules
+
+When multiple contractile aspects apply to the same codebase (which they always
+do — every repo has a Mustfile AND a Trustfile at minimum), the composition
+order matters:
+
+1. **Mustfile first**: If the code doesn't compile or tests fail, nothing else
+   matters. Correctness is the foundation.
+2. **Trustfile second**: If the hash chains are broken or signatures invalid,
+   the code is not trustworthy regardless of what it does.
+3. **Intentfile third**: If the design intent doesn't match the implementation,
+   the code may be correct-but-wrong.
+4. **Antifile fourth**: Check for known-bad patterns after confirming the code
+   is at least structurally and cryptographically sound.
+5. **Dustfile last**: Recovery procedures are meaningless if the code is wrong,
+   untrusted, or matches known antipatterns.
+
+K9 enforces this ordering by evaluating contractiles in tier order: Kennel
+(structure) → Yard (contracts) → Hunt (execution). Within each tier,
+contractiles are evaluated in the composition order above.

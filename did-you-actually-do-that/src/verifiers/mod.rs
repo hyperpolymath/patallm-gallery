@@ -19,6 +19,7 @@
 //! |11 | SLM Consensus      | Rust/Elixir  | (sentinel-side)       |
 //! |12 | Pattern Learning   | Elixir       | (brain-side)          |
 
+pub mod attestation;
 pub mod completeness;
 pub mod content_hash;
 pub mod cross_reference;
@@ -124,6 +125,12 @@ pub fn check_evidence_by_layer(evidence: &EvidenceSpec) -> (Layer, EvidenceResul
         | EvidenceSpec::GitCommitExists { .. }
         | EvidenceSpec::GitBranchExists { .. } => {
             (Layer::DiffCoherence, diff_coherence::check(evidence))
+        }
+
+        EvidenceSpec::PanicAttackAttestation { .. } => {
+            // Attestation verification enriches ContentHash (Layer 2) with
+            // cryptographic evidence that the scan was actually performed.
+            (Layer::ContentHash, attestation::check(evidence))
         }
 
         EvidenceSpec::Custom { .. } => {
