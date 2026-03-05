@@ -1,0 +1,21 @@
+{
+  "name": "claude-firefox-lsp",
+  "version": "0.1.0",
+  "tasks": {
+    "vscode:prepublish": "deno task run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package"
+  },
+  "imports": {
+    "vscode-languageclient": "npm:vscode-languageclient@^9.0.0",
+    "@types/node": "npm:@types/node@^20.0.0",
+    "@types/vscode": "npm:@types/vscode@^1.75.0",
+    "@typescript-eslint/eslint-plugin": "npm:@typescript-eslint/eslint-plugin@^6.0.0",
+    "@typescript-eslint/parser": "npm:@typescript-eslint/parser@^6.0.0",
+    "eslint": "npm:eslint@^8.0.0",
+    "typescript": "npm:typescript@^5.0.0",
+    "vsce": "npm:vsce@^2.15.0"
+  }
+}
