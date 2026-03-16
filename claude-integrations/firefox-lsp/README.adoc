@@ -1,5 +1,5 @@
 = Claude Firefox LSP
-Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 :toc: left
 :toclevels: 3
 :icons: font

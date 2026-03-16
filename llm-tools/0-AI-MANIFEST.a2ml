@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 # 0-AI-MANIFEST.a2ml - Universal AI Agent Entry Point
 # Repository: llm-tools
-# Author: Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+# Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 (ai-manifest
   (version "1.0")
@@ -18,7 +18,7 @@
     (rule "SCM files ONLY in .machine_readable/ directory")
     (rule "Never create STATE.scm, META.scm, or ECOSYSTEM.scm in repository root")
     (rule "License is PMPL-1.0-or-later")
-    (rule "Author is Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"))
+    (rule "Author is Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"))
 
   (structure
     (component "antidote" (path "antidote/") (language "guile-scheme") (description "LLM semantic reset artifacts"))

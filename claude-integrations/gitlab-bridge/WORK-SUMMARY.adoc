@@ -1,5 +1,5 @@
 = Claude GitLab Bridge - Work Summary
-Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 :toc:
 :toclevels: 3
 
@@ -97,7 +97,7 @@ Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
 
 **All files updated to:**
 - License: PMPL-1.0-or-later (Palimpsest License)
-- Copyright: 2025 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+- Copyright: 2025 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 - SPDX headers on all source files
 
 == Remaining Work
@@ -277,6 +277,6 @@ claude-gitlab-bridge/
 
 == Contact
 
-Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 Project: https://github.com/hyperpolymath/claude-gitlab-bridge

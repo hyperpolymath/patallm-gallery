@@ -3,7 +3,7 @@
 name = "did-you-actually-do-that"
 version = "0.1.0"
 edition = "2021"
-authors = ["Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"]
+authors = ["Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"]
 description = "A verification framework for validating claimed AI actions against actual outcomes"
 license = "PMPL-1.0-or-later"
 repository = "https://gitlab.com/hyperpolymath/did-you-actually-do-that"

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+// SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = LLM Tools
 
 image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
@@ -109,6 +109,6 @@ Full git history for each component is preserved in the original repositories.
 
 SPDX-License-Identifier: PMPL-1.0-or-later
 
-Copyright (C) 2025-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+Copyright (C) 2025-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 See link:LICENSE[LICENSE] for the full Palimpsest-MPL 1.0 license text.

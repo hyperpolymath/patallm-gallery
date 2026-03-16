@@ -1,5 +1,5 @@
 = Claude GitLab Bridge - Completion Report
-Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 v2.0.0, 2025-01-23
 :toc:
 :toclevels: 4
@@ -441,7 +441,7 @@ The Claude GitLab Bridge v2.0 is feature-complete for the initial roadmap:
 
 **License:** PMPL-1.0-or-later (Palimpsest License)
 
-**Author:** Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+**Author:** Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 **Repository:** https://github.com/hyperpolymath/claude-gitlab-bridge
 

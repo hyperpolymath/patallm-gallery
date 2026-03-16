@@ -1,5 +1,5 @@
 ; SPDX-License-Identifier: PMPL-1.0-or-later
-; SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+; SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 ;
 ; AI Manifest for claude-integrations
 ; Universal entry point for all AI agents.
@@ -8,7 +8,7 @@
   (version "1.0")
   (name "claude-integrations")
   (description "Unified monorepo for all Claude browser and service integrations")
-  (author "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>")
+  (author "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>")
   (license "PMPL-1.0-or-later")
 
   (canonical-locations

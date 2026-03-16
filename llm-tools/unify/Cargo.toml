@@ -12,7 +12,7 @@ resolver = "2"
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-license = "AGPL-3.0-or-later"
+license = "PMPL-1.0-or-later"
 authors = ["LLM Unify Contributors"]
 repository = "https://github.com/Hyperpolymath/llm-unify"
 homepage = "https://github.com/Hyperpolymath/llm-unify"

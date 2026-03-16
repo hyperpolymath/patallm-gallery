@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "publisher": "hyperpolymath",
   "license": "PMPL-1.0-or-later",
-  "author": "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>",
+  "author": "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>",
   "repository": {
     "type": "git",
     "url": "https://github.com/hyperpolymath/claude-firefox-lsp"

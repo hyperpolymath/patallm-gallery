@@ -27,7 +27,7 @@ This repository is an **Elixir LSP server** leveraging the BEAM VM.
 ## Code Quality
 - Run `just quality` before committing (fmt, lint, dialyzer)
 - Maintain SPDX headers (PMPL-1.0-or-later)
-- Use correct author: Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+- Use correct author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 - Keep adapters isolated in separate GenServer processes
 
 ## Testing

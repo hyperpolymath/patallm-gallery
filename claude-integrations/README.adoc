@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 = Claude Integrations
-Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 :toc: left
 :toclevels: 3
 :icons: font
@@ -94,7 +94,7 @@ Full git history for each component is preserved in the original repositories
 
 SPDX-License-Identifier: PMPL-1.0-or-later
 
-Copyright (C) 2024-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+Copyright (C) 2024-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 Licensed under the Palimpsest License, Version 1.0 or later.
 See link:LICENSE[] for the full license text.
