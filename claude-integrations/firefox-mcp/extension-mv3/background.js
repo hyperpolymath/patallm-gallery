@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-License-Identifier: PMPL-1.0-or-later
 // Claude Firefox MCP - Background Service Worker (MV3)
 // Handles service worker lifecycle with reconnection
 

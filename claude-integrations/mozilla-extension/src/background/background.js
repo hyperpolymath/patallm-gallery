@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-License-Identifier: PMPL-1.0-or-later
 // Background script for Claude Mozilla Extension
 
 // Handle extension icon click - open sidebar

@@ -1,5 +1,5 @@
 #!/bin/bash
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # End-to-end test for llm-unify happy path
 # Tests: init DB -> import ChatGPT/Claude -> search -> validate -> backup/restore -> TUI
 

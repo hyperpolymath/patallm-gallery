@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-License-Identifier: PMPL-1.0-or-later
 // Claude API client for Mozilla extension
 
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';

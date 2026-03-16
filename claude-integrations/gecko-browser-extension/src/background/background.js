@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-License-Identifier: PMPL-1.0-or-later
 // Claude for Gecko - Background Service Worker
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
