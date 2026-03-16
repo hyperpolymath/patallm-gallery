@@ -111,7 +111,7 @@ This project follows the **Hyperpolymath Standard** language policy.
 
 | Guile Scheme
 | State/meta files
-| STATE.scm, META.scm, ECOSYSTEM.scm
+| .machine_readable/6a2/STATE.a2ml, .machine_readable/6a2/META.a2ml, .machine_readable/6a2/ECOSYSTEM.a2ml
 
 |===
 
