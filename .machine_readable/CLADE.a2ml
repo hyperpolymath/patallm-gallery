@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Clade declaration — part of the gv-clade-index registry
+# See: https://github.com/hyperpolymath/gv-clade-index
+
+[identity]
+uuid = "dde6385a-25f4-5464-8e51-6028d5b9998c"
+primary-forge = "github"
+primary-owner = "hyperpolymath"
+canonical-name = "patallm-gallery"
+prefixed-name = "dx-patallm-gallery"
+
+[clade]
+primary = "dx"
+secondary = ["ax"]
+assigned = "2026-03-16"
+rationale = ""
+
+[forges]
+github = "hyperpolymath/patallm-gallery"
+gitlab = "hyperpolymath/patallm-gallery"
+bitbucket = "hyperpolymath/patallm-gallery"
+
+[lineage]
+type = "monorepo"
+parent = "Monorepo — echomesh, elegant-state, claude-integrations, etc."
+born = "2026-03-16"
