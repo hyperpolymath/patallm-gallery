@@ -6,7 +6,7 @@
   project = {
     name = "llm-unify",
     version = "0.1.0",
-    license = "AGPL-3.0-or-later",
+    license = "PMPL-1.0-or-later",
     rust_edition = "2021",
     min_rust_version = "1.75.0",
   },

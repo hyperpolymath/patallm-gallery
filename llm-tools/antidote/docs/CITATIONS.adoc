@@ -10,7 +10,7 @@
   title = {llm-antidote},
   year = {2025},
   url = {https://github.com/hyperpolymath/llm-antidote},
-  license = {AGPL-3.0-or-later}
+  license = {PMPL-1.0-or-later}
 }
 ----
 

@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Standardized license to MIT OR AGPL-3.0-or-later dual licensing
+- Standardized license to MIT OR PMPL-1.0-or-later dual licensing
 - Standardized .gitignore and .gitattributes per RSR
 - Updated thiserror from 1.0 to 2.0
 - Bumped peter-evans/repository-dispatch to 4.0.1

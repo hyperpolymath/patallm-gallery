@@ -24,7 +24,7 @@ Detailed milestones and deliverables will be defined once project specifications
 * [x] Repository initialization
 * [x] Multi-forge distribution infrastructure (GitHub, GitLab, Codeberg, Bitbucket)
 * [x] Development standards and language policy
-* [x] License selection (AGPL-3.0-or-later)
+* [x] License selection (PMPL-1.0-or-later)
 
 === Phase 1: Specification
 

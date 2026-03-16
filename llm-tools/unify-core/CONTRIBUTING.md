@@ -126,4 +126,4 @@ See [.claude/CLAUDE.md](.claude/CLAUDE.md) for the complete language policy.
 ## License
 
 By contributing, you agree that your contributions will be licensed under the
-project's dual license: MIT OR AGPL-3.0-or-later.
+project's dual license: MIT OR PMPL-1.0-or-later.

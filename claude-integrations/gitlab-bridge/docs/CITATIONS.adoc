@@ -10,7 +10,7 @@
   title = {claude-gitlab-bridge},
   year = {2025},
   url = {https://github.com/hyperpolymath/claude-gitlab-bridge},
-  license = {AGPL-3.0-or-later}
+  license = {PMPL-1.0-or-later}
 }
 ----
 
