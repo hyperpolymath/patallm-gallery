@@ -76,7 +76,7 @@ jobs:
           cat RSR_COMPLIANCE.md
 
       - name: Upload compliance report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@ea165f8d65b6db9a8b71b5c2d1a090c0daf9c8bb # v4
         with:
           name: rsr-compliance-report
           path: RSR_COMPLIANCE.md
