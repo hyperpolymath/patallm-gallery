@@ -1,5 +1,6 @@
 //! Full-text search functionality
 
+#![forbid(unsafe_code)]
 pub mod error;
 pub mod search;
 

@@ -62,6 +62,7 @@
 //! - `async` - Enable async verification for network-based evidence checks (HTTP, TCP)
 //! - `watch` - Enable watch mode for continuous verification
 
+#![forbid(unsafe_code)]
 #[cfg(feature = "async")]
 pub mod async_checks;
 

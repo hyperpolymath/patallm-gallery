@@ -9,6 +9,7 @@
 //! The ESN receives processed state from the LSM and produces
 //! outputs that can drive actions or influence LLM prompts.
 
+#![forbid(unsafe_code)]
 use ndarray::{s, Array1, Array2};
 use ndarray_rand::RandomExt;
 use rand::distr::Uniform;

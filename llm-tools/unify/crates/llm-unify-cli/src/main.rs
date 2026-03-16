@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
 //! LLM Unify CLI
 
+#![forbid(unsafe_code)]
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use llm_unify_core::Provider;

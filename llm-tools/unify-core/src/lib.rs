@@ -4,6 +4,7 @@
 //! across multiple platforms.
 
 /// Crate version (synced with Cargo.toml)
+#![forbid(unsafe_code)]
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Crate version as semver components

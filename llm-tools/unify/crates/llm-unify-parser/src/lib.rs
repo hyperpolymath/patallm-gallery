@@ -1,5 +1,6 @@
 //! Parsers for various LLM platform export formats
 
+#![forbid(unsafe_code)]
 pub mod chatgpt;
 pub mod claude;
 pub mod copilot;

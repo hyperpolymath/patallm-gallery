@@ -1,5 +1,6 @@
 //! Terminal User Interface for LLM Unify
 
+#![forbid(unsafe_code)]
 pub mod app;
 pub mod ui;
 

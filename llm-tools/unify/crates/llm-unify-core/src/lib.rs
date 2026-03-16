@@ -3,6 +3,7 @@
 //! This crate provides the fundamental abstractions for managing LLM conversations
 //! across multiple platforms.
 
+#![forbid(unsafe_code)]
 pub mod error;
 pub mod models;
 pub mod provider;

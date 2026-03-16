@@ -3,6 +3,7 @@
 //! This library provides a persistent knowledge graph that multiple agents
 //! (Claude, Llama, custom modules) can query and modify via GraphQL.
 
+#![forbid(unsafe_code)]
 pub mod schema;
 pub mod store;
 pub mod graphql;

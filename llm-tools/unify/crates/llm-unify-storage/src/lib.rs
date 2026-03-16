@@ -1,5 +1,6 @@
 //! Storage layer for LLM Unify using SQLite
 
+#![forbid(unsafe_code)]
 pub mod backup;
 pub mod database;
 pub mod error;
