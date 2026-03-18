@@ -5,7 +5,8 @@ name: CodeQL Security Analysis
 on:
   workflow_dispatch:  # Manual trigger only
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   placeholder:
