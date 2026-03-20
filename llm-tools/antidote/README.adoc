@@ -90,12 +90,20 @@ cat llm-reset  # View the artifact
 
 ```
 llm-antidote/
-├── LICENSE              # CC0 1.0 Universal (Public Domain)
-├── README.md            # This file
+├── LICENSE              # PMPL-1.0-or-later
+├── README.adoc          # This file
 ├── CLAUDE.md            # AI assistant development guide
+├── Project.toml         # Julia package manifest
 ├── llm-reset            # Universal reset artifact (Guile Scheme)
-├── artifacts/           # Additional reset variants
-├── tools/               # Verification and diagnostic tools
+├── artifacts/           # Additional reset variants (Scheme + Julia)
+│   └── llm_reset.jl     # Universal reset artifact (Julia)
+├── tools/               # Verification and diagnostic tools (Julia)
+│   ├── benchmark.jl     # Benchmark framework for reset effectiveness
+│   ├── rsr_compliance.jl # RSR compliance checker
+│   ├── llm_diagnostic.jl # Diagnostic tools for context probing
+│   └── llm_cli.jl       # CLI interface
+├── tests/               # Test suite (Julia)
+│   └── test_suite.jl    # Semi-automated test suite
 ├── examples/            # Usage demonstrations
 └── docs/                # Research and documentation
 ```
@@ -206,5 +214,6 @@ Special thanks to the open-source AI community for inspiration and dialogue.
 ---
 
 *Status*: Active Development
-*Version*: 0.1.0-alpha
-*Last Updated*: 2025-11-22
+*Version*: 1.0.0
+*Language*: Julia (rewritten from Python, March 2026)
+*Last Updated*: 2026-03-20
