@@ -239,7 +239,7 @@ defmodule ClaudeFirefox.LSP.Server do
   # Parse opts from LSP arguments (may be map or list)
   defp parse_opts([]), do: []
   defp parse_opts([%{} = opts_map | _]) do
-    Enum.map(opts_map, fn {k, v} -> {String.to_atom(k), v} end)
+    Enum.map(opts_map, fn {k, v} -> {String.to_existing_atom(k), v} end)
   end
   defp parse_opts(_), do: []
 end
