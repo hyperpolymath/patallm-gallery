@@ -1,0 +1,28 @@
+{
+  "applicability": [
+    "individual",
+    "team"
+  ],
+  "capabilities": {
+    "primary": {
+      "description": "TODO: describe this service's primary capability",
+      "panel_compatible": true,
+      "protocol": "cli",
+      "requires_auth": false,
+      "type": "custom"
+    }
+  },
+  "consumes": [
+    "octad-storage"
+  ],
+  "groove_version": "1",
+  "health": null,
+  "invoke_patterns": {
+    "ci": "patallm-gallery --ci --format json",
+    "local": "patallm-gallery --interactive",
+    "mcp": "boj cartridge_invoke patallm-gallery"
+  },
+  "mode": "passive",
+  "service_id": "patallm-gallery",
+  "service_version": "0.1.0"
+}
