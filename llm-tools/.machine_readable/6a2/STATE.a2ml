@@ -1,39 +1,40 @@
-;;; SPDX-License-Identifier: PMPL-1.0-or-later
-;;; STATE.scm - Current project state for llm-tools
-;;; Location: .machine_readable/STATE.scm ONLY
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+#
+# STATE.a2ml — Llm Tools project state
+[metadata]
+project = "llm-tools"
+version = "1.0.0"
+last-updated = "2026-02-08"
+status = "active"
+session = "converted from scheme — 2026-04-11"
 
-(state
-  (metadata
-    (version "1.0.0")
-    (last-updated "2026-02-08")
-    (updated-by "claude-opus-4.6"))
+[project-context]
+name = "Llm Tools"
+purpose = """Unified LLM tooling: context management, conversation unification, and code verification"""
+completion-percentage = 30
 
-  (project-context
-    (name "llm-tools")
-    (type "monorepo")
-    (description "Unified LLM tooling: context management, conversation unification, and code verification")
-    (languages ("rust" "haskell" "guile-scheme")))
+[position]
+phase = "consolidation"   # design | implementation | testing | maintenance | archived
+maturity = "experimental"  # experimental | alpha | beta | production | lts
 
-  (current-position
-    (phase "consolidation")
-    (status "initial-merge-complete")
-    (completion-percentage 30))
+[route-to-mvp]
+milestones = [
+  # No milestones recorded
+]
 
-  (components
-    (antidote
-      (status "imported")
-      (origin "llm-antidote"))
-    (unify
-      (status "imported")
-      (origin "llm-unify"))
-    (unify-core
-      (status "imported")
-      (origin "llm-unify-core"))
-    (verify
-      (status "imported")
-      (origin "llm-verify")))
+[blockers-and-issues]
+issues = [
+  # No blockers recorded
+]
 
-  (critical-next-actions
-    (action "Set up CI/CD workflows for monorepo")
-    (action "Update internal cross-references between components")
-    (action "Create GitHub repo and push")))
+[critical-next-actions]
+actions = [
+  "Set up CI/CD workflows for monorepo",
+  "Update internal cross-references between components",
+  "Create GitHub repo and push",
+]
+
+[maintenance-status]
+last-run-utc = "2026-02-08T00:00:00Z"
+last-result = "unknown"  # unknown | pass | warn | fail
