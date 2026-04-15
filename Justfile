@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 # Justfile - hyperpolymath standard task runner
 
+import? "contractile.just"
+
 default:
     @just --list
 
