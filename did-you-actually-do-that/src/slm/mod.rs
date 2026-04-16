@@ -177,8 +177,8 @@ mod tests {
             reasoning: "Stub functions detected".to_string(),
             weight: 1.5,
         };
-        let json = serde_json::to_string(&vote).unwrap();
-        let back: Vote = serde_json::from_str(&json).unwrap();
+        let json = serde_json::to_string(&vote).expect("TODO: handle error");
+        let back: Vote = serde_json::from_str(&json).expect("TODO: handle error");
         assert_eq!(back.voter, "test-model");
         assert_eq!(back.decision, VoteDecision::Reject);
         assert_eq!(back.weight, 1.5);

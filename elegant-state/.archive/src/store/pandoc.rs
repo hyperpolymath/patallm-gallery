@@ -231,7 +231,7 @@ mod tests {
         let converter = PandocConverter::new();
         // This test passes if pandoc is installed, which is expected in the Guix env
         if converter.is_available() {
-            let version = converter.version().unwrap();
+            let version = converter.version().expect("TODO: handle error");
             assert!(version.contains("pandoc"));
         }
     }
@@ -244,7 +244,7 @@ mod tests {
         }
 
         let markdown = "# Hello\n\nThis is **bold** and *italic*.";
-        let plain = converter.to_plain_text(markdown, InputFormat::Markdown).unwrap();
+        let plain = converter.to_plain_text(markdown, InputFormat::Markdown).expect("TODO: handle error");
 
         assert!(plain.contains("Hello"));
         assert!(plain.contains("bold"));
@@ -259,7 +259,7 @@ mod tests {
         }
 
         let html = "<h1>Title</h1><p>Paragraph with <strong>bold</strong>.</p>";
-        let markdown = converter.to_markdown(html, InputFormat::Html).unwrap();
+        let markdown = converter.to_markdown(html, InputFormat::Html).expect("TODO: handle error");
 
         assert!(markdown.contains("Title"));
         assert!(markdown.contains("**bold**") || markdown.contains("__bold__"));

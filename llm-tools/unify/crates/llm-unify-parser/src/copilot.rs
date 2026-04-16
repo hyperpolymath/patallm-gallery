@@ -293,7 +293,7 @@ mod tests {
         let result = parser.parse(json.as_bytes());
         assert!(result.is_ok());
 
-        let conversations = result.unwrap();
+        let conversations = result.expect("TODO: handle error");
         assert_eq!(conversations.len(), 1);
 
         let conv = &conversations[0];
@@ -321,7 +321,7 @@ mod tests {
         let result = parser.parse(json.as_bytes());
         assert!(result.is_ok());
 
-        let conversations = result.unwrap();
+        let conversations = result.expect("TODO: handle error");
         assert_eq!(conversations.len(), 1);
         assert_eq!(conversations[0].messages.len(), 2);
     }
@@ -349,7 +349,7 @@ mod tests {
         let result = parser.parse(json.as_bytes());
         assert!(result.is_ok());
 
-        let conversations = result.unwrap();
+        let conversations = result.expect("TODO: handle error");
         assert_eq!(conversations[0].messages.len(), 4);
     }
 
@@ -371,7 +371,7 @@ mod tests {
         let result = parser.parse(json.as_bytes());
         assert!(result.is_ok());
 
-        let conversations = result.unwrap();
+        let conversations = result.expect("TODO: handle error");
         // Only user message, no assistant response
         assert_eq!(conversations[0].messages.len(), 1);
     }

@@ -281,7 +281,7 @@ fn output_json(reports: &[VerificationReport]) {
             "unverifiable": reports.iter().filter(|r| r.overall_verdict == Verdict::Unverifiable).count()
         }
     });
-    println!("{}", serde_json::to_string_pretty(&output).unwrap());
+    println!("{}", serde_json::to_string_pretty(&output).expect("TODO: handle error"));
 }
 
 /// Output reports as SARIF (Static Analysis Results Interchange Format)
@@ -372,7 +372,7 @@ fn output_sarif(reports: &[VerificationReport]) {
         }]
     });
 
-    println!("{}", serde_json::to_string_pretty(&sarif).unwrap());
+    println!("{}", serde_json::to_string_pretty(&sarif).expect("TODO: handle error"));
 }
 
 /// Output reports as JUnit XML (for CI systems)

@@ -204,14 +204,14 @@ mod tests {
 
     #[test]
     fn test_fulltext_search() {
-        let index = FullTextIndex::open_in_memory().unwrap();
-        let mut writer = index.writer(50_000_000).unwrap();
+        let index = FullTextIndex::open_in_memory().expect("TODO: handle error");
+        let mut writer = index.writer(50_000_000).expect("TODO: handle error");
 
         let node = StateNode::new(NodeKind::Insight, json!({"text": "hello world rust programming"}));
-        index.index_node(&writer, &node).unwrap();
-        writer.commit().unwrap();
+        index.index_node(&writer, &node).expect("TODO: handle error");
+        writer.commit().expect("TODO: handle error");
 
-        let results = index.search("rust", None, 10).unwrap();
+        let results = index.search("rust", None, 10).expect("TODO: handle error");
         assert!(!results.is_empty());
         assert!(results[0].content.contains("rust"));
     }

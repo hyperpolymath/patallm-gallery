@@ -297,8 +297,8 @@ mod tests {
     fn test_ensemble_result_serialization() {
         let ensemble = Ensemble::new();
         let result = ensemble.evaluate(&sample_context());
-        let json = serde_json::to_string(&result).unwrap();
-        let back: EnsembleResult = serde_json::from_str(&json).unwrap();
+        let json = serde_json::to_string(&result).expect("TODO: handle error");
+        let back: EnsembleResult = serde_json::from_str(&json).expect("TODO: handle error");
         assert_eq!(back.votes.len(), result.votes.len());
         assert_eq!(back.suggested_verdict, result.suggested_verdict);
     }

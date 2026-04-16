@@ -51,17 +51,17 @@ mod tests {
 
     #[test]
     fn test_hash_matches() {
-        let dir = TempDir::new().unwrap();
+        let dir = TempDir::new().expect("TODO: handle error");
         let file_path = dir.path().join("test.txt");
         let content = b"hello world";
-        fs::write(&file_path, content).unwrap();
+        fs::write(&file_path, content).expect("TODO: handle error");
 
         let mut hasher = Sha256::new();
         hasher.update(content);
         let hash = hex::encode(hasher.finalize());
 
         let evidence = EvidenceSpec::FileWithHash {
-            path: file_path.to_str().unwrap().to_string(),
+            path: file_path.to_str().expect("TODO: handle error").to_string(),
             sha256: hash,
         };
         let result = check(&evidence);
@@ -70,12 +70,12 @@ mod tests {
 
     #[test]
     fn test_hash_mismatch() {
-        let dir = TempDir::new().unwrap();
+        let dir = TempDir::new().expect("TODO: handle error");
         let file_path = dir.path().join("test.txt");
-        fs::write(&file_path, "hello world").unwrap();
+        fs::write(&file_path, "hello world").expect("TODO: handle error");
 
         let evidence = EvidenceSpec::FileWithHash {
-            path: file_path.to_str().unwrap().to_string(),
+            path: file_path.to_str().expect("TODO: handle error").to_string(),
             sha256: "0000000000000000000000000000000000000000000000000000000000000000"
                 .to_string(),
         };

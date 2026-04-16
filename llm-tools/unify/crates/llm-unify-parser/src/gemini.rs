@@ -231,7 +231,7 @@ mod tests {
         let result = parser.parse(json.as_bytes());
         assert!(result.is_ok());
 
-        let conversations = result.unwrap();
+        let conversations = result.expect("TODO: handle error");
         assert_eq!(conversations.len(), 1);
 
         let conv = &conversations[0];
@@ -264,7 +264,7 @@ mod tests {
         let result = parser.parse(json.as_bytes());
         assert!(result.is_ok());
 
-        let conversations = result.unwrap();
+        let conversations = result.expect("TODO: handle error");
         assert_eq!(conversations.len(), 1);
         assert_eq!(conversations[0].messages.len(), 2);
     }
@@ -289,7 +289,7 @@ mod tests {
         let parser = GeminiParser;
         let result = parser.parse(json.as_bytes());
         assert!(result.is_ok());
-        assert_eq!(result.unwrap().len(), 2);
+        assert_eq!(result.expect("TODO: handle error").len(), 2);
     }
 
     #[test]
@@ -305,7 +305,7 @@ mod tests {
         let result = parser.parse(json.as_bytes());
         assert!(result.is_ok());
 
-        let conversations = result.unwrap();
+        let conversations = result.expect("TODO: handle error");
         assert_eq!(conversations[0].messages[0].role, MessageRole::Assistant);
     }
 

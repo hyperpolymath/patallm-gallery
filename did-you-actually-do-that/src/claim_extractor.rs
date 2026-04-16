@@ -73,35 +73,35 @@ impl ClaimExtractor {
             // Must contain a file extension or path separator to be a valid file path
             file_created_pattern: Regex::new(
                 r#"(?i)(?:I\s+)?(?:created|made|added)\s+(?:the\s+)?file\s+[`"']?([^\s`"']+\.[a-zA-Z0-9]+)[`"']?"#
-            ).unwrap(),
+            ).expect("TODO: handle error"),
             file_wrote_pattern: Regex::new(
                 r#"(?i)(?:I\s+)?(?:wrote|written)\s+(?:to\s+)?(?:the\s+)?file\s+[`"']?([^\s`"']+\.[a-zA-Z0-9]+)[`"']?"#
-            ).unwrap(),
+            ).expect("TODO: handle error"),
             file_modified_pattern: Regex::new(
                 r#"(?i)(?:I\s+)?(?:modified|updated|edited|changed)\s+(?:the\s+)?(?:file\s+)?[`"']?([^\s`"']+\.[a-zA-Z0-9]+)[`"']?"#
-            ).unwrap(),
+            ).expect("TODO: handle error"),
             file_deleted_pattern: Regex::new(
                 r#"(?i)(?:I\s+)?(?:deleted|removed)\s+(?:the\s+)?file\s+[`"']?([^\s`"']+\.[a-zA-Z0-9]+)[`"']?"#
-            ).unwrap(),
+            ).expect("TODO: handle error"),
             // Command execution
             command_ran_pattern: Regex::new(
                 r#"(?i)(?:I\s+)?(?:ran|executed)\s+(?:the\s+)?command\s+[`"']([^`"']+)[`"']"#
-            ).unwrap(),
+            ).expect("TODO: handle error"),
             // Git operations - require hash to be present for commit detection
             git_commit_pattern: Regex::new(
                 r#"(?i)(?:committed|commit)\s+(?:with\s+)?(?:hash\s+)?([a-f0-9]{7,40})"#
-            ).unwrap(),
+            ).expect("TODO: handle error"),
             git_push_pattern: Regex::new(
                 r#"(?i)(?:I\s+)?pushed\s+(?:to\s+)?(?:the\s+)?branch\s+[`"']?([^\s`"']+)[`"']?"#
-            ).unwrap(),
+            ).expect("TODO: handle error"),
             // Git branch - require "branch" keyword to avoid false positives
             git_branch_pattern: Regex::new(
                 r#"(?i)(?:I\s+)?(?:created|switched\s+to)\s+(?:the\s+)?branch\s+[`"']?([^\s`"']+)[`"']?"#
-            ).unwrap(),
+            ).expect("TODO: handle error"),
             // Directory operations - require "directory" or "folder" keyword
             directory_created_pattern: Regex::new(
                 r#"(?i)(?:I\s+)?(?:created|made)\s+(?:the\s+)?(?:directory|folder|dir)\s+[`"']?([^\s`"']+)[`"']?"#
-            ).unwrap(),
+            ).expect("TODO: handle error"),
         }
     }
 

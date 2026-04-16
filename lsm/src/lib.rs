@@ -215,7 +215,7 @@ impl LiquidStateMachine {
         let max_dist = ((nx * nx + ny * ny + nz * nz) as f32).sqrt();
 
         let mut weights = Array2::<f32>::zeros((n, n));
-        let weight_dist = Normal::new(0.5, 0.2).unwrap();
+        let weight_dist = Normal::new(0.5, 0.2).expect("TODO: handle error");
 
         for i in 0..n {
             for j in 0..n {
@@ -269,7 +269,7 @@ impl LiquidStateMachine {
         let mut weights = Array2::random_using((n_neurons, input_dim), dist, rng);
 
         // Sparse connectivity: only ~30% of neurons receive each input
-        let bernoulli = Bernoulli::new(0.3).unwrap();
+        let bernoulli = Bernoulli::new(0.3).expect("TODO: handle error");
         for i in 0..n_neurons {
             for j in 0..input_dim {
                 if !rng.sample(bernoulli) {
@@ -463,7 +463,7 @@ mod tests {
             dimensions: (5, 5, 5),
             ..Default::default()
         };
-        let lsm = LiquidStateMachine::new(config, 10).unwrap();
+        let lsm = LiquidStateMachine::new(config, 10).expect("TODO: handle error");
         assert_eq!(lsm.size(), 125);
     }
 
@@ -473,7 +473,7 @@ mod tests {
             dimensions: (5, 5, 5),
             ..Default::default()
         };
-        let mut lsm = LiquidStateMachine::new(config, 10).unwrap();
+        let mut lsm = LiquidStateMachine::new(config, 10).expect("TODO: handle error");
 
         let input = Array1::from_vec(vec![1.0; 10]);
         let output = lsm.step(&input);
@@ -484,7 +484,7 @@ mod tests {
     #[test]
     fn test_lsm_reset() {
         let config = LsmConfig::default();
-        let mut lsm = LiquidStateMachine::new(config, 10).unwrap();
+        let mut lsm = LiquidStateMachine::new(config, 10).expect("TODO: handle error");
 
         // Run some steps
         let input = Array1::from_vec(vec![1.0; 10]);
@@ -505,7 +505,7 @@ mod tests {
             input_scale: 2.0,
             ..Default::default()
         };
-        let mut lsm = LiquidStateMachine::new(config, 5).unwrap();
+        let mut lsm = LiquidStateMachine::new(config, 5).expect("TODO: handle error");
 
         // Strong input should produce spikes
         let input = Array1::from_vec(vec![5.0; 5]);

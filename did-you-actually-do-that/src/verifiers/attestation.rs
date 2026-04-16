@@ -393,7 +393,7 @@ mod tests {
     #[test]
     fn test_valid_attestation() {
         let (envelope_str, report_bytes) = build_test_attestation();
-        let envelope: Envelope = serde_json::from_str(&envelope_str).unwrap();
+        let envelope: Envelope = serde_json::from_str(&envelope_str).expect("TODO: handle error");
         let result = verify_envelope(&envelope, &report_bytes, None);
         assert_eq!(result.verdict, Verdict::Confirmed);
         assert!(result.structure_valid);
@@ -407,7 +407,7 @@ mod tests {
     #[test]
     fn test_tampered_report_detected() {
         let (envelope_str, _) = build_test_attestation();
-        let envelope: Envelope = serde_json::from_str(&envelope_str).unwrap();
+        let envelope: Envelope = serde_json::from_str(&envelope_str).expect("TODO: handle error");
         // Tamper: different report bytes
         let tampered = b"tampered report content";
         let result = verify_envelope(&envelope, tampered, None);

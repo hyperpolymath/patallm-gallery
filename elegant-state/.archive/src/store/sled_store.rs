@@ -110,7 +110,7 @@ impl Store for SledStore {
 
         // Log event
         let event = StateEvent::new(agent, Operation::Create, Target::Node(node.id))
-            .with_after(serde_json::to_value(&node).unwrap());
+            .with_after(serde_json::to_value(&node).expect("TODO: handle error"));
         self.log_event(event)?;
 
         Ok(node)
@@ -144,8 +144,8 @@ impl Store for SledStore {
 
         // Log event
         let event = StateEvent::new(agent, Operation::Update, Target::Node(id))
-            .with_before(serde_json::to_value(&old_node).unwrap())
-            .with_after(serde_json::to_value(&new_node).unwrap());
+            .with_before(serde_json::to_value(&old_node).expect("TODO: handle error"))
+            .with_after(serde_json::to_value(&new_node).expect("TODO: handle error"));
         self.log_event(event)?;
 
         Ok(new_node)
@@ -178,7 +178,7 @@ impl Store for SledStore {
 
         // Log event
         let event = StateEvent::new(agent, Operation::Delete, Target::Node(id))
-            .with_before(serde_json::to_value(&old_node).unwrap());
+            .with_before(serde_json::to_value(&old_node).expect("TODO: handle error"));
         self.log_event(event)?;
 
         Ok(())
@@ -229,7 +229,7 @@ impl Store for SledStore {
 
         // Log event
         let event = StateEvent::new(agent, Operation::Link, Target::Edge(edge.id))
-            .with_after(serde_json::to_value(&edge).unwrap());
+            .with_after(serde_json::to_value(&edge).expect("TODO: handle error"));
         self.log_event(event)?;
 
         Ok(edge)
@@ -265,7 +265,7 @@ impl Store for SledStore {
 
         // Log event
         let event = StateEvent::new(agent, Operation::Unlink, Target::Edge(id))
-            .with_before(serde_json::to_value(&old_edge).unwrap());
+            .with_before(serde_json::to_value(&old_edge).expect("TODO: handle error"));
         self.log_event(event)?;
 
         Ok(())
@@ -401,7 +401,7 @@ mod tests {
 
     #[test]
     fn test_node_crud() {
-        let store = SledStore::open_temporary().unwrap();
+        let store = SledStore::open_temporary().expect("TODO: handle error");
 
         let node = StateNode::new(
             NodeKind::Project,
@@ -410,60 +410,60 @@ mod tests {
         let id = node.id;
 
         // Create
-        let created = store.create_node(node, AgentId::User).unwrap();
+        let created = store.create_node(node, AgentId::User).expect("TODO: handle error");
         assert_eq!(created.id, id);
 
         // Read
-        let retrieved = store.get_node(id).unwrap().unwrap();
+        let retrieved = store.get_node(id).expect("TODO: handle error").expect("TODO: handle error");
         assert_eq!(retrieved.id, id);
 
         // Update
         let updated = store
             .update_node(id, serde_json::json!({"name": "updated"}), AgentId::User)
-            .unwrap();
+            .expect("TODO: handle error");
         assert_eq!(updated.content["name"], "updated");
 
         // Delete
-        store.delete_node(id, AgentId::User).unwrap();
-        assert!(store.get_node(id).unwrap().is_none());
+        store.delete_node(id, AgentId::User).expect("TODO: handle error");
+        assert!(store.get_node(id).expect("TODO: handle error").is_none());
     }
 
     #[test]
     fn test_edge_operations() {
-        let store = SledStore::open_temporary().unwrap();
+        let store = SledStore::open_temporary().expect("TODO: handle error");
 
         let node1 = store
             .create_node(
                 StateNode::new(NodeKind::Project, serde_json::json!({"name": "A"})),
                 AgentId::User,
             )
-            .unwrap();
+            .expect("TODO: handle error");
         let node2 = store
             .create_node(
                 StateNode::new(NodeKind::Task, serde_json::json!({"name": "B"})),
                 AgentId::User,
             )
-            .unwrap();
+            .expect("TODO: handle error");
 
         let edge = StateEdge::new(node1.id, node2.id, EdgeKind::PartOf);
-        let created = store.create_edge(edge, AgentId::User).unwrap();
+        let created = store.create_edge(edge, AgentId::User).expect("TODO: handle error");
 
-        let edges_from = store.edges_from(node1.id).unwrap();
+        let edges_from = store.edges_from(node1.id).expect("TODO: handle error");
         assert_eq!(edges_from.len(), 1);
         assert_eq!(edges_from[0].id, created.id);
 
-        let edges_to = store.edges_to(node2.id).unwrap();
+        let edges_to = store.edges_to(node2.id).expect("TODO: handle error");
         assert_eq!(edges_to.len(), 1);
     }
 
     #[test]
     fn test_event_logging() {
-        let store = SledStore::open_temporary().unwrap();
+        let store = SledStore::open_temporary().expect("TODO: handle error");
 
         let node = StateNode::new(NodeKind::Insight, serde_json::json!({"text": "hello"}));
-        store.create_node(node, AgentId::Claude).unwrap();
+        store.create_node(node, AgentId::Claude).expect("TODO: handle error");
 
-        let events = store.get_events(None, 10).unwrap();
+        let events = store.get_events(None, 10).expect("TODO: handle error");
         assert_eq!(events.len(), 1);
         assert_eq!(events[0].agent, AgentId::Claude);
         assert_eq!(events[0].operation, Operation::Create);

@@ -37,7 +37,7 @@ fn generate_mackey_glass(length: usize, seed: u64) -> Vec<f64> {
     let mut series = Vec::with_capacity(length);
 
     for _ in 0..length {
-        let x_t = *history.last().unwrap();
+        let x_t = *history.last().expect("TODO: handle error");
         let x_tau = history[history.len() - MG_TAU - 1];
 
         // Mackey-Glass discrete update
