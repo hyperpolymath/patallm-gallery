@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # SPDX-License-Identifier: PMPL-1.0-or-later
+=======
+# SPDX-License-Identifier: MPL-2.0-or-later
+>>>>>>> 1b58383 (chore: sync from parent repo automation)
 name: RSR Language Policy
 
 on:
