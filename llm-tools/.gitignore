@@ -32,3 +32,12 @@ cabal.sandbox.config
 # Environment
 .env
 .env.*
+node_modules/
+_build/
+deps/
+.elixir_ls/
+.cache/
+*.log
+*.tmp
+build/
+dist/

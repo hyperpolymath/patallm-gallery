@@ -67,3 +67,6 @@ lib/bs/
 
 # Crash recovery artifacts
 ai-cli-crash-capture/
+.elixir_ls/
+.cache/
+Thumbs.db

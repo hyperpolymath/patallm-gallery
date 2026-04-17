@@ -28,3 +28,11 @@ node_modules/
 *.key
 *.pem
 secrets.json
+target/
+_build/
+deps/
+.elixir_ls/
+.cache/
+*.tmp
+build/
+dist/
