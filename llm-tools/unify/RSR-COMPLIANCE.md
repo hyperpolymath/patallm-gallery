@@ -32,7 +32,7 @@ LLM Unify achieves **RSR Silver-level compliance** with 51 out of 55 possible po
 | 3 | Memory Safety | 5/5 | 🥇 Gold | ✅ | Zero unsafe blocks |
 | 4 | Offline-First | 5/5 | 🥇 Gold | ✅ | No network dependencies |
 | 5 | .well-known/ | 5/5 | 🥇 Gold | ✅ | RFC 9116 compliant |
-| 6 | Build System | 5/5 | 🥇 Gold | ✅ | justfile + CI/CD |
+| 6 | Build System | 5/5 | 🥇 Gold | ✅ | Justfile + CI/CD |
 | 7 | Test Coverage | 3/5 | 🥉 Bronze | ⚠️ | ~30% (target: 80%) |
 | 8 | TPCF | 5/5 | 🥇 Gold | ✅ | Perimeter 3 framework |
 | 9 | License | 5/5 | 🥇 Gold | ✅ | AGPL-3.0 + Palimpsest |
@@ -108,7 +108,7 @@ $ grep -r "unsafe" --include="*.rs" crates/ | grep -v "//.*unsafe" | wc -l
 **Automated verification:**
 - CI pipeline checks for unsafe blocks
 - Build fails if any unsafe code detected
-- justfile recipe: `just check-unsafe`
+- Justfile recipe: `just check-unsafe`
 
 **Evidence:**
 - All memory safety guaranteed by Rust compiler

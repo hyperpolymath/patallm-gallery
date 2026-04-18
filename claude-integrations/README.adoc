@@ -72,7 +72,7 @@ claude-integrations/
 ├── gitlab-bridge/           # GitLab integration bridge
 ├── mozilla-extension/       # Mozilla products extension
 ├── .machine_readable/       # SCM checkpoint files
-├── justfile                 # Build recipes
+├── Justfile                 # Build recipes
 ├── LICENSE                  # PMPL-1.0-or-later
 └── README.adoc              # This file
 ----

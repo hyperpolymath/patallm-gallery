@@ -48,7 +48,7 @@ llm-tools/
 +-- unify/              # Conversation manager (ex llm-unify)
 +-- unify-core/         # Core library (ex llm-unify-core)
 +-- verify/             # Code verification (ex llm-verify)
-+-- justfile            # Build orchestration
++-- Justfile            # Build orchestration
 +-- LICENSE             # PMPL-1.0-or-later
 +-- README.adoc         # This file
 ----

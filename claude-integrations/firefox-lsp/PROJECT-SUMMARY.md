@@ -72,7 +72,7 @@ claude-firefox-lsp/
 │   └── README.md
 ├── CHANGELOG.md                 # Version history
 ├── ECOSYSTEM.scm                # Ecosystem positioning
-├── justfile                     # Task automation
+├── Justfile                     # Task automation
 ├── LICENSE                      # PMPL-1.0-or-later
 ├── META.scm                     # ADRs and design rationale
 ├── mix.exs                      # Elixir project config

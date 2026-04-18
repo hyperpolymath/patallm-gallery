@@ -134,7 +134,7 @@ sled database
 ----
 elegant-STATE/
 ├── Cargo.toml
-├── justfile              # Build recipes
+├── Justfile              # Build recipes
 ├── src/
 │   ├── main.rs           # CLI entrypoint
 │   ├── lib.rs            # Library root

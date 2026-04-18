@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - VS Code extension scaffold
 - Comprehensive documentation (README.adoc)
 - Checkpoint files (STATE.scm, META.scm, ECOSYSTEM.scm)
-- justfile for common tasks
+- Justfile for common tasks
 
 ### Technical Details
 - Marionette protocol implementation with TCP socket communication

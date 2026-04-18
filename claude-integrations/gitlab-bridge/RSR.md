@@ -207,7 +207,7 @@ src/
 - ✅ Automated testing before release
 - ✅ Changelog generation (to be implemented)
 
-### justfile Recipes ✅
+### Justfile Recipes ✅
 
 Comprehensive build automation:
 - `just build` - Build project
@@ -352,7 +352,7 @@ Implemented in GOVERNANCE.adoc:
 
 ### Automation ✅
 
-- ✅ Build automation with justfile
+- ✅ Build automation with Justfile
 - ✅ Test automation with Vitest
 - ✅ Linting automation with ESLint
 - ✅ Formatting automation with Prettier
@@ -474,7 +474,7 @@ claude-gitlab-bridge/
 ├── .gitattributes                        # Git attributes
 ├── .gitignore                            # Git ignore patterns
 ├── package.json                          # Node.js metadata
-├── justfile                              # Build automation
+├── Justfile                              # Build automation
 ├── .well-known/
 │   ├── security.txt                      # RFC 9116
 │   ├── ai.txt                            # AI training policy

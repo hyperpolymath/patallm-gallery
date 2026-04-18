@@ -21,7 +21,7 @@
 
 ### Build System
 
-- ✅ File: justfile
+- ✅ File: Justfile
 - ❌ File: Makefile
 - ✅ Build system present
 - ✅ File: flake.nix

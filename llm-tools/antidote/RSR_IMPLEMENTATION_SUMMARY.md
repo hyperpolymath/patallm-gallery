@@ -82,7 +82,7 @@ RFC-compliant metadata:
   - CI checks integration
 
 **Missing (optional):**
-- ⚠️ Makefile - Not needed (justfile provides superior functionality)
+- ⚠️ Makefile - Not needed (Justfile provides superior functionality)
 
 ### ✅ CI/CD (3/3 - 100%)
 
@@ -167,7 +167,7 @@ RFC-compliant metadata:
 |----------|-------|--------|-------|
 | Documentation | 8/8 | ✅ Excellent | All required docs present |
 | .well-known/ | 4/4 | ✅ Excellent | RFC 9116 compliant |
-| Build System | 3/4 | ✅ Very Good | justfile + Nix (no Makefile) |
+| Build System | 3/4 | ✅ Very Good | Justfile + Nix (no Makefile) |
 | CI/CD | 3/3 | ✅ Excellent | GitHub + GitLab |
 | Testing | 2/2 | ✅ Excellent | Test suite + RSR checker |
 | Offline-First | 1/1 | ✅ Excellent | Zero network dependencies |
@@ -179,7 +179,7 @@ RFC-compliant metadata:
 
 ## Quick Start with RSR Features
 
-### Using justfile
+### Using Justfile
 
 ```bash
 # List all available commands
@@ -263,7 +263,7 @@ Both platforms generate:
 2. **TPCF framework** - Structured permission model (Perimeter 3)
 3. **Automated compliance** - `just rsr-check` ensures standards maintained
 4. **CI/CD pipelines** - Automated validation on both GitHub and GitLab
-5. **Documentation tooling** - justfile recipes for common tasks
+5. **Documentation tooling** - Justfile recipes for common tasks
 
 ### For Researchers
 
@@ -280,7 +280,7 @@ Both platforms generate:
 | Aspect | Before RSR | After RSR |
 |--------|-----------|-----------|
 | Documentation | 4 files | 8 required + .well-known |
-| Build system | None | justfile (40+ recipes) + Nix |
+| Build system | None | Justfile (40+ recipes) + Nix |
 | CI/CD | None | GitHub Actions + GitLab CI |
 | Testing | Manual | Automated test suite |
 | Security | Basic | RFC 9116 security.txt + SECURITY.md |
