@@ -177,7 +177,7 @@ mod tests {
         let mut config = CapabilityConfig::default();
 
         let caps = AgentCapabilities::new(AgentId::User).with_mode(CapabilityMode::Direct);
-        config.set_capabilities(caps).expect("TODO: handle error");
+        config.set_capabilities(caps).unwrap();
 
         assert!(config.can_write_directly(&AgentId::User));
         assert!(!config.can_write_directly(&AgentId::Claude));

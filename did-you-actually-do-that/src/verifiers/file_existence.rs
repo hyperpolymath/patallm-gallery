@@ -53,12 +53,12 @@ mod tests {
 
     #[test]
     fn test_file_exists_confirmed() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let file_path = dir.path().join("test.txt");
-        fs::write(&file_path, "hello").expect("TODO: handle error");
+        fs::write(&file_path, "hello").unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: file_path.to_str().expect("TODO: handle error").to_string(),
+            path: file_path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Confirmed);
@@ -75,9 +75,9 @@ mod tests {
 
     #[test]
     fn test_directory_exists_confirmed() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let evidence = EvidenceSpec::DirectoryExists {
-            path: dir.path().to_str().expect("TODO: handle error").to_string(),
+            path: dir.path().to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Confirmed);

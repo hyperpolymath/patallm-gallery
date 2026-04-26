@@ -408,7 +408,7 @@ mod tests {
             "working_directory": "/home/user"
         }"#;
 
-        let input = parse_hook_input(json).expect("TODO: handle error");
+        let input = parse_hook_input(json).unwrap();
         assert_eq!(input.event, HookEvent::PostToolExecution);
         assert_eq!(input.tool_name, Some("Write".to_string()));
     }

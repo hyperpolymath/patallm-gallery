@@ -464,7 +464,7 @@ mod tests {
 
         let stub_file = tmp.join("stub.rs");
         fs::write(&stub_file, "fn main() { todo!() }\nfn helper() { unimplemented!() }")
-            .expect("TODO: handle error");
+            .unwrap();
 
         let claims = vec![make_claim(
             "Created stub.rs",

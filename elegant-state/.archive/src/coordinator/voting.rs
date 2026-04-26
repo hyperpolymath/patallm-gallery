@@ -373,17 +373,17 @@ mod tests {
         coordinator.cast_vote(
             Vote::new(proposal_id, AgentId::User, VoteDecision::Approve),
             &config,
-        ).expect("TODO: handle error");
+        ).unwrap();
 
         coordinator.cast_vote(
             Vote::new(proposal_id, AgentId::Claude, VoteDecision::Approve),
             &config,
-        ).expect("TODO: handle error");
+        ).unwrap();
 
         coordinator.cast_vote(
             Vote::new(proposal_id, AgentId::Llama, VoteDecision::Reject),
             &config,
-        ).expect("TODO: handle error");
+        ).unwrap();
 
         let result = coordinator.evaluate(proposal_id);
         assert!(matches!(result, VotingResult::Approved { .. }));
@@ -398,12 +398,12 @@ mod tests {
         coordinator.cast_vote(
             Vote::new(proposal_id, AgentId::User, VoteDecision::Approve),
             &config,
-        ).expect("TODO: handle error");
+        ).unwrap();
 
         coordinator.cast_vote(
             Vote::new(proposal_id, AgentId::Claude, VoteDecision::Reject),
             &config,
-        ).expect("TODO: handle error");
+        ).unwrap();
 
         let result = coordinator.evaluate(proposal_id);
         assert!(matches!(result, VotingResult::Rejected { .. }));
@@ -417,14 +417,14 @@ mod tests {
         // Give User higher weight
         let user_caps = super::super::capabilities::AgentCapabilities::new(AgentId::User)
             .with_vote_weight(2.0);
-        config.set_capabilities(user_caps).expect("TODO: handle error");
+        config.set_capabilities(user_caps).unwrap();
 
         let proposal_id = ProposalId::new();
 
         coordinator.cast_vote(
             Vote::new(proposal_id, AgentId::User, VoteDecision::Approve),
             &config,
-        ).expect("TODO: handle error");
+        ).unwrap();
 
         let result = coordinator.evaluate(proposal_id);
         assert!(matches!(result, VotingResult::Approved { .. }));
@@ -439,7 +439,7 @@ mod tests {
         coordinator.cast_vote(
             Vote::new(proposal_id, AgentId::User, VoteDecision::Approve),
             &config,
-        ).expect("TODO: handle error");
+        ).unwrap();
 
         let result = coordinator.cast_vote(
             Vote::new(proposal_id, AgentId::User, VoteDecision::Reject),

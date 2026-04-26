@@ -290,7 +290,7 @@ mod tests {
     fn test_ocr_available() {
         let ocr = OcrEngine::new();
         if ocr.is_available() {
-            let version = ocr.version().expect("TODO: handle error");
+            let version = ocr.version().unwrap();
             assert!(version.contains("tesseract"));
         }
     }
@@ -299,7 +299,7 @@ mod tests {
     fn test_list_languages() {
         let ocr = OcrEngine::new();
         if ocr.is_available() {
-            let langs = ocr.list_languages().expect("TODO: handle error");
+            let langs = ocr.list_languages().unwrap();
             // eng should be available in most installations
             assert!(langs.iter().any(|l| l == "eng"));
         }

@@ -417,7 +417,7 @@ mod tests {
         let resp = PortResponse::err("test-2".to_string(), -1, "oops".to_string());
         assert!(resp.result.is_none());
         assert!(resp.error.is_some());
-        assert_eq!(resp.error.expect("TODO: handle error").code, -1);
+        assert_eq!(resp.error.unwrap().code, -1);
     }
 
     #[test]
@@ -431,7 +431,7 @@ mod tests {
         };
         let response = handle_request(&verifier, &ensemble, &request);
         assert!(response.result.is_some());
-        assert_eq!(response.result.expect("TODO: handle error")["pong"], true);
+        assert_eq!(response.result.unwrap()["pong"], true);
     }
 
     #[test]
@@ -445,7 +445,7 @@ mod tests {
         };
         let response = handle_request(&verifier, &ensemble, &request);
         assert!(response.error.is_some());
-        assert_eq!(response.error.expect("TODO: handle error").code, -32601);
+        assert_eq!(response.error.unwrap().code, -32601);
     }
 
     #[test]
@@ -463,7 +463,7 @@ mod tests {
         };
         let response = handle_request(&verifier, &ensemble, &request);
         assert!(response.result.is_some());
-        let result = response.result.expect("TODO: handle error");
+        let result = response.result.unwrap();
         assert!(result["votes"].is_array());
         assert!(result["suggested_verdict"].is_string());
     }
@@ -472,10 +472,10 @@ mod tests {
     fn test_read_write_message_roundtrip() {
         let data = b"hello world";
         let mut buf = Vec::new();
-        write_message(&mut buf, data).expect("TODO: handle error");
+        write_message(&mut buf, data).unwrap();
 
         let mut cursor = io::Cursor::new(buf);
-        let result = read_message(&mut cursor).expect("TODO: handle error").expect("TODO: handle error");
+        let result = read_message(&mut cursor).unwrap().unwrap();
         assert_eq!(result, data);
     }
 }

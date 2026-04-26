@@ -157,12 +157,12 @@ mod tests {
 
     #[test]
     fn test_valid_json() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("test.json");
-        fs::write(&path, r#"{"key": "value", "num": 42}"#).expect("TODO: handle error");
+        fs::write(&path, r#"{"key": "value", "num": 42}"#).unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Confirmed);
@@ -170,26 +170,26 @@ mod tests {
 
     #[test]
     fn test_invalid_json() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("bad.json");
-        fs::write(&path, r#"{"key": value}"#).expect("TODO: handle error");
+        fs::write(&path, r#"{"key": value}"#).unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Refuted);
-        assert!(result.details.expect("TODO: handle error").contains("JSON syntax error"));
+        assert!(result.details.unwrap().contains("JSON syntax error"));
     }
 
     #[test]
     fn test_valid_toml() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("test.toml");
-        fs::write(&path, "[package]\nname = \"test\"\n").expect("TODO: handle error");
+        fs::write(&path, "[package]\nname = \"test\"\n").unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Confirmed);
@@ -197,40 +197,40 @@ mod tests {
 
     #[test]
     fn test_invalid_toml() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("bad.toml");
-        fs::write(&path, "[package\nname = broken").expect("TODO: handle error");
+        fs::write(&path, "[package\nname = broken").unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Refuted);
-        assert!(result.details.expect("TODO: handle error").contains("TOML syntax error"));
+        assert!(result.details.unwrap().contains("TOML syntax error"));
     }
 
     #[test]
     fn test_source_file_readable() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("main.rs");
-        fs::write(&path, "fn main() {\n    println!(\"hello\");\n}\n").expect("TODO: handle error");
+        fs::write(&path, "fn main() {\n    println!(\"hello\");\n}\n").unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Confirmed);
-        assert!(result.details.expect("TODO: handle error").contains("3 lines"));
+        assert!(result.details.unwrap().contains("3 lines"));
     }
 
     #[test]
     fn test_empty_file() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("empty.json");
-        fs::write(&path, "").expect("TODO: handle error");
+        fs::write(&path, "").unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Inconclusive);

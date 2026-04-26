@@ -194,7 +194,7 @@ impl EchoStateNetwork {
     /// Create sparse reservoir weight matrix with target spectral radius
     fn create_reservoir_matrix(config: &EsnConfig, rng: &mut impl Rng) -> Array2<f32> {
         let n = config.reservoir_size;
-        let dist = Uniform::new(-1.0f32, 1.0f32).expect("TODO: handle error");
+        let dist = Uniform::new(-1.0f32, 1.0f32).unwrap();
 
         let mut w = Array2::zeros((n, n));
 
@@ -233,7 +233,7 @@ impl EchoStateNetwork {
         input_dim: usize,
         rng: &mut impl Rng,
     ) -> Array2<f32> {
-        let dist = Uniform::new(-1.0f32, 1.0f32).expect("TODO: handle error");
+        let dist = Uniform::new(-1.0f32, 1.0f32).unwrap();
         let w = Array2::random_using((config.reservoir_size, input_dim), &dist, rng);
         w * config.input_scale
     }
@@ -264,7 +264,7 @@ impl EchoStateNetwork {
         }
 
         // Add noise
-        let noise_dist = Normal::new(0.0, self.config.noise_level as f64).expect("TODO: handle error");
+        let noise_dist = Normal::new(0.0, self.config.noise_level as f64).unwrap();
         let noise: Array1<f32> = Array1::from_iter(
             (0..self.config.reservoir_size).map(|_| rng.sample(noise_dist) as f32),
         );
@@ -460,7 +460,7 @@ impl EchoStateNetwork {
     /// Set feedback weights
     pub fn set_feedback(&mut self, output_dim: usize) {
         let mut rng = rand::rng();
-        let dist = Uniform::new(-1.0f32, 1.0f32).expect("TODO: handle error");
+        let dist = Uniform::new(-1.0f32, 1.0f32).unwrap();
         let w = Array2::random_using((self.config.reservoir_size, output_dim), &dist, &mut rng);
         self.w_feedback = Some(w * self.config.feedback_scale);
         self.output_dim = Some(output_dim);
@@ -568,7 +568,7 @@ mod tests {
             reservoir_size: 100,
             ..Default::default()
         };
-        let esn = EchoStateNetwork::new(config, 10, Activation::Tanh).expect("TODO: handle error");
+        let esn = EchoStateNetwork::new(config, 10, Activation::Tanh).unwrap();
         assert_eq!(esn.size(), 100);
     }
 
@@ -578,7 +578,7 @@ mod tests {
             reservoir_size: 100,
             ..Default::default()
         };
-        let mut esn = EchoStateNetwork::new(config, 10, Activation::Tanh).expect("TODO: handle error");
+        let mut esn = EchoStateNetwork::new(config, 10, Activation::Tanh).unwrap();
 
         let input = Array1::from_vec(vec![0.5; 10]);
         let state = esn.step(&input);
@@ -595,7 +595,7 @@ mod tests {
             spectral_radius: 0.9,
             ..Default::default()
         };
-        let mut esn = EchoStateNetwork::new(config, 5, Activation::Tanh).expect("TODO: handle error");
+        let mut esn = EchoStateNetwork::new(config, 5, Activation::Tanh).unwrap();
 
         // Drive with input
         let input = Array1::from_vec(vec![1.0; 5]);
@@ -632,7 +632,7 @@ mod tests {
         ];
         let activations = vec![Activation::Tanh, Activation::Tanh];
 
-        let mut h_esn = HierarchicalEsn::new(configs, 10, activations).expect("TODO: handle error");
+        let mut h_esn = HierarchicalEsn::new(configs, 10, activations).unwrap();
 
         let input = Array1::from_vec(vec![0.5; 10]);
         let output = h_esn.step(&input);

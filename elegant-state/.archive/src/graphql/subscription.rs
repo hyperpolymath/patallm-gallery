@@ -163,9 +163,9 @@ mod tests {
             serde_json::json!({"test": true}),
         );
 
-        sender.send(SubscriptionEvent::NodeCreated(node.clone())).expect("TODO: handle error");
+        sender.send(SubscriptionEvent::NodeCreated(node.clone())).unwrap();
 
-        match receiver.try_recv().expect("TODO: handle error") {
+        match receiver.try_recv().unwrap() {
             SubscriptionEvent::NodeCreated(n) => assert_eq!(n.id, node.id),
             _ => panic!("Wrong event type"),
         }

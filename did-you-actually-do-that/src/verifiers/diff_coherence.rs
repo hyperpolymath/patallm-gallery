@@ -224,22 +224,22 @@ mod tests {
     use tempfile::TempDir;
 
     fn setup_git_repo() -> TempDir {
-        let dir = TempDir::new().expect("TODO: handle error");
-        let repo = Repository::init(dir.path()).expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
+        let repo = Repository::init(dir.path()).unwrap();
 
         // Create a file and commit
         let file_path = dir.path().join("test.txt");
-        fs::write(&file_path, "hello").expect("TODO: handle error");
+        fs::write(&file_path, "hello").unwrap();
 
-        let mut index = repo.index().expect("TODO: handle error");
-        index.add_path(Path::new("test.txt")).expect("TODO: handle error");
-        index.write().expect("TODO: handle error");
-        let tree_id = index.write_tree().expect("TODO: handle error");
-        let tree = repo.find_tree(tree_id).expect("TODO: handle error");
+        let mut index = repo.index().unwrap();
+        index.add_path(Path::new("test.txt")).unwrap();
+        index.write().unwrap();
+        let tree_id = index.write_tree().unwrap();
+        let tree = repo.find_tree(tree_id).unwrap();
 
-        let sig = git2::Signature::now("Test", "test@test.com").expect("TODO: handle error");
+        let sig = git2::Signature::now("Test", "test@test.com").unwrap();
         repo.commit(Some("HEAD"), &sig, &sig, "Initial commit", &tree, &[])
-            .expect("TODO: handle error");
+            .unwrap();
 
         dir
     }
@@ -248,7 +248,7 @@ mod tests {
     fn test_git_clean_on_clean_repo() {
         let dir = setup_git_repo();
         let evidence = EvidenceSpec::GitClean {
-            repo_path: Some(dir.path().to_str().expect("TODO: handle error").to_string()),
+            repo_path: Some(dir.path().to_str().unwrap().to_string()),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Confirmed);
@@ -258,10 +258,10 @@ mod tests {
     fn test_git_clean_with_changes() {
         let dir = setup_git_repo();
         // Add an untracked file
-        fs::write(dir.path().join("new.txt"), "untracked").expect("TODO: handle error");
+        fs::write(dir.path().join("new.txt"), "untracked").unwrap();
 
         let evidence = EvidenceSpec::GitClean {
-            repo_path: Some(dir.path().to_str().expect("TODO: handle error").to_string()),
+            repo_path: Some(dir.path().to_str().unwrap().to_string()),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Refuted);
@@ -270,12 +270,12 @@ mod tests {
     #[test]
     fn test_commit_exists_on_initial_commit() {
         let dir = setup_git_repo();
-        let repo = Repository::open(dir.path()).expect("TODO: handle error");
-        let head = repo.head().expect("TODO: handle error").target().expect("TODO: handle error");
+        let repo = Repository::open(dir.path()).unwrap();
+        let head = repo.head().unwrap().target().unwrap();
 
         let evidence = EvidenceSpec::GitCommitExists {
             commit: head.to_string(),
-            repo_path: Some(dir.path().to_str().expect("TODO: handle error").to_string()),
+            repo_path: Some(dir.path().to_str().unwrap().to_string()),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Confirmed);
@@ -286,7 +286,7 @@ mod tests {
         let dir = setup_git_repo();
         let evidence = EvidenceSpec::GitCommitExists {
             commit: "0000000000000000000000000000000000000000".to_string(),
-            repo_path: Some(dir.path().to_str().expect("TODO: handle error").to_string()),
+            repo_path: Some(dir.path().to_str().unwrap().to_string()),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Refuted);
@@ -297,13 +297,13 @@ mod tests {
         let dir = setup_git_repo();
 
         // git init creates a branch depending on config — check which one
-        let repo = Repository::open(dir.path()).expect("TODO: handle error");
-        let head = repo.head().expect("TODO: handle error");
+        let repo = Repository::open(dir.path()).unwrap();
+        let head = repo.head().unwrap();
         let branch_name = head.shorthand().unwrap_or("main");
 
         let evidence = EvidenceSpec::GitBranchExists {
             branch: branch_name.to_string(),
-            repo_path: Some(dir.path().to_str().expect("TODO: handle error").to_string()),
+            repo_path: Some(dir.path().to_str().unwrap().to_string()),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Confirmed);
@@ -314,7 +314,7 @@ mod tests {
         let dir = setup_git_repo();
         let evidence = EvidenceSpec::GitBranchExists {
             branch: "nonexistent-branch-xyz".to_string(),
-            repo_path: Some(dir.path().to_str().expect("TODO: handle error").to_string()),
+            repo_path: Some(dir.path().to_str().unwrap().to_string()),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Refuted);

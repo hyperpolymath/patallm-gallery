@@ -311,7 +311,7 @@ mod tests {
 
     #[test]
     fn test_valid_cargo_toml() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("Cargo.toml");
         fs::write(
             &path,
@@ -324,24 +324,24 @@ version = "0.1.0"
 serde = "1.0"
 "#,
         )
-        .expect("TODO: handle error");
+        .unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Confirmed);
-        assert!(result.details.expect("TODO: handle error").contains("1 dependencies"));
+        assert!(result.details.unwrap().contains("1 dependencies"));
     }
 
     #[test]
     fn test_invalid_cargo_toml() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("Cargo.toml");
-        fs::write(&path, "this is not valid toml {{{").expect("TODO: handle error");
+        fs::write(&path, "this is not valid toml {{{").unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Refuted);
@@ -349,16 +349,16 @@ serde = "1.0"
 
     #[test]
     fn test_valid_package_json() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("package.json");
         fs::write(
             &path,
             r#"{"name": "test", "version": "1.0.0", "dependencies": {"express": "^4.0"}}"#,
         )
-        .expect("TODO: handle error");
+        .unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Confirmed);
@@ -366,7 +366,7 @@ serde = "1.0"
 
     #[test]
     fn test_valid_mix_exs() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("mix.exs");
         fs::write(
             &path,
@@ -383,24 +383,24 @@ defmodule MyApp.MixProject do
 end
 "#,
         )
-        .expect("TODO: handle error");
+        .unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Confirmed);
-        assert!(result.details.expect("TODO: handle error").contains("2 dependencies"));
+        assert!(result.details.unwrap().contains("2 dependencies"));
     }
 
     #[test]
     fn test_non_manifest_returns_unverifiable() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("readme.txt");
-        fs::write(&path, "hello").expect("TODO: handle error");
+        fs::write(&path, "hello").unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Unverifiable);
@@ -408,7 +408,7 @@ end
 
     #[test]
     fn test_cargo_dep_without_version() {
-        let dir = TempDir::new().expect("TODO: handle error");
+        let dir = TempDir::new().unwrap();
         let path = dir.path().join("Cargo.toml");
         fs::write(
             &path,
@@ -421,13 +421,13 @@ version = "0.1.0"
 bad-dep = {}
 "#,
         )
-        .expect("TODO: handle error");
+        .unwrap();
 
         let evidence = EvidenceSpec::FileExists {
-            path: path.to_str().expect("TODO: handle error").to_string(),
+            path: path.to_str().unwrap().to_string(),
         };
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Refuted);
-        assert!(result.details.expect("TODO: handle error").contains("no version"));
+        assert!(result.details.unwrap().contains("no version"));
     }
 }

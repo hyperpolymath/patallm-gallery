@@ -215,11 +215,11 @@ mod tests {
 
         assert_eq!(manager.pending().len(), 1);
 
-        let p = manager.get_mut(id).expect("TODO: handle error");
+        let p = manager.get_mut(id).unwrap();
         p.approve(Some("Looks good".into()));
 
         assert_eq!(manager.pending().len(), 0);
-        assert_eq!(manager.get(id).expect("TODO: handle error").status, ProposalStatus::Approved);
+        assert_eq!(manager.get(id).unwrap().status, ProposalStatus::Approved);
     }
 
     #[test]

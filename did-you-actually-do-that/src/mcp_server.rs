@@ -564,7 +564,7 @@ mod tests {
         let response = server.handle_initialize(json!(1));
 
         assert!(response.result.is_some());
-        let result = response.result.expect("TODO: handle error");
+        let result = response.result.unwrap();
         assert_eq!(result["protocolVersion"], MCP_VERSION);
         assert!(result["serverInfo"]["name"].is_string());
     }
@@ -575,11 +575,11 @@ mod tests {
         let response = server.handle_tools_list(json!(1));
 
         assert!(response.result.is_some());
-        let result = response.result.expect("TODO: handle error");
-        let tools = result["tools"].as_array().expect("TODO: handle error");
+        let result = response.result.unwrap();
+        let tools = result["tools"].as_array().unwrap();
         assert_eq!(tools.len(), 4);
 
-        let tool_names: Vec<&str> = tools.iter().map(|t| t["name"].as_str().expect("TODO: handle error")).collect();
+        let tool_names: Vec<&str> = tools.iter().map(|t| t["name"].as_str().unwrap()).collect();
         assert!(tool_names.contains(&"verify_claim"));
         assert!(tool_names.contains(&"quick_verify"));
         assert!(tool_names.contains(&"compute_hash"));
@@ -594,7 +594,7 @@ mod tests {
         }));
 
         assert!(result.is_ok());
-        let text = result.expect("TODO: handle error");
+        let text = result.unwrap();
         assert!(text.contains("Refuted"));
     }
 
@@ -613,7 +613,7 @@ mod tests {
         }));
 
         assert!(result.is_ok());
-        let text = result.expect("TODO: handle error");
+        let text = result.unwrap();
         assert!(text.contains("Test claim"));
         assert!(text.contains("Refuted"));
     }
