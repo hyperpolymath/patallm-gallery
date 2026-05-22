@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Layer 1: File Existence
 //!
 //! Checks that claimed files and directories actually exist on disk.

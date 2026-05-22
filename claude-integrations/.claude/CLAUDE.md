@@ -83,7 +83,7 @@ Route to:
 name = "model-router"
 version = "0.1.0"
 authors = ["Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"]
-license = "PMPL-1.0-or-later"
+license = "MPL-2.0"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
@@ -113,6 +113,6 @@ model-router classify --repo /path/to/repo "add authentication"
 
 ## Code Style
 
-- SPDX headers: `PMPL-1.0-or-later`
+- SPDX headers: `MPL-2.0`
 - Author: Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
 - Browser extensions use `MPL-2.0` fallback (store requirements)

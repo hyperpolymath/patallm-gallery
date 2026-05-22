@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Erlang Port binary protocol for communication with the Elixir brain.
 //!
 //! The Port protocol uses length-prefixed JSON messages over stdin/stdout.

@@ -1,5 +1,5 @@
 # Attestation Chain Blueprint (A2ML)
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 
 @abstract:
 Blueprint specification for the panic-attack three-phase attestation

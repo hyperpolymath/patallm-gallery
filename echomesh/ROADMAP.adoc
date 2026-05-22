@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2025 Hyperpolymath
 
 = Echomesh Roadmap
@@ -24,7 +24,7 @@ Detailed milestones and deliverables will be defined once project specifications
 * [x] Repository initialization
 * [x] Multi-forge distribution infrastructure (GitHub, GitLab, Codeberg, Bitbucket)
 * [x] Development standards and language policy
-* [x] License selection (PMPL-1.0-or-later)
+* [x] License selection (MPL-2.0)
 
 === Phase 1: Specification
 

@@ -34,7 +34,7 @@
     "code-review"
   ],
   "author": "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>",
-  "license": "PMPL-1.0-or-later",
+  "license": "MPL-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hyperpolymath/claude-gitlab-bridge.git"

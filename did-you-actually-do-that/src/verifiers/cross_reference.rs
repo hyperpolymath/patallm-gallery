@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Layer 8: Cross-Reference Analysis
 //!
 //! Validates consistency across multiple claims by building a reference graph.

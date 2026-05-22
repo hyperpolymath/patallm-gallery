@@ -1,4 +1,4 @@
--- SPDX-License-Identifier: PMPL-1.0-or-later
+-- SPDX-License-Identifier: MPL-2.0
 -- PanicAttackTrustfile - Verification of panic-attack attestation chains
 --
 -- Seven-step sequential verification pipeline:

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Layer 2: Content Hash
 //!
 //! Verifies that file contents match expected SHA-256 hashes.

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 defmodule DyadtBrain.GRPC.Endpoint do
   @moduledoc """
   TCP-based gRPC endpoint for the DYADT verification service.

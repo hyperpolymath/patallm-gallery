@@ -108,4 +108,4 @@ impl ProviderTrait for MyProvider {
 
 ## License
 
-PMPL-1.0-or-later
+MPL-2.0

@@ -14,7 +14,7 @@
 ||| All proofs are erased at runtime (quantity 0) — zero overhead.
 ||| No `believe_me`, `assert_total`, or `assert_smaller` anywhere.
 |||
-||| SPDX-License-Identifier: PMPL-1.0-or-later
+||| SPDX-License-Identifier: MPL-2.0
 
 module Attestation
 

@@ -52,7 +52,7 @@ LLM Unify achieves **RSR Silver-level compliance** with 51 out of 55 possible po
 - ✅ `CODE_OF_CONDUCT.md` - Contributor Covenant 2.1 + CCCP
 - ✅ `MAINTAINERS.md` - Governance model
 - ✅ `CHANGELOG.md` - Keep a Changelog format
-- ✅ `LICENSE` - PMPL-1.0-or-later
+- ✅ `LICENSE` - MPL-2.0
 - ✅ `RSR-COMPLIANCE.md` - This document
 
 **Quality indicators:**
@@ -251,7 +251,7 @@ Available recipes:
 **Dual licensing:** ✅ Complete
 
 **Code license:**
-- **PMPL-1.0-or-later** for all source code
+- **MPL-2.0** for all source code
 - Strong copyleft (derivative works must be open source)
 - Ensures user freedom
 

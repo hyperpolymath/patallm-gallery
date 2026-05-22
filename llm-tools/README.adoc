@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = LLM Tools
 
@@ -49,7 +49,7 @@ llm-tools/
 +-- unify-core/         # Core library (ex llm-unify-core)
 +-- verify/             # Code verification (ex llm-verify)
 +-- Justfile            # Build orchestration
-+-- LICENSE             # PMPL-1.0-or-later
++-- LICENSE             # MPL-2.0
 +-- README.adoc         # This file
 ----
 
@@ -107,7 +107,7 @@ Full git history for each component is preserved in the original repositories.
 
 == License
 
-SPDX-License-Identifier: PMPL-1.0-or-later
+SPDX-License-Identifier: MPL-2.0
 
 Copyright (C) 2025-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 

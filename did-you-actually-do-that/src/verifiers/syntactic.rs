@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Layer 3: Syntactic Validity
 //!
 //! Checks that created/modified files parse without errors. Currently supports:

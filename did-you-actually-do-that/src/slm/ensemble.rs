@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Tier 2: SLM Ensemble — multiple small models vote on work quality.
 //!
 //! The ensemble manages multiple SLM backends, collects their votes,

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Verification layers for the 12-layer verification pipeline.
 //!
 //! Each module implements one or more verification layers that check claims

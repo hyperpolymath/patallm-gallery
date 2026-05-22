@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Layer 6: Diff Coherence
 //!
 //! Verifies git operations using libgit2: clean working directories, commit

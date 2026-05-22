@@ -27,4 +27,4 @@ cargo add lsm
 
 == License
 
-PMPL-1.0-or-later
+MPL-2.0

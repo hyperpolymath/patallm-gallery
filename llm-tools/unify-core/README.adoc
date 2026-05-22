@@ -286,6 +286,6 @@ if let Some(model) = metadata.get("model") {
 
 == License
 
-Dual licensed under MIT OR PMPL-1.0-or-later.
+Dual licensed under MIT OR MPL-2.0.
 
 See link:LICENSE.txt[LICENSE.txt] for details including the Palimpsest Philosophical Overlay.

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 = Antifile Contractile Specification
 :author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 :date: 2026-03-01
@@ -214,7 +214,7 @@ The Antifile uses A2ML format, similar to the blueprint:
 [source]
 ----
 # Antifile — Known-Bad Pattern Catalog
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 
 @pattern(id="anti-001", severity="critical"):
   name: Silent Swallow

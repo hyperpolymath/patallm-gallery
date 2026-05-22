@@ -15,7 +15,7 @@ Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 - Lines 7-9: Converted `[![...]` Markdown badges to `image:` AsciiDoc syntax
 - Lines 349-351: Converted status badges to AsciiDoc format
 - Added new badges:
-  * PMPL-1.0-or-later license badge
+  * MPL-2.0 license badge
   * ReScript language badge
   * Deno runtime badge
   * Idris-ready badge
@@ -96,7 +96,7 @@ Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 === License Updates
 
 **All files updated to:**
-- License: PMPL-1.0-or-later (Palimpsest License)
+- License: MPL-2.0 (Palimpsest License)
 - Copyright: 2025 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 - SPDX headers on all source files
 
@@ -272,7 +272,7 @@ claude-gitlab-bridge/
 * All code follows hyperpolymath language policy
 * ReScript provides superior type safety over TypeScript
 * Deno eliminates need for node_modules and npm
-* Palimpsest License (PMPL-1.0-or-later) applied throughout
+* Palimpsest License (MPL-2.0) applied throughout
 * Ready for Idris integration when needed
 
 == Contact

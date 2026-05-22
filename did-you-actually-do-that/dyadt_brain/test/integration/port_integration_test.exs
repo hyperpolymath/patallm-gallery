@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 defmodule DyadtBrain.Integration.PortIntegrationTest do
   @moduledoc """
   Integration tests for Rust verifier Port communication.

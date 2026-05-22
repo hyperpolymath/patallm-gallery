@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
+// SPDX-License-Identifier: MIT OR MPL-2.0
 //! Provider adapter conformance tests
 //!
 //! This module provides conformance tests that any `ProviderTrait` implementation

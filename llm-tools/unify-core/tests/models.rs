@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
+// SPDX-License-Identifier: MIT OR MPL-2.0
 //! Model serialization conformance tests
 //!
 //! These tests verify that all core types serialize and deserialize correctly,

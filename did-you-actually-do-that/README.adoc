@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 = Did You Actually Do That? (DYADT)
 :toc: macro
 :toclevels: 3
@@ -268,4 +268,4 @@ See link:ABI-FFI-README.md[ABI/FFI Documentation] for complete details.
 
 == License
 
-SPDX-License-Identifier: PMPL-1.0-or-later
+SPDX-License-Identifier: MPL-2.0

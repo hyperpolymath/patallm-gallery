@@ -2,7 +2,7 @@ image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,
 image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
 
 // SPDX-FileCopyrightText: 2024 Jonathan D.A. Jewell
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 
 = ESN: Echo State Networks in Rust
 
@@ -444,7 +444,7 @@ Expected output (NRMSE ~0.016):
 Dual-licensed under your choice of:
 
 * **Palimpsest-MPL License v1.0 (PMPL-1.0)** — permissive, attribution required
-* **PMPL-1.0-or-later** — copyleft, network use triggers distribution
+* **MPL-2.0** — copyleft, network use triggers distribution
 
 See link:LICENSE.txt[LICENSE.txt] for details.
 

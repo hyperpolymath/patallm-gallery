@@ -1,7 +1,7 @@
 image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
 
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2025 LLM Unify Contributors
 = LLM Unify
 
@@ -456,7 +456,7 @@ We welcome contributions! See link:CONTRIBUTING.md[CONTRIBUTING.md] for:
 
 This project is dual-licensed:
 
-* **PMPL-1.0-or-later** for the codebase - Strong copyleft ensuring user freedom
+* **MPL-2.0** for the codebase - Strong copyleft ensuring user freedom
 * **Palimpsest Protocol** for data portability - Your data, your rights
 
 See link:LICENSE[LICENSE] and link:LICENSE-PALIMPSEST[LICENSE-PALIMPSEST] for details.

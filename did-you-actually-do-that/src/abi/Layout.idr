@@ -3,7 +3,7 @@
 ||| This module provides formal proofs about memory layout, alignment,
 ||| and padding for C-compatible structs used in DYADT's verification pipeline.
 |||
-||| SPDX-License-Identifier: PMPL-1.0-or-later
+||| SPDX-License-Identifier: MPL-2.0
 |||
 ||| @see https://en.wikipedia.org/wiki/Data_structure_alignment
 

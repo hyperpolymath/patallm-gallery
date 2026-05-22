@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Graph-of-Thought (GoT) reasoning backend for the SLM ensemble.
 //!
 //! Uses three independent reasoning paths to evaluate claims from different

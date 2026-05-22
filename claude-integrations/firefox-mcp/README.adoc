@@ -171,12 +171,12 @@ The extension auto-reconnects to the MCP server. Click the extension icon to man
 |Proprietary
 
 |License
-|PMPL-1.0-or-later
+|MPL-2.0
 |Proprietary
 |===
 
 == License
 
-PMPL-1.0-or-later
+MPL-2.0
 
 This is an independent project. Not affiliated with Anthropic or Mozilla.

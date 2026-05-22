@@ -26,7 +26,7 @@ All requested features for the Claude GitLab Bridge have been successfully imple
 
 |License updates
 |✅ Complete
-|PMPL-1.0-or-later applied throughout
+|MPL-2.0 applied throughout
 
 |Documentation
 |✅ Complete
@@ -233,7 +233,7 @@ All requested features for the Claude GitLab Bridge have been successfully imple
 
 - All files have SPDX headers
 - Proper copyright attribution (Jonathan D.A. Jewell)
-- PMPL-1.0-or-later license throughout
+- MPL-2.0 license throughout
 - Descriptive variable names
 - Comprehensive type definitions
 - Documented functions with DocStrings
@@ -439,7 +439,7 @@ The Claude GitLab Bridge v2.0 is feature-complete for the initial roadmap:
 
 **Project Status:** 🟢 **Ready for Development & Testing**
 
-**License:** PMPL-1.0-or-later (Palimpsest License)
+**License:** MPL-2.0 (Palimpsest License)
 
 **Author:** Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 

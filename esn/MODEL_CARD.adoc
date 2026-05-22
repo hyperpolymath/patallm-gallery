@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2024 Jonathan D.A. Jewell
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 
 = ESN Model Card
 :author: Jonathan D.A. Jewell (hyperpolymath)
@@ -30,7 +30,7 @@ toc::[]
 | 0.1.0
 
 | *License*
-| MIT OR PMPL-1.0-or-later
+| MIT OR MPL-2.0
 
 | *Repository*
 | https://github.com/hyperpolymath/esn

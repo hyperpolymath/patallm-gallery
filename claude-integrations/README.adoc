@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 = Claude Integrations
@@ -73,7 +73,7 @@ claude-integrations/
 ├── mozilla-extension/       # Mozilla products extension
 ├── .machine_readable/       # SCM checkpoint files
 ├── Justfile                 # Build recipes
-├── LICENSE                  # PMPL-1.0-or-later
+├── LICENSE                  # MPL-2.0
 └── README.adoc              # This file
 ----
 
@@ -92,7 +92,7 @@ Full git history for each component is preserved in the original repositories
 
 == License
 
-SPDX-License-Identifier: PMPL-1.0-or-later
+SPDX-License-Identifier: MPL-2.0
 
 Copyright (C) 2024-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 

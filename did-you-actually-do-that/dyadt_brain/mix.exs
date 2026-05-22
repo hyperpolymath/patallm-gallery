@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 defmodule DyadtBrain.MixProject do
   use Mix.Project
 
@@ -42,7 +42,7 @@ defmodule DyadtBrain.MixProject do
 
   defp package do
     [
-      licenses: ["PMPL-1.0-or-later"],
+      licenses: ["MPL-2.0"],
       links: %{
         "GitLab" => "https://gitlab.com/hyperpolymath/did-you-actually-do-that",
         "GitHub" => "https://github.com/hyperpolymath/did-you-actually-do-that"

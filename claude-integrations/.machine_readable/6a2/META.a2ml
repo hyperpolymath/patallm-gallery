@@ -1,9 +1,9 @@
-; SPDX-License-Identifier: PMPL-1.0-or-later
+; SPDX-License-Identifier: MPL-2.0
 ; META.scm - Meta-level information for claude-integrations
 
 (meta
   (version "1.0")
-  (license "PMPL-1.0-or-later")
+  (license "MPL-2.0")
   (author "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>")
 
   (architecture-decisions
@@ -17,5 +17,5 @@
 
   (development-practices
     (build-tool "just")
-    (license "PMPL-1.0-or-later")
+    (license "MPL-2.0")
     (documentation-format "AsciiDoc")))

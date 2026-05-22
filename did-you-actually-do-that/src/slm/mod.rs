@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! SLM Ensemble for Layer 11: SLM Consensus verification.
 //!
 //! Multiple small language models independently evaluate whether an LLM

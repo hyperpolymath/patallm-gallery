@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 defmodule DyadtBrain.VeriSimDB.DriftDetector do
   @moduledoc """
   Detect verification drift over time using VeriSimDB's temporal modality.

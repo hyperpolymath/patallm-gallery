@@ -471,4 +471,4 @@ user_pref("devtools.chrome.enabled", true);
 
 ## License
 
-PMPL-1.0-or-later
+MPL-2.0

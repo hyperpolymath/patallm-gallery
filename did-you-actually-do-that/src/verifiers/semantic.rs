@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Layer 4: Semantic Integrity
 //!
 //! Verifies that code does what claims say: file content matching, regex patterns,

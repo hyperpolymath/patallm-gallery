@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Tier 1: Policy Oracle — deterministic rule checking.
 //!
 //! Fast, no ML inference needed. Checks for known violation patterns

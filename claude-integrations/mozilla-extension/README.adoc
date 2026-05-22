@@ -110,7 +110,7 @@ Access settings via the gear icon in the sidebar:
 
 == License
 
-PMPL-1.0-or-later
+MPL-2.0
 
 This is an independent project and is not affiliated with Anthropic.
 Claude is a trademark of Anthropic, PBC.

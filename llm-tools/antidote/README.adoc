@@ -90,7 +90,7 @@ cat llm-reset  # View the artifact
 
 ```
 llm-antidote/
-├── LICENSE              # PMPL-1.0-or-later
+├── LICENSE              # MPL-2.0
 ├── README.adoc          # This file
 ├── CLAUDE.md            # AI assistant development guide
 ├── Project.toml         # Julia package manifest

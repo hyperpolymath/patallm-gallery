@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Mustfile - Project requirements and standards configuration
 # Nickel configuration for LLM Unify
 
@@ -6,7 +6,7 @@
   project = {
     name = "llm-unify",
     version = "0.1.0",
-    license = "PMPL-1.0-or-later",
+    license = "MPL-2.0",
     rust_edition = "2021",
     min_rust_version = "1.75.0",
   },

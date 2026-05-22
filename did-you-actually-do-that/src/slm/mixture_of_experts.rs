@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 //! Mixture-of-Experts (MoE) routing backend for the SLM ensemble.
 //!
 //! Routes claim evaluation to specialized expert backends based on the

@@ -2,7 +2,7 @@
 :author: Claude Opus 4.6 (self-report)
 :date: 2026-02-09
 :toc:
-:spdx: PMPL-1.0-or-later
+:spdx: MPL-2.0
 
 == Context
 

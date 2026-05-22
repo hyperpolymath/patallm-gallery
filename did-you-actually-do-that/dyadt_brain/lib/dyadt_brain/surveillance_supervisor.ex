@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 defmodule DyadtBrain.SurveillanceSupervisor do
   @moduledoc """
   Tier 3: Consensus Arbiter — weighted vote aggregation with GO/NO-GO logic.

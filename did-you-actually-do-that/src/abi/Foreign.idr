@@ -6,7 +6,7 @@
 ||| All functions are declared here with type signatures and safety proofs.
 ||| Implementations live in ffi/zig/
 |||
-||| SPDX-License-Identifier: PMPL-1.0-or-later
+||| SPDX-License-Identifier: MPL-2.0
 
 module DYADT.ABI.Foreign
 

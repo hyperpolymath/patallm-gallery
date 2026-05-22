@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 =======
 // SPDX-License-Identifier: MPL-2.0-or-later
 >>>>>>> 1b58383 (chore: sync from parent repo automation)
@@ -186,7 +186,7 @@ See link:CODE_OF_CONDUCT.md[Code of Conduct] and link:SECURITY.md[Security Polic
 Dual-licensed under:
 
 * Palimpsest-MPL-1.0 License
-* PMPL-1.0-or-later
+* MPL-2.0
 
 With Palimpsest philosophical overlay. See link:LICENSE.txt[LICENSE.txt] for details.
 

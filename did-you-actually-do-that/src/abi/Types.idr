@@ -6,7 +6,7 @@
 |||
 ||| All type definitions include formal proofs of correctness.
 |||
-||| SPDX-License-Identifier: PMPL-1.0-or-later
+||| SPDX-License-Identifier: MPL-2.0
 |||
 ||| @see https://idris2.readthedocs.io for Idris2 documentation
 

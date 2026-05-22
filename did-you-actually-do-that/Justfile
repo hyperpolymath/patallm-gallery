@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # justfile - did-you-actually-do-that (dyadt)
 # Verification framework for validating claimed AI actions
 set shell := ["bash", "-uc"]

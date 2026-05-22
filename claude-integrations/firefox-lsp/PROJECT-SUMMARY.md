@@ -73,7 +73,7 @@ claude-firefox-lsp/
 ├── CHANGELOG.md                 # Version history
 ├── ECOSYSTEM.scm                # Ecosystem positioning
 ├── Justfile                     # Task automation
-├── LICENSE                      # PMPL-1.0-or-later
+├── LICENSE                      # MPL-2.0
 ├── META.scm                     # ADRs and design rationale
 ├── mix.exs                      # Elixir project config
 ├── README.adoc                  # User documentation
@@ -210,7 +210,7 @@ just start   # Start server
 
 ## License
 
-SPDX-License-Identifier: PMPL-1.0-or-later
+SPDX-License-Identifier: MPL-2.0
 Copyright (c) 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 Licensed under the Palimpsest License, version 1.0 or later.
