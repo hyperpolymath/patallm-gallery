@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Claude Firefox LSP - VS Code Extension
 
 VS Code extension for Firefox browser automation via Language Server Protocol.

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = The Lisp Meta-Layer: Why Guile Scheme for Verification Intelligence
 :author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 :date: 2026-03-01

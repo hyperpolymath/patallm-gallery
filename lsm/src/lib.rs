@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Liquid State Machine (LSM) - Spiking Neural Network Reservoir
 //!
 //! Implements a biologically-inspired spiking neural network using

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Mixture-of-Experts (MoE) routing backend for the SLM ensemble.
 //!
 //! Routes claim evaluation to specialized expert backends based on the

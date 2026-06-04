@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: MPL-2.0
+# Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 defmodule DyadtBrain.TestRunner do
   @moduledoc """
   Layers 5 (Test Execution) and 10 (Regression Guard).

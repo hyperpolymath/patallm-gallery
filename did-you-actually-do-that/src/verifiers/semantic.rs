@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Layer 4: Semantic Integrity
 //!
 //! Verifies that code does what claims say: file content matching, regex patterns,

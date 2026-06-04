@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Verification layers for the 12-layer verification pipeline.
 //!
 //! Each module implements one or more verification layers that check claims

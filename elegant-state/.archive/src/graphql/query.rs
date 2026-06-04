@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 use async_graphql::{Context, Object, Result, ID};
 use crate::store::{SledStore, Store};
 use crate::schema::{NodeId, NodeKind as DomainNodeKind};

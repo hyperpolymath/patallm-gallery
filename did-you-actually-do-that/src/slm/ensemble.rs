@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Tier 2: SLM Ensemble — multiple small models vote on work quality.
 //!
 //! The ensemble manages multiple SLM backends, collects their votes,

@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: MPL-2.0
+# Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 defmodule DyadtBrain.RegressionBaseline do
   @moduledoc """
   Layer 10 enhancement: baseline storage and comparison for regression detection.

@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: MPL-2.0
+# Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 defmodule DyadtBrain.API.Schema do
   @moduledoc """
   GraphQL schema for the DYADT Brain verification API.

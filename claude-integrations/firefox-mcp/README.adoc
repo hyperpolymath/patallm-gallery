@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
 
 == License & Philosophy
@@ -6,7 +8,6 @@ This project must declare **MPL-2.0-or-later** for platform/tooling compatibilit
 
 Philosophy: **Palimpsest**. The Palimpsest-MPL (PMPL) text is provided in `license/PMPL-1.0.txt`, and the canonical source is the palimpsest-license repository.
 
-// SPDX-License-Identifier: MPL-2.0-or-later
 = Claude Firefox MCP
 
 

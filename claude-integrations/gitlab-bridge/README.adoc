@@ -1,8 +1,9 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = Claude GitLab Bridge
 
 image:https://img.shields.io/badge/license-PMPL--1.0-blue.svg[License,link="https://github.com/hyperpolymath/palimpsest-license"]
 
-// SPDX-License-Identifier: PMPL-1.0
 
 [![RSR Compliance](https://img.shields.io/badge/RSR-GOLD-gold?style=flat-square)](RSR.md)
 [![TPCF](https://img.shields.io/badge/TPCF-Perimeter%203-blue?style=flat-square)](GOVERNANCE.adoc)

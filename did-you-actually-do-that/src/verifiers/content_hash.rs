@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Layer 2: Content Hash
 //!
 //! Verifies that file contents match expected SHA-256 hashes.

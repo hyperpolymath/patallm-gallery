@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! MCP (Model Context Protocol) server for AI self-verification
 //!
 //! This module provides an MCP server that allows AI systems to verify their

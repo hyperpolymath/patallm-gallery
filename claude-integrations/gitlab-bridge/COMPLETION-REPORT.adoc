@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = Claude GitLab Bridge - Completion Report
 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 v2.0.0, 2025-01-23

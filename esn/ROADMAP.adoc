@@ -1,5 +1,6 @@
-// SPDX-FileCopyrightText: 2024 Jonathan D.A. Jewell
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+// SPDX-FileCopyrightText: 2024 Jonathan D.A. Jewell
 
 = ESN Development Roadmap
 :author: Jonathan D.A. Jewell (hyperpolymath)

@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # llm-unify-core
 
 Core types for managing LLM conversations across multiple providers (ChatGPT, Claude, Gemini, Copilot).

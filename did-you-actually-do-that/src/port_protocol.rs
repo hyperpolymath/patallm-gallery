@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Erlang Port binary protocol for communication with the Elixir brain.
 //!
 //! The Port protocol uses length-prefixed JSON messages over stdin/stdout.

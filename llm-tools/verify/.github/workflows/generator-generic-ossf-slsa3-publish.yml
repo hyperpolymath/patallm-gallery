@@ -22,6 +22,7 @@ permissions: read-all
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     outputs:
       digests: ${{ steps.hash.outputs.digests }}
 

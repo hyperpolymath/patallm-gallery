@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: MPL-2.0
+# Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 defmodule DyadtBrain.Fleet.Reporter do
   @moduledoc """
   Reports dyadtbot results back to the fleet shared context and external systems.

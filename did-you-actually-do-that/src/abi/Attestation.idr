@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: MPL-2.0
+-- Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 ||| DYADT Attestation Chain — Dependent Type Proofs
 |||
 ||| Provides compile-time guarantees for the panic-attack attestation

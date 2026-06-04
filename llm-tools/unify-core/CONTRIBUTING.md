@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Contributing to LLM Unify Core
 
 Thank you for considering contributing to LLM Unify Core! This document outlines the

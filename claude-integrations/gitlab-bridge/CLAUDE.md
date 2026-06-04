@@ -1,8 +1,7 @@
 <!--
-SPDX-License-Identifier: MPL-2.0-or-later
-SPDX-FileCopyrightText: 2024 hyperpolymath
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 -->
-
 # Claude GitLab Bridge
 
 ## Project Overview

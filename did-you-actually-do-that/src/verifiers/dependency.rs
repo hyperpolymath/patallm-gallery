@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Layer 7: Dependency Resolution
 //!
 //! Verifies that added dependencies resolve, versions exist, and manifests

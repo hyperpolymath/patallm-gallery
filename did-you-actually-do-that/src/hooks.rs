@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Claude Code hook integration
 //!
 //! This module provides hooks for integrating with Claude Code's hook system.

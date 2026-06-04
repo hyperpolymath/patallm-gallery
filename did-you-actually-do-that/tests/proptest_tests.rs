@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Property-based tests using proptest
 
 use did_you_actually_do_that::{Claim, EvidenceSpec, Verdict, Verifier};

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! elegant-STATE: Local-first state graph for multi-agent orchestration
 //!
 //! This library provides a persistent knowledge graph that multiple agents

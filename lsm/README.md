@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # LSM - Liquid State Machine
 
 A Rust implementation of Liquid State Machines (spiking neural network reservoirs) for temporal pattern recognition.

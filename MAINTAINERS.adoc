@@ -1,7 +1,7 @@
-<<<<<<< HEAD
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+<<<<<<< HEAD
 =======
-// SPDX-License-Identifier: MPL-2.0-or-later
 >>>>>>> 1b58383 (chore: sync from parent repo automation)
 = Maintainers
 :toc: preamble

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! SLM Ensemble for Layer 11: SLM Consensus verification.
 //!
 //! Multiple small language models independently evaluate whether an LLM

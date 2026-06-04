@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = LLM Procrastination Patterns: Analysis and Mitigations
 :author: Claude Opus 4.6 (self-report)
 :date: 2026-02-09
