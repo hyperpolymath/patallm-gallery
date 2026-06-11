@@ -1,10 +1,7 @@
 # SPDX-License-Identifier: MPL-2.0
 name: Greetings
-
 on: [pull_request_target, issues]
-
 permissions: read-all
-
 jobs:
   greeting:
     runs-on: ubuntu-latest
@@ -13,8 +10,8 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-    - uses: actions/first-interaction@0bf83b6a4cabf9de8c72c1e38c84508d3c4fabd3 # v1
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-message: "Message that will be displayed on users' first issue"
-        pr-message: "Message that will be displayed on users' first pull request"
+      - uses: actions/first-interaction@0bf83b6a4cabf9de8c72c1e38c84508d3c4fabd3 # v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: "Message that will be displayed on users' first issue"
+          pr-message: "Message that will be displayed on users' first pull request"

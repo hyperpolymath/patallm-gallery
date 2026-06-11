@@ -8,11 +8,9 @@ stages:
   - security
   - deploy
   - compliance
-
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/.cargo
   RUST_VERSION: "1.75"
-
 # Cache configuration
 .cache_template: &cache_config
   cache:
@@ -20,40 +18,35 @@ variables:
     paths:
       - .cargo/
       - target/
-
 # ============================================================================
 # STAGE 1: VALIDATE
 # ============================================================================
-
 format_check:
   stage: validate
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   script:
     - rustup component add rustfmt
     - cargo fmt -- --check
   allow_failure: false
-
 clippy_lint:
   stage: validate
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   script:
     - rustup component add clippy
     - cargo clippy --all-targets --all-features -- -D warnings
   allow_failure: false
-
 doc_build:
   stage: validate
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   script:
     - cargo doc --no-deps --all-features
   artifacts:
     paths:
       - target/doc
     expire_in: 1 week
-
 rsr_compliance_check:
   stage: validate
   image: rust:${RUST_VERSION}
@@ -96,26 +89,23 @@ rsr_compliance_check:
       fi
 
       echo "✓ All RSR compliance checks passed"
-
 # ============================================================================
 # STAGE 2: BUILD
 # ============================================================================
-
 build_debug:
   stage: build
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   script:
     - cargo build --all-features
   artifacts:
     paths:
       - target/debug/llm-unify
     expire_in: 1 day
-
 build_release:
   stage: build
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   only:
     - main
     - tags
@@ -125,43 +115,38 @@ build_release:
     paths:
       - target/release/llm-unify
     expire_in: 1 week
-
 # ============================================================================
 # STAGE 3: TEST
 # ============================================================================
-
 unit_tests:
   stage: test
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   script:
     - cargo test --lib --all-features
   dependencies:
     - build_debug
-
 integration_tests:
   stage: test
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   script:
     - cargo test --test '*' --all-features
   dependencies:
     - build_debug
-  allow_failure: true  # Until we have more integration tests
-
+  allow_failure: true # Until we have more integration tests
 doc_tests:
   stage: test
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   script:
     - cargo test --doc --all-features
   dependencies:
     - build_debug
-
 test_coverage:
   stage: test
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   script:
     - cargo install cargo-tarpaulin
     - cargo tarpaulin --out Xml --all-features
@@ -171,12 +156,10 @@ test_coverage:
       coverage_report:
         coverage_format: cobertura
         path: cobertura.xml
-  allow_failure: true  # Current coverage is ~30%, target is 80%
-
+  allow_failure: true # Current coverage is ~30%, target is 80%
 # ============================================================================
 # STAGE 4: SECURITY
 # ============================================================================
-
 cargo_audit:
   stage: security
   image: rust:${RUST_VERSION}
@@ -184,7 +167,6 @@ cargo_audit:
     - cargo install cargo-audit
     - cargo audit
   allow_failure: false
-
 cargo_deny:
   stage: security
   image: rust:${RUST_VERSION}
@@ -194,7 +176,6 @@ cargo_deny:
     - cargo deny check bans
     - cargo deny check sources
   allow_failure: false
-
 unsafe_check:
   stage: security
   image: rust:${RUST_VERSION}
@@ -212,7 +193,6 @@ unsafe_check:
 
       echo "✓ Zero unsafe blocks confirmed"
   allow_failure: false
-
 license_scan:
   stage: security
   image: rust:${RUST_VERSION}
@@ -233,15 +213,13 @@ license_scan:
       fi
 
       echo "✓ License compliance verified"
-
 # ============================================================================
 # STAGE 5: DEPLOY
 # ============================================================================
-
 publish_crates_io:
   stage: deploy
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   only:
     - tags
   when: manual
@@ -270,11 +248,10 @@ publish_crates_io:
   environment:
     name: crates.io
     url: https://crates.io/crates/llm-unify-cli
-
 deploy_docs:
   stage: deploy
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   only:
     - main
     - tags
@@ -283,12 +260,10 @@ deploy_docs:
   artifacts:
     paths:
       - target/doc
-  # Optional: Deploy to GitHub Pages or docs.rs
-
+      # Optional: Deploy to GitHub Pages or docs.rs
 # ============================================================================
 # STAGE 6: COMPLIANCE
 # ============================================================================
-
 rsr_full_report:
   stage: compliance
   image: rust:${RUST_VERSION}
@@ -325,7 +300,6 @@ rsr_full_report:
   artifacts:
     reports:
       metrics: rsr-metrics.txt
-
 # ============================================================================
 # ADDITIONAL JOBS
 # ============================================================================
@@ -340,12 +314,11 @@ dependency_check:
     - cargo install cargo-outdated
     - cargo outdated
   allow_failure: true
-
 # Benchmark (on main branch)
 benchmark:
   stage: test
   image: rust:${RUST_VERSION}
-  <<: *cache_config
+  !!merge <<: *cache_config
   only:
     - main
   script:
@@ -355,3 +328,8 @@ benchmark:
     paths:
       - target/criterion
     expire_in: 1 month
+trufflehog:
+  stage: security
+  image: trufflesecurity/trufflehog:latest
+  script:
+    - trufflehog git file://. --only-verified --fail

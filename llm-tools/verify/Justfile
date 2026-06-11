@@ -87,3 +87,6 @@ sbom:
 # All checks (for CI)
 ci: build test lint
     @echo "All checks passed"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

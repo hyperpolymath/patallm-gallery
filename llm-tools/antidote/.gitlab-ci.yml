@@ -5,15 +5,12 @@ stages:
   - test
   - compliance
   - documentation
-
 variables:
   PYTHON_VERSION: "3.11"
-
 # Cache Python dependencies (none currently, but good practice)
 cache:
   paths:
     - .cache/pip
-
 # Validate Python files
 validate:python:
   stage: validate
@@ -22,7 +19,6 @@ validate:python:
     - echo "Validating Python files..."
     - python -m py_compile tools/*.py tests/*.py
     - echo "✅ All Python files valid"
-
 # Validate Scheme artifacts
 validate:scheme:
   stage: validate
@@ -31,7 +27,6 @@ validate:scheme:
     - echo "Checking Scheme artifacts..."
     - find artifacts -name "*.scm" -type f
     - echo "✅ Scheme artifacts present"
-
 # Validate JavaScript artifacts
 validate:javascript:
   stage: validate
@@ -40,7 +35,6 @@ validate:javascript:
     - echo "Checking JavaScript artifacts..."
     - find artifacts -name "*.js" -type f
     - echo "✅ JavaScript artifacts present"
-
 # Run test suite
 test:suite:
   stage: test
@@ -55,7 +49,6 @@ test:suite:
     paths:
       - test_suite.json
     expire_in: 1 week
-
 # RSR compliance check
 compliance:rsr:
   stage: compliance
@@ -69,7 +62,6 @@ compliance:rsr:
     paths:
       - RSR_COMPLIANCE.md
     expire_in: 1 month
-
 # Verify documentation exists
 documentation:check:
   stage: documentation
@@ -94,7 +86,6 @@ documentation:check:
           echo "⚠️ $file missing (optional)"
         fi
       done
-
 # Verify security.txt (RFC 9116)
 documentation:security-txt:
   stage: documentation
@@ -110,7 +101,6 @@ documentation:security-txt:
         echo "❌ security.txt missing"
         exit 1
       fi
-
 # Count artifacts and tools
 statistics:
   stage: documentation
@@ -128,7 +118,6 @@ statistics:
     - echo ""
     - echo "Documentation:"
     - find . -name "*.md" | wc -l
-
 # Validate tools are executable
 tools:cli:
   stage: test
@@ -137,7 +126,6 @@ tools:cli:
     - echo "Testing CLI tool..."
     - python tools/llm-cli.py list
     - echo "✅ CLI tool works"
-
 tools:diagnostic:
   stage: test
   image: python:${PYTHON_VERSION}
@@ -145,7 +133,6 @@ tools:diagnostic:
     - echo "Testing diagnostic tool..."
     - python tools/llm-diagnostic.py memory
     - echo "✅ Diagnostic tool works"
-
 tools:benchmark:
   stage: test
   image: python:${PYTHON_VERSION}
@@ -153,7 +140,6 @@ tools:benchmark:
     - echo "Testing benchmark tool..."
     - python tools/benchmark.py types
     - echo "✅ Benchmark tool works"
-
 # Security scan (basic)
 security:scan:
   stage: compliance
@@ -167,19 +153,13 @@ security:scan:
         exit 1
       fi
     - echo "✅ No obvious secrets found"
-
 # Generate distribution archive
 build:dist:
   stage: compliance
   image: alpine:latest
   script:
     - echo "Creating distribution archive..."
-    - tar czf llm-antidote-$(cat VERSION).tar.gz \
-        --exclude='.git' \
-        --exclude='*.tar.gz' \
-        --exclude='__pycache__' \
-        --exclude='*.pyc' \
-        .
+    - tar czf llm-antidote-$(cat VERSION).tar.gz \ --exclude='.git' \ --exclude='*.tar.gz' \ --exclude='__pycache__' \ --exclude='*.pyc' \ .
     - ls -lh llm-antidote-*.tar.gz
     - echo "✅ Distribution archive created"
   artifacts:
@@ -189,7 +169,6 @@ build:dist:
   only:
     - main
     - tags
-
 # Lines of code statistics
 statistics:loc:
   stage: documentation
@@ -210,3 +189,8 @@ statistics:loc:
     - echo ""
     - echo "Documentation:"
     - find . -name "*.md" -exec wc -l {} \; | awk '{sum+=$1} END {print sum}'
+trufflehog:
+  stage: security
+  image: trufflesecurity/trufflehog:latest
+  script:
+    - trufflehog git file://. --only-verified --fail

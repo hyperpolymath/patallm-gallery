@@ -255,3 +255,6 @@ db-stats:
 # Clean test database
 db-clean:
     rm -f test.db test.db-shm test.db-wal
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

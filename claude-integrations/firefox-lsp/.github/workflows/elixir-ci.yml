@@ -1,14 +1,11 @@
 # SPDX-License-Identifier: MPL-2.0
 name: Elixir CI
-
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
-
+    branches: [main]
 permissions: read-all
-
 jobs:
   test:
     name: Test (Elixir ${{matrix.elixir}} / OTP ${{matrix.otp}})

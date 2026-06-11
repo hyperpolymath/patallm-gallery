@@ -266,3 +266,6 @@ info:
     @echo "  - RFC 9116 security.txt"
     @echo "  - CC0 1.0 Universal license"
     @echo "  - TPCF Perimeter 3 (Community Sandbox)"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

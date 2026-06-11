@@ -1,27 +1,22 @@
 # SPDX-License-Identifier: MPL-2.0
 name: Rust
-
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
-
+    branches: ["main"]
 env:
   CARGO_TERM_COLOR: always
-
 permissions: read-all
-
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: read
-
     steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - name: Build
+        run: cargo build --verbose
+      - name: Run tests
+        run: cargo test --verbose

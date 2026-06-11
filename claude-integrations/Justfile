@@ -77,3 +77,6 @@ status:
 	@echo "=== Gecko Extension ===" && ls gecko-browser-extension/manifest.json 2>/dev/null && echo "OK" || echo "MISSING"
 	@echo "=== GitLab Bridge ===" && ls gitlab-bridge/deno.json 2>/dev/null && echo "OK" || echo "MISSING"
 	@echo "=== Mozilla Extension ===" && ls mozilla-extension/src/ 2>/dev/null && echo "OK" || echo "MISSING"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

@@ -95,3 +95,6 @@ vscode-package:
 
 # Run CI checks locally
 ci: quality test
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

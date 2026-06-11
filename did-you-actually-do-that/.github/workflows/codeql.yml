@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: MPL-2.0
 name: CodeQL
-
 on:
   push:
     branches: [main]
@@ -8,10 +7,7 @@ on:
     branches: [main]
   schedule:
     - cron: '0 6 * * 1'
-
-
 permissions: read-all
-
 jobs:
   analyze:
     name: Analyze
@@ -26,12 +22,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@a4784f2dad6682d68cce8299ef20b1ca931bbdfb # v4
         with:
           languages: ${{ matrix.language }}
-
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@a4784f2dad6682d68cce8299ef20b1ca931bbdfb # v4
         with:

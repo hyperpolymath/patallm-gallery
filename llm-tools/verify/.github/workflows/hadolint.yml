@@ -8,19 +8,16 @@
 # More details at https://github.com/hadolint/hadolint
 
 name: Hadolint
-
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "master" ]
+    branches: ["master"]
   schedule:
     - cron: '17 11 * * 6'
-
 permissions:
   contents: read
-
 jobs:
   hadolint:
     name: Run hadolint scanning
@@ -33,7 +30,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Run hadolint
         uses: hadolint/hadolint-action@f988afea3da57ee48710a9795b6bb677cc901183
         with:
@@ -41,7 +37,6 @@ jobs:
           format: sarif
           output-file: hadolint-results.sarif
           no-fail: true
-
       - name: Upload analysis results to GitHub
         uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3.28.0
         with:

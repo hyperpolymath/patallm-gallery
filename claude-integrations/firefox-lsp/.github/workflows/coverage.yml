@@ -1,12 +1,9 @@
 # SPDX-License-Identifier: MPL-2.0
 name: Test Coverage
-
 on:
   push:
-    branches: [ main ]
-
+    branches: [main]
 permissions: read-all
-
 jobs:
   coverage:
     name: Test Coverage

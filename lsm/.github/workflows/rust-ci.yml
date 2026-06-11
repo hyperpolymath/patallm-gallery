@@ -4,9 +4,7 @@ on: [push, pull_request]
 env:
   CARGO_TERM_COLOR: always
   RUSTFLAGS: -Dwarnings
-
 permissions: read-all
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -19,19 +17,14 @@ jobs:
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2
-      
       - name: Check formatting
         run: cargo fmt --all -- --check
-      
       - name: Clippy lints
         run: cargo clippy --all-targets --all-features -- -D warnings
-      
       - name: Run tests
         run: cargo test --all-features
-      
       - name: Build release
         run: cargo build --release
-
   security:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -46,7 +39,6 @@ jobs:
         run: cargo audit
       - name: Check for outdated deps
         run: cargo install cargo-outdated && cargo outdated --exit-code 1 || true
-
   coverage:
     runs-on: ubuntu-latest
     timeout-minutes: 15

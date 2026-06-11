@@ -2,7 +2,7 @@
 name: ClusterFuzzLite PR fuzzing
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
 permissions: read-all
 jobs:
   PR:

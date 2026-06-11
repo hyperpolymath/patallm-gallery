@@ -13,30 +13,23 @@
 # 2. Start using the action within your workflow
 
 name: Run Datadog Synthetic tests
-
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
-
+    branches: ["master"]
 permissions: read-all
-
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
-    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-    # Run Synthetic tests within your GitHub workflow.
-    # For additional configuration options visit the action within the marketplace: https://github.com/marketplace/actions/datadog-synthetics-ci
-    - name: Run Datadog Synthetic tests
-      uses: DataDog/synthetics-ci-github-action@87b505388a22005bb8013481e3f73a367b9a53eb # v1.4.0
-      with:
-        api_key: ${{secrets.DD_API_KEY}}
-        app_key: ${{secrets.DD_APP_KEY}}
-        test_search_query: 'tag:e2e-tests' #Modify this tag to suit your tagging strategy
-
-
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      # Run Synthetic tests within your GitHub workflow.
+      # For additional configuration options visit the action within the marketplace: https://github.com/marketplace/actions/datadog-synthetics-ci
+      - name: Run Datadog Synthetic tests
+        uses: DataDog/synthetics-ci-github-action@87b505388a22005bb8013481e3f73a367b9a53eb # v1.4.0
+        with:
+          api_key: ${{secrets.DD_API_KEY}}
+          app_key: ${{secrets.DD_APP_KEY}}
+          test_search_query: 'tag:e2e-tests' #Modify this tag to suit your tagging strategy

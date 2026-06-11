@@ -808,3 +808,6 @@ recipes-md:
             echo "- \`$recipe\`: $desc"
         fi
     done
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

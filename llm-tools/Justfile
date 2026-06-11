@@ -65,3 +65,6 @@ status:
     @cd unify-core && cargo check 2>&1 | tail -1
     @echo "=== verify ==="
     @cd verify && cabal check 2>&1 | tail -1
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

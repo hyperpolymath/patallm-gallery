@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: MPL-2.0
 name: Security Audit
-
 on:
   push:
     branches: [main]
@@ -8,9 +7,7 @@ on:
     branches: [main]
   schedule:
     - cron: '0 6 * * *'
-
 permissions: read-all
-
 jobs:
   audit:
     name: Cargo Audit
@@ -21,7 +18,6 @@ jobs:
       - uses: rustsec/audit-check@69366f33c96575abad1ee0dba8212993eecbe998 # v2.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
   deny:
     name: Cargo Deny
     runs-on: ubuntu-latest

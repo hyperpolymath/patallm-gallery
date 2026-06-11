@@ -75,3 +75,6 @@ fuzz TARGET="verify":
 # All pre-commit checks
 pre-commit: check
     @echo "All checks passed!"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true
