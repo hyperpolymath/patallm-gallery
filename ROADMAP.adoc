@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-<<<<<<< HEAD
-=======
->>>>>>> 1b58383 (chore: sync from parent repo automation)
 // SPDX-FileCopyrightText: 2025 Hyperpolymath
 
 = PatALLM Gallery Roadmap
