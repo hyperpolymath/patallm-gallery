@@ -1,5 +1,5 @@
 <!--
-SPDX-License-Identifier: MPL-2.0
+SPDX-License-Identifier: CC-BY-SA-4.0
 Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 -->
 # RSR Compliance Documentation
@@ -59,7 +59,7 @@ All required files are present and properly formatted:
 All source files include proper SPDX headers:
 
 ```
-SPDX-License-Identifier: MPL-2.0-or-later
+SPDX-License-Identifier: CC-BY-SA-4.0
 SPDX-FileCopyrightText: 2024 hyperpolymath
 ```
 
@@ -296,7 +296,7 @@ Open to all contributors who follow the Code of Conduct.
 
 All source files include:
 ```
-SPDX-License-Identifier: MPL-2.0-or-later
+SPDX-License-Identifier: CC-BY-SA-4.0
 SPDX-FileCopyrightText: 2024 hyperpolymath
 ```
 
