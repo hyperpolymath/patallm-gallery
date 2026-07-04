@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # SPDX-License-Identifier: MPL-2.0
-=======
-# SPDX-License-Identifier: MPL-2.0
->>>>>>> 1b58383 (chore: sync from parent repo automation)
 # Instant Forge Sync - Triggers propagation to all forges on push/release
 name: Instant Sync
 
