@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-// {{PROJECT}} FFI Implementation
+// PATALLM_GALLERY FFI Implementation
 //
 // This module implements the C-compatible FFI declared in src/abi/Foreign.idr
 // All types and layouts must match the Idris2 ABI definitions.
@@ -10,7 +10,7 @@ const std = @import("std");
 
 // Version information (keep in sync with project)
 const VERSION = "0.1.0";
-const BUILD_INFO = "{{PROJECT}} built with Zig " ++ @import("builtin").zig_version_string;
+const BUILD_INFO = "PATALLM_GALLERY built with Zig " ++ @import("builtin").zig_version_string;
 
 /// Thread-local error storage
 threadlocal var last_error: ?[]const u8 = null;
