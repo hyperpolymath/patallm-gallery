@@ -8,6 +8,13 @@ updates:
     open-pull-requests-limit: 5
 
   # npm (JavaScript/TypeScript)
+    # Batch this ecosystem into a single PR. Ungrouped, Dependabot
+    # opens one PR per dependency, and each PR re-fires every
+    # workflow in the repo.
+    groups:
+      github-actions:
+        patterns:
+          - "*"
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -15,6 +22,13 @@ updates:
     open-pull-requests-limit: 10
 
   # pip (Python)
+    # Batch this ecosystem into a single PR. Ungrouped, Dependabot
+    # opens one PR per dependency, and each PR re-fires every
+    # workflow in the repo.
+    groups:
+      npm:
+        patterns:
+          - "*"
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
@@ -22,6 +36,13 @@ updates:
     open-pull-requests-limit: 10
 
   # cargo (Rust)
+    # Batch this ecosystem into a single PR. Ungrouped, Dependabot
+    # opens one PR per dependency, and each PR re-fires every
+    # workflow in the repo.
+    groups:
+      pip:
+        patterns:
+          - "*"
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:
@@ -29,6 +50,13 @@ updates:
     open-pull-requests-limit: 5
 
   # gomod (Go)
+    # Batch this ecosystem into a single PR. Ungrouped, Dependabot
+    # opens one PR per dependency, and each PR re-fires every
+    # workflow in the repo.
+    groups:
+      cargo:
+        patterns:
+          - "*"
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
@@ -36,6 +64,13 @@ updates:
     open-pull-requests-limit: 5
 
   # nuget (C#/.NET)
+    # Batch this ecosystem into a single PR. Ungrouped, Dependabot
+    # opens one PR per dependency, and each PR re-fires every
+    # workflow in the repo.
+    groups:
+      gomod:
+        patterns:
+          - "*"
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
@@ -43,8 +78,22 @@ updates:
     open-pull-requests-limit: 5
 
   # composer (PHP)
+    # Batch this ecosystem into a single PR. Ungrouped, Dependabot
+    # opens one PR per dependency, and each PR re-fires every
+    # workflow in the repo.
+    groups:
+      nuget:
+        patterns:
+          - "*"
   - package-ecosystem: "composer"
     directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    # Batch this ecosystem into a single PR. Ungrouped, Dependabot
+    # opens one PR per dependency, and each PR re-fires every
+    # workflow in the repo.
+    groups:
+      composer:
+        patterns:
+          - "*"

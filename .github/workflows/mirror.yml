@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: MPL-2.0
+# This workflow is managed by gh actions-lock.
 name: Mirror to Git Forges
 on:
   push:
     branches: [main]
   workflow_dispatch:
 permissions:
+  actions: read
   contents: read
 jobs:
   mirror:
