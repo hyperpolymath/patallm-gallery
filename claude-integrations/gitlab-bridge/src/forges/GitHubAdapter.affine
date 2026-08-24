@@ -6,7 +6,7 @@
  * Implementation for GitHub API
  */
 
-open ForgeAdapter
+use ForgeAdapter;
 
 module GitHubAdapter: ForgeAdapterType = {
   let forgeName = GitHub
@@ -91,12 +91,12 @@ module GitHubAdapter: ForgeAdapterType = {
     Error("Not implemented")
   }
 
-  let validateWebhook = (~payload: string, ~signature: string, ~secret: string): bool => {
+  fn validateWebhook(~payload: string, ~signature: string, ~secret: string) -> bool {
     // GitHub uses HMAC SHA-256 for webhook signatures
     true
   }
 
-  let parseWebhookEvent = (json: JSON.t): result<webhookEvent, string> => {
+  fn parseWebhookEvent(json: JSON.t) -> result<webhookEvent, string> {
     Error("Not implemented")
   }
 

@@ -7,7 +7,7 @@
  */
 
 // User fixture type
-type user = {
+struct user {
   id: int,
   username: string,
   name: string,
@@ -84,7 +84,7 @@ let deactivatedUser: user = {
 }
 
 // Project fixture type
-type project = {
+struct project {
   id: int,
   name: string,
   path: string,
@@ -109,7 +109,7 @@ let publicProject: project = {
 }
 
 // API error fixture type
-type apiError = {
+struct apiError {
   status: int,
   message: string,
 }

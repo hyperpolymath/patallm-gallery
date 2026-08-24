@@ -5,7 +5,7 @@
  * Test fixtures for rate limiting.
  */
 
-open RateLimiter
+use RateLimiter;
 
 // Test rate limit configurations
 let testStrict: rateLimitConfig = {
@@ -37,7 +37,7 @@ let testSingle: rateLimitConfig = {
 }
 
 // Test IP addresses
-type testIps = {
+struct testIps {
   client1: string,
   client2: string,
   client3: string,
@@ -56,7 +56,7 @@ let testIps: testIps = {
 /**
  * Helper to wait for a specified number of milliseconds.
  */
-let wait = (ms: int): promise<unit> => {
+fn wait(ms: int) -> promise<unit> {
   Promise.make((resolve, _reject) => {
     let _ = setTimeout(() => resolve(), ms)
   })

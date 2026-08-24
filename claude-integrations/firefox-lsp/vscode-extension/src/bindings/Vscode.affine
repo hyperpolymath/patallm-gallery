@@ -57,7 +57,7 @@ module Workspace = {
 // --- Window ---
 
 module InputBoxOptions = {
-  type t = {
+  struct t {
     prompt: string,
     placeHolder: string,
   }
@@ -90,7 +90,7 @@ module Commands = {
 // --- LanguageClient (from vscode-languageclient/node) ---
 
 module ServerOptions = {
-  type t = {
+  struct t {
     command: string,
     args: array<string>,
   }
@@ -99,16 +99,16 @@ module ServerOptions = {
 module LanguageClientOptions = {
   type documentSelector
 
-  type synchronize = {fileEvents: FileSystemWatcher.t}
+  struct synchronize {fileEvents: FileSystemWatcher.t}
 
-  type t = {
+  struct t {
     documentSelector: array<documentSelector>,
     synchronize: synchronize,
   }
 }
 
 module ExecuteCommandParams = {
-  type t = {
+  struct t {
     command: string,
     arguments: array<Js.Json.t>,
   }

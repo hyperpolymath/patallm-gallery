@@ -8,7 +8,7 @@
  * HMAC-SHA256 signatures, and extracts webhook metadata from headers.
  */
 
-open Types
+use Types;
 
 /**
  * Header name for the GitLab webhook secret token.
@@ -51,9 +51,9 @@ let webhookEvents = [
  * Validates a webhook token matches the expected secret.
  * Uses timing-safe comparison to prevent timing attacks.
  */
-let validateWebhookToken = (receivedToken: string, expectedSecret: string): bool => {
+fn validateWebhookToken(receivedToken: string, expectedSecret: string) -> bool {
   // Ensure neither is empty
-  if receivedToken->String.length == 0 || expectedSecret->String.length == 0 {
+  if receivedToken.len() == 0 || expectedSecret.len() == 0 {
     false
   } else {
     Crypto.timingSafeStringCompare(receivedToken, expectedSecret)
@@ -64,7 +64,7 @@ let validateWebhookToken = (receivedToken: string, expectedSecret: string): bool
  * Computes HMAC-SHA256 signature for webhook payload.
  * Returns hex-encoded HMAC signature.
  */
-let computeWebhookSignature = (payload: string, secret: string): string => {
+fn computeWebhookSignature(payload: string, secret: string) -> string {
   Crypto.computeHmacSha256(payload, secret)
 }
 
@@ -72,8 +72,8 @@ let computeWebhookSignature = (payload: string, secret: string): string => {
  * Validates webhook signature using HMAC-SHA256.
  * Used for systems that use signature-based validation.
  */
-let validateWebhookSignature = (payload: string, signature: string, secret: string): bool => {
-  if payload->String.length == 0 || signature->String.length == 0 || secret->String.length == 0 {
+fn validateWebhookSignature(payload: string, signature: string, secret: string) -> bool {
+  if payload.len() == 0 || signature.len() == 0 || secret.len() == 0 {
     false
   } else {
     let expectedSignature = computeWebhookSignature(payload, secret)
@@ -93,9 +93,9 @@ let getHeaderValue = (
   headers: Dict.t<headerValue>,
   name: string,
 ): option<string> => {
-  switch headers->Dict.get(name) {
-  | None => None
-  | Some(value) =>
+  match headers->Dict.get(name) {
+  None => None
+  Some(value) =>
     if Array.isArray(value) {
       let arr = headerToArray(value)
       arr->Array.get(0)
@@ -116,7 +116,7 @@ let validateWebhookRequest = (
   secret: string,
 ): webhookValidationResult => {
   // Check for required secret
-  if secret->String.trim->String.length == 0 {
+  if secret.trim().len() == 0 {
     {valid: false, event: None, reason: Some("Webhook secret not configured")}
   } else {
     // Get the token from headers
@@ -125,13 +125,13 @@ let validateWebhookRequest = (
         getHeaderValue(headers, "X-Gitlab-Token"),
       )
 
-    switch token {
-    | None => {
+    match token {
+  None => {
         valid: false,
         event: None,
         reason: Some("Missing webhook token header"),
       }
-    | Some(tokenValue) =>
+  Some(tokenValue) =>
       if !validateWebhookToken(tokenValue, secret) {
         {valid: false, event: None, reason: Some("Invalid webhook token")}
       } else {
@@ -142,13 +142,13 @@ let validateWebhookRequest = (
           )
 
         // Validate event type if present
-        switch event {
-        | Some(evt) if !(webhookEvents->Array.includes(evt)) => {
+        match event {
+  Some(evt) if !(webhookEvents.contains(evt)) => {
             valid: false,
             event: Some(evt),
             reason: Some(`Unknown webhook event type: ${evt}`),
           }
-        | _ => {valid: true, event, reason: None}
+  _ => {valid: true, event, reason: None}
         }
       }
     }
@@ -171,7 +171,7 @@ let requireValidWebhook = (
 }
 
 // Webhook metadata extracted from headers
-type webhookMetadata = {
+struct webhookMetadata {
   event: option<string>,
   instance: option<string>,
   requestId: option<string>,
@@ -195,7 +195,7 @@ let extractWebhookMetadata = (
 }
 
 // Secret strength validation result
-type secretStrengthResult = {
+struct secretStrengthResult {
   valid: bool,
   issues: array<string>,
 }
@@ -204,13 +204,13 @@ type secretStrengthResult = {
  * Validates minimum secret strength.
  * Checks length, character diversity, and common weak patterns.
  */
-let validateSecretStrength = (secret: string): secretStrengthResult => {
+fn validateSecretStrength(secret: string) -> secretStrengthResult {
   let issues: array<string> = []
 
-  if secret->String.length == 0 {
+  if secret.len() == 0 {
     {valid: false, issues: ["Secret is empty"]}
   } else {
-    if secret->String.length < 32 {
+    if secret.len() < 32 {
       let _ = issues->Array.push("Secret should be at least 32 characters")
     }
 
@@ -240,6 +240,6 @@ let validateSecretStrength = (secret: string): secretStrengthResult => {
       let _ = issues->Array.push("Secret appears to be a placeholder or common value")
     }
 
-    {valid: issues->Array.length == 0, issues}
+    {valid: issues.len() == 0, issues}
   }
 }

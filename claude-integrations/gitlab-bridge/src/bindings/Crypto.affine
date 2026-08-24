@@ -53,7 +53,7 @@ type hmac
  * Compute HMAC-SHA256 signature for a string payload.
  * Returns hex-encoded signature string.
  */
-let computeHmacSha256 = (payload: string, secret: string): string => {
+fn computeHmacSha256(payload: string, secret: string) -> string {
   createHmac("sha256", secret)->updateString(payload)->digestHex
 }
 
@@ -62,7 +62,7 @@ let computeHmacSha256 = (payload: string, secret: string): string => {
  * Compares two strings without leaking timing information.
  * Returns false for different-length strings (after padding comparison).
  */
-let timingSafeStringCompare = (a: string, b: string): bool => {
+fn timingSafeStringCompare(a: string, b: string) -> bool {
   try {
     let bufA = bufferFromString(a)
     let bufB = bufferFromString(b)
@@ -82,7 +82,7 @@ let timingSafeStringCompare = (a: string, b: string): bool => {
       timingSafeEqual(bufA, bufB)
     }
   } catch {
-  | _ => false
+  _ => false
   }
 }
 
@@ -90,7 +90,7 @@ let timingSafeStringCompare = (a: string, b: string): bool => {
  * Timing-safe hex string comparison.
  * Compares two hex-encoded strings without leaking timing information.
  */
-let timingSafeHexCompare = (a: string, b: string): bool => {
+fn timingSafeHexCompare(a: string, b: string) -> bool {
   try {
     let bufA = bufferFromHex(a)
     let bufB = bufferFromHex(b)
@@ -103,6 +103,6 @@ let timingSafeHexCompare = (a: string, b: string): bool => {
       timingSafeEqual(bufA, bufB)
     }
   } catch {
-  | _ => false
+  _ => false
   }
 }

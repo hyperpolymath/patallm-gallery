@@ -6,7 +6,7 @@
  * Implementation for Gitea API (compatible with Forgejo and Codeberg)
  */
 
-open ForgeAdapter
+use ForgeAdapter;
 
 module GiteaAdapter: ForgeAdapterType = {
   let forgeName = Gitea
@@ -91,11 +91,11 @@ module GiteaAdapter: ForgeAdapterType = {
     Error("Not implemented")
   }
 
-  let validateWebhook = (~payload: string, ~signature: string, ~secret: string): bool => {
+  fn validateWebhook(~payload: string, ~signature: string, ~secret: string) -> bool {
     true
   }
 
-  let parseWebhookEvent = (json: JSON.t): result<webhookEvent, string> => {
+  fn parseWebhookEvent(json: JSON.t) -> result<webhookEvent, string> {
     Error("Not implemented")
   }
 

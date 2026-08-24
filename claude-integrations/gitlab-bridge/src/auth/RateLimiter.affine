@@ -8,7 +8,7 @@
  * per-key tracking, automatic cleanup, and Express middleware integration.
  */
 
-open Types
+use Types;
 
 // Timer ID type for setInterval/clearInterval
 type intervalId
@@ -18,7 +18,7 @@ type intervalId
 @send external unref: intervalId => unit = "unref"
 
 // Rate limit configuration
-type rateLimitConfig = {
+struct rateLimitConfig {
   limit: int,
   windowMs: int,
   headers: bool,
@@ -34,13 +34,13 @@ let defaultConfig: rateLimitConfig = {
 }
 
 // Internal record for tracking request timestamps
-type rateLimitRecord = {
+struct rateLimitRecord {
   mutable timestamps: array<float>,
   mutable lastAccess: float,
 }
 
 // Rate limiter instance (mutable state)
-type rateLimiter = {
+struct rateLimiter {
   config: rateLimitConfig,
   store: Map.t<string, rateLimitRecord>,
   mutable cleanupInterval: option<intervalId>,
@@ -50,7 +50,7 @@ type rateLimiter = {
  * Create a new rate limiter with the given configuration.
  * Starts a cleanup interval to prevent memory leaks.
  */
-let make = (~config: rateLimitConfig=defaultConfig): rateLimiter => {
+fn make(~config: rateLimitConfig=defaultConfig) -> rateLimiter {
   let limiter = {
     config,
     store: Map.make(),
@@ -79,46 +79,46 @@ let make = (~config: rateLimitConfig=defaultConfig): rateLimiter => {
 /**
  * Stop the cleanup interval.
  */
-let stop = (limiter: rateLimiter): unit => {
-  switch limiter.cleanupInterval {
-  | Some(interval) => {
+fn stop(limiter: rateLimiter) -> unit {
+  match limiter.cleanupInterval {
+  Some(interval) => {
       clearInterval(interval)
       limiter.cleanupInterval = None
     }
-  | None => ()
+  None => ()
   }
 }
 
 /**
  * Check rate limit status for a key without recording a hit.
  */
-let check = (limiter: rateLimiter, key: string): rateLimitInfo => {
+fn check(limiter: rateLimiter, key: string) -> rateLimitInfo {
   let now = Date.now()
   let windowStart = now -. limiter.config.windowMs->Int.toFloat
 
   // Get or create record
-  let record = switch limiter.store->Map.get(key) {
-  | None => {
+  let record = match limiter.store->Map.get(key) {
+  None => {
       let newRecord = {timestamps: [], lastAccess: now}
       limiter.store->Map.set(key, newRecord)
       newRecord
     }
-  | Some(existing) => existing
+  Some(existing) => existing
   }
 
   // Filter out timestamps outside the window
-  record.timestamps = record.timestamps->Array.filter(ts => ts > windowStart)
+  record.timestamps = record.timestamps.filter(ts => ts > windowStart)
   record.lastAccess = now
 
   // Calculate remaining requests
-  let currentCount = record.timestamps->Array.length
+  let currentCount = record.timestamps.len()
   let remaining = Math.Int.max(0, limiter.config.limit - currentCount)
   let isLimited = remaining == 0
 
   // Calculate reset time
-  let resetTime = switch record.timestamps->Array.get(0) {
-  | Some(oldest) => oldest +. limiter.config.windowMs->Int.toFloat
-  | None => now +. limiter.config.windowMs->Int.toFloat
+  let resetTime = match record.timestamps->Array.get(0) {
+  Some(oldest) => oldest +. limiter.config.windowMs->Int.toFloat
+  None => now +. limiter.config.windowMs->Int.toFloat
   }
 
   {
@@ -132,20 +132,20 @@ let check = (limiter: rateLimiter, key: string): rateLimitInfo => {
 /**
  * Record a request hit for a key and return updated rate limit info.
  */
-let hit = (limiter: rateLimiter, key: string): rateLimitInfo => {
+fn hit(limiter: rateLimiter, key: string) -> rateLimitInfo {
   let now = Date.now()
   let info = check(limiter, key)
 
   if !info.isLimited {
-    switch limiter.store->Map.get(key) {
-    | Some(record) => {
+    match limiter.store->Map.get(key) {
+  Some(record) => {
         let _ = record.timestamps->Array.push(now)
         {
           ...info,
           remaining: Math.Int.max(0, info.remaining - 1),
         }
       }
-    | None => info
+  None => info
     }
   } else {
     info
@@ -155,35 +155,35 @@ let hit = (limiter: rateLimiter, key: string): rateLimitInfo => {
 /**
  * Reset the rate limit for a specific key.
  */
-let reset = (limiter: rateLimiter, key: string): unit => {
+fn reset(limiter: rateLimiter, key: string) -> unit {
   let _ = limiter.store->Map.delete(key)
 }
 
 /**
  * Reset all rate limits.
  */
-let resetAll = (limiter: rateLimiter): unit => {
+fn resetAll(limiter: rateLimiter) -> unit {
   limiter.store->Map.clear
 }
 
 /**
  * Get the current count of tracked keys.
  */
-let size = (limiter: rateLimiter): int => {
+fn size(limiter: rateLimiter) -> int {
   limiter.store->Map.size
 }
 
 /**
  * Get rate limit info without recording a hit (alias for check).
  */
-let getInfo = (limiter: rateLimiter, key: string): rateLimitInfo => {
+fn getInfo(limiter: rateLimiter, key: string) -> rateLimitInfo {
   check(limiter, key)
 }
 
 /**
  * Check rate limit and raise exception if exceeded.
  */
-let requireRateLimit = (limiter: rateLimiter, key: string): unit => {
+fn requireRateLimit(limiter: rateLimiter, key: string) -> unit {
   let info = hit(limiter, key)
 
   if info.isLimited {
@@ -196,7 +196,7 @@ let requireRateLimit = (limiter: rateLimiter, key: string): unit => {
 }
 
 // Preset rate limit configurations
-type presetConfig = {limit: int, windowMs: int}
+struct presetConfig {limit: int, windowMs: int}
 
 let presets: Dict.t<presetConfig> = Dict.fromArray([
   ("strict", {limit: 30, windowMs: 60 * 1000}),
@@ -210,25 +210,25 @@ let presets: Dict.t<presetConfig> = Dict.fromArray([
 /**
  * Create a rate limiter from a preset name.
  */
-let makeFromPreset = (~preset: string, ~overrides: option<rateLimitConfig>=?): rateLimiter => {
-  let base = switch presets->Dict.get(preset) {
-  | Some(p) => {
+fn makeFromPreset(~preset: string, ~overrides: option<rateLimitConfig>=?) -> rateLimiter {
+  let base = match presets->Dict.get(preset) {
+  Some(p) => {
       limit: p.limit,
       windowMs: p.windowMs,
       headers: true,
       message: "Too many requests, please try again later.",
     }
-  | None => defaultConfig
+  None => defaultConfig
   }
 
-  let config = switch overrides {
-  | Some(ov) => {
+  let config = match overrides {
+  Some(ov) => {
       limit: if ov.limit > 0 { ov.limit } else { base.limit },
       windowMs: if ov.windowMs > 0 { ov.windowMs } else { base.windowMs },
       headers: ov.headers,
       message: ov.message,
     }
-  | None => base
+  None => base
   }
 
   make(~config)

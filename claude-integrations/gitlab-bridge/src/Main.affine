@@ -15,7 +15,7 @@ module Anthropic = Anthropic
 module Express = Express
 
 // Configuration type
-type config = {
+struct config {
   gitlabToken: string,
   gitlabUrl: string,
   anthropicApiKey: string,
@@ -24,13 +24,13 @@ type config = {
 }
 
 // Bridge state
-type bridge = {
+struct bridge {
   config: config,
   anthropic: Anthropic.anthropic,
 }
 
 // Create a new bridge instance
-let make = (~config: config): bridge => {
+fn make(~config: config) -> bridge {
   let anthropic = Anthropic.make({
     apiKey: config.anthropicApiKey,
     baseURL: None,
@@ -41,13 +41,13 @@ let make = (~config: config): bridge => {
 }
 
 // Issue analysis parameters
-type issueParams = {
+struct issueParams {
   projectId: string,
   issueId: int,
 }
 
 // Issue analysis result
-type analysis = {
+struct analysis {
   summary: string,
   suggestions: array<string>,
   priority: string,
@@ -85,18 +85,18 @@ let analyzeIssue = async (bridge: bridge, ~params: issueParams): result<analysis
       priority: "medium",
     })
   } catch {
-  | Js.Exn.Error(e) => Error(e->Js.Exn.message->Option.getOr("Unknown error"))
+  Js.Exn.Error(e) => Error(e->Js.Exn.message->Option.getOr("Unknown error"))
   }
 }
 
 // MR review parameters
-type mrParams = {
+struct mrParams {
   projectId: string,
   mergeRequestId: int,
 }
 
 // MR review result
-type review = {
+struct review {
   comments: array<string>,
   approved: bool,
   suggestions: array<string>,
@@ -126,19 +126,19 @@ let reviewMR = async (bridge: bridge, ~params: mrParams): result<review, string>
       suggestions: ["Add unit tests", "Update documentation"],
     })
   } catch {
-  | Js.Exn.Error(e) => Error(e->Js.Exn.message->Option.getOr("Unknown error"))
+  Js.Exn.Error(e) => Error(e->Js.Exn.message->Option.getOr("Unknown error"))
   }
 }
 
 // Task execution parameters
-type taskParams = {
+struct taskParams {
   taskType: string,
   projectId: string,
   context: JSON.t,
 }
 
 // Task result
-type taskResult = {
+struct taskResult {
   success: bool,
   message: string,
   data: option<JSON.t>,
@@ -155,7 +155,7 @@ let executeTask = async (bridge: bridge, ~params: taskParams): result<taskResult
 }
 
 // Webhook event type
-type webhookEvent = {
+struct webhookEvent {
   eventType: string,
   projectId: string,
   payload: JSON.t,

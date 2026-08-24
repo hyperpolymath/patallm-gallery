@@ -7,7 +7,7 @@
  */
 
 // Repository configuration
-type repoConfig = {
+struct repoConfig {
   id: string,
   projectId: string,
   gitlabUrl: string,
@@ -26,55 +26,55 @@ and repoFeatures = {
 }
 
 // Multi-repo configuration
-type multiRepoConfig = {
+struct multiRepoConfig {
   repositories: array<repoConfig>,
   defaultGitlabUrl: string,
   sharedWebhookSecret: option<string>,
 }
 
 // Repository registry
-type repoRegistry = {
+struct repoRegistry {
   repos: Dict.t<repoConfig>,
   byProjectId: Dict.t<repoConfig>,
 }
 
 // Create empty registry
-let makeRegistry = (): repoRegistry => {
+fn makeRegistry() -> repoRegistry {
   repos: Dict.make(),
   byProjectId: Dict.make(),
 }
 
 // Add repository to registry
-let addRepo = (registry: repoRegistry, config: repoConfig): repoRegistry => {
+fn addRepo(registry: repoRegistry, config: repoConfig) -> repoRegistry {
   registry.repos->Dict.set(config.id, config)
   registry.byProjectId->Dict.set(config.projectId, config)
   registry
 }
 
 // Get repository by ID
-let getRepoById = (registry: repoRegistry, id: string): option<repoConfig> => {
+fn getRepoById(registry: repoRegistry, id: string) -> option<repoConfig> {
   registry.repos->Dict.get(id)
 }
 
 // Get repository by project ID
-let getRepoByProjectId = (registry: repoRegistry, projectId: string): option<repoConfig> => {
+fn getRepoByProjectId(registry: repoRegistry, projectId: string) -> option<repoConfig> {
   registry.byProjectId->Dict.get(projectId)
 }
 
 // Get all enabled repositories
-let getEnabledRepos = (registry: repoRegistry): array<repoConfig> => {
+fn getEnabledRepos(registry: repoRegistry) -> array<repoConfig> {
   registry.repos
   ->Dict.valuesToArray
-  ->Array.filter(repo => repo.enabled)
+  .filter(repo => repo.enabled)
 }
 
 // Validate repository configuration
-let validateRepoConfig = (config: repoConfig): result<unit, string> => {
-  if config.id->String.trim->String.length == 0 {
+fn validateRepoConfig(config: repoConfig) -> result<unit, string> {
+  if config.id.trim().len() == 0 {
     Error("Repository ID cannot be empty")
-  } else if config.projectId->String.trim->String.length == 0 {
+  } else if config.projectId.trim().len() == 0 {
     Error("Project ID cannot be empty")
-  } else if config.name->String.trim->String.length == 0 {
+  } else if config.name.trim().len() == 0 {
     Error("Repository name cannot be empty")
   } else {
     Ok()
@@ -82,7 +82,7 @@ let validateRepoConfig = (config: repoConfig): result<unit, string> => {
 }
 
 // Load configuration from JSON
-let parseRepoConfig = (json: JSON.t): result<repoConfig, string> => {
+fn parseRepoConfig(json: JSON.t) -> result<repoConfig, string> {
   try {
     // Simplified parsing - real implementation would use proper JSON decoder
     let obj = json->JSON.Decode.object->Option.getExn
@@ -130,21 +130,21 @@ let parseRepoConfig = (json: JSON.t): result<repoConfig, string> => {
 
     validateRepoConfig(config)->Result.map(_ => config)
   } catch {
-  | _ => Error("Failed to parse repository configuration")
+  _ => Error("Failed to parse repository configuration")
   }
 }
 
 // Load multiple repositories from JSON
-let parseMultiRepoConfig = (json: JSON.t): result<multiRepoConfig, string> => {
+fn parseMultiRepoConfig(json: JSON.t) -> result<multiRepoConfig, string> {
   try {
     let obj = json->JSON.Decode.object->Option.getExn
 
     let reposJson = obj->Dict.get("repositories")->Option.flatMap(JSON.Decode.array)->Option.getExn
 
-    let repos = reposJson->Array.map(parseRepoConfig)->Array.keepSome((result) =>
-      switch result {
-      | Ok(config) => Some(config)
-      | Error(_) => None
+    let repos = reposJson.map(parseRepoConfig)->Array.keepSome((result) =>
+      match result {
+  Ok(config) => Some(config)
+  Error(_) => None
       }
     )
 
@@ -154,12 +154,12 @@ let parseMultiRepoConfig = (json: JSON.t): result<multiRepoConfig, string> => {
       sharedWebhookSecret: None,
     })
   } catch {
-  | _ => Error("Failed to parse multi-repository configuration")
+  _ => Error("Failed to parse multi-repository configuration")
   }
 }
 
 // Build registry from configuration
-let buildRegistry = (config: multiRepoConfig): repoRegistry => {
+fn buildRegistry(config: multiRepoConfig) -> repoRegistry {
   let registry = makeRegistry()
   config.repositories->Array.reduce(registry, (reg, repo) => addRepo(reg, repo))
 }
@@ -173,33 +173,33 @@ let routeWebhook = (
 }
 
 // Get repository statistics
-type repoStats = {
+struct repoStats {
   totalRepos: int,
   enabledRepos: int,
   disabledRepos: int,
   gitlabUrls: array<string>,
 }
 
-let getStats = (registry: repoRegistry): repoStats => {
+fn getStats(registry: repoRegistry) -> repoStats {
   let all = registry.repos->Dict.valuesToArray
-  let enabled = all->Array.filter(r => r.enabled)
-  let disabled = all->Array.filter(r => !r.enabled)
+  let enabled = all.filter(r => r.enabled)
+  let disabled = all.filter(r => !r.enabled)
   let urls = all
-    ->Array.map(r => r.gitlabUrl)
+    .map(r => r.gitlabUrl)
     ->Array.toSet
     ->Set.toArray
 
   {
-    totalRepos: all->Array.length,
-    enabledRepos: enabled->Array.length,
-    disabledRepos: disabled->Array.length,
+    totalRepos: all.len(),
+    enabledRepos: enabled.len(),
+    disabledRepos: disabled.len(),
     gitlabUrls: urls,
   }
 }
 
 // Export configuration to JSON
-let exportConfig = (config: multiRepoConfig): JSON.t => {
-  let repos = config.repositories->Array.map(repo => {
+fn exportConfig(config: multiRepoConfig) -> JSON.t {
+  let repos = config.repositories.map(repo => {
     JSON.object_(
       Dict.fromArray([
         ("id", JSON.string(repo.id)),

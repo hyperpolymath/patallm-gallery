@@ -8,7 +8,7 @@
 // and reads MCP JSON-RPC requests from stdin (from Claude Code), forwarding
 // tool calls to the extension and returning results.
 
-open Deno_Ws
+use Deno_Ws;
 
 // --- Constants ---
 
@@ -25,7 +25,7 @@ type rec jsonSchema = {
   required: option<array<string>>,
 }
 
-type mcpTool = {
+struct mcpTool {
   name: string,
   description: string,
   inputSchema: jsonSchema,
@@ -537,7 +537,7 @@ let mcpTools: array<mcpTool> = [
 
 // --- Mutable state ---
 
-type pendingRequest = {
+struct pendingRequest {
   resolve: Js.Json.t => unit,
   reject: exn => unit,
 }
@@ -549,7 +549,7 @@ let pendingRequests: Dict.t<pendingRequest> = Dict.make()
 // --- Helpers ---
 
 // Write a JSON-RPC message to stdout for Claude Code to consume.
-let writeStdout = (message: 'a): unit => {
+fn writeStdout(message: 'a) -> unit {
   let json = jsonStringify(message)
   let encoder = TextEncoder.make()
   let bytes = TextEncoder.encode(encoder, json ++ "\n")
@@ -557,7 +557,7 @@ let writeStdout = (message: 'a): unit => {
 }
 
 // Log to stderr so it does not interfere with the MCP protocol on stdout.
-let log = (args: array<string>): unit => {
+fn log(args: array<string>) -> unit {
   Console.error2("[MCP Server]", Array.join(args, " "))
 }
 
@@ -567,9 +567,9 @@ let log = (args: array<string>): unit => {
 // that resolves when the extension responds with a matching request id.
 let callExtension = async (toolName: string, args: Js.Json.t): Js.Json.t => {
   let socket = extensionSocket.contents
-  switch socket {
-  | None => Exn.raiseError("Firefox extension not connected. Start Firefox with the extension loaded.")
-  | Some(ws) =>
+  match socket {
+  None => Exn.raiseError("Firefox extension not connected. Start Firefox with the extension loaded.")
+  Some(ws) =>
     if WebSocket.readyState(ws) !== WebSocket._OPEN {
       Exn.raiseError("Firefox extension not connected. Start Firefox with the extension loaded.")
     }
@@ -583,12 +583,12 @@ let callExtension = async (toolName: string, args: Js.Json.t): Js.Json.t => {
 
       // Timeout after 30 seconds
       let _ = setTimeout(() => {
-        switch Dict.get(pendingRequests, idStr) {
-        | Some(_) => {
+        match Dict.get(pendingRequests, idStr) {
+  Some(_) => {
             Dict.delete(pendingRequests, idStr)
             reject(Exn.anyToExnInternal("Extension request timed out"))
           }
-        | None => ()
+  None => ()
         }
       }, 30000)
     })
@@ -609,13 +609,13 @@ let callExtension = async (toolName: string, args: Js.Json.t): Js.Json.t => {
 
 // --- MCP request types ---
 
-type mcpRequest = {
+struct mcpRequest {
   id: option<int>,
   method: string,
   params: option<Js.Json.t>,
 }
 
-type toolCallParams = {
+struct toolCallParams {
   name: string,
   arguments: Js.Json.t,
 }
@@ -626,8 +626,8 @@ let handleMcpRequest = async (request: mcpRequest): unit => {
   let {id, method, params} = request
 
   try {
-    let result = switch method {
-    | "initialize" =>
+    let result = match method {
+  "initialize" =>
       Some(
         Obj.magic({
           "protocolVersion": "2024-11-05",
@@ -635,26 +635,22 @@ let handleMcpRequest = async (request: mcpRequest): unit => {
           "serverInfo": {"name": "claude-firefox-mcp", "version": "1.0.0"},
         }),
       )
-
-    | "notifications/initialized" => {
+  "notifications/initialized" => {
         log(["MCP initialized"])
         None // No response needed for notifications
       }
-
-    | "tools/list" => Some(Obj.magic({"tools": mcpTools}))
-
-    | "tools/call" =>
-      switch params {
-      | Some(p) => {
+  "tools/list" => Some(Obj.magic({"tools": mcpTools}))
+  "tools/call" =>
+      match params {
+  Some(p) => {
           let toolParams: toolCallParams = Obj.magic(p)
           log(["Tool call:", toolParams.name])
           let extensionResult = await callExtension(toolParams.name, toolParams.arguments)
           Some(extensionResult)
         }
-      | None => Exn.raiseError("Missing params for tools/call")
+  None => Exn.raiseError("Missing params for tools/call")
       }
-
-    | _ => {
+  _ => {
         writeStdout({
           "jsonrpc": "2.0",
           "id": id,
@@ -664,15 +660,15 @@ let handleMcpRequest = async (request: mcpRequest): unit => {
       }
     }
 
-    switch result {
-    | Some(r) => writeStdout({"jsonrpc": "2.0", "id": id, "result": r})
-    | None => ()
+    match result {
+  Some(r) => writeStdout({"jsonrpc": "2.0", "id": id, "result": r})
+  None => ()
     }
   } catch {
-  | Exn.Error(err) => {
-      let msg = switch Exn.message(err) {
-      | Some(m) => m
-      | None => "Unknown error"
+  Exn.Error(err) => {
+      let msg = match Exn.message(err) {
+  Some(m) => m
+  None => "Unknown error"
       }
       log(["Error:", msg])
       writeStdout({
@@ -681,7 +677,7 @@ let handleMcpRequest = async (request: mcpRequest): unit => {
         "error": {"code": -32000, "message": msg},
       })
     }
-  | err => {
+  err => {
       let msg = Obj.magic(err)->Js.String.make
       log(["Error:", msg])
       writeStdout({
@@ -697,38 +693,38 @@ let handleMcpRequest = async (request: mcpRequest): unit => {
 
 // Process a JSON message received from the Firefox extension over WebSocket.
 // Matches the message id to a pending request and resolves or rejects it.
-type extensionMessage = {
+struct extensionMessage {
   id: option<int>,
   result: option<Js.Json.t>,
   error: option<{"message": string}>,
 }
 
-let handleExtensionMessage = (data: string): unit => {
+fn handleExtensionMessage(data: string) -> unit {
   try {
     let message: extensionMessage = jsonParse(data)
 
-    switch message.id {
-    | Some(msgId) => {
+    match message.id {
+  Some(msgId) => {
         let idStr = Int.toString(msgId)
-        switch Dict.get(pendingRequests, idStr) {
-        | Some({resolve, reject}) => {
+        match Dict.get(pendingRequests, idStr) {
+  Some({resolve, reject}) => {
             Dict.delete(pendingRequests, idStr)
-            switch message.error {
-            | Some(err) => reject(Exn.anyToExnInternal(err["message"]))
-            | None =>
-              switch message.result {
-              | Some(r) => resolve(r)
-              | None => resolve(Obj.magic(Js.null))
+            match message.error {
+  Some(err) => reject(Exn.anyToExnInternal(err["message"]))
+  None =>
+              match message.result {
+  Some(r) => resolve(r)
+  None => resolve(Obj.magic(Js.null))
               }
             }
           }
-        | None => ()
+  None => ()
         }
       }
-    | None => ()
+  None => ()
     }
   } catch {
-  | _ => log(["Failed to parse extension message"])
+  _ => log(["Failed to parse extension message"])
   }
 }
 
@@ -736,15 +732,15 @@ let handleExtensionMessage = (data: string): unit => {
 
 // Start the WebSocket server that the Firefox extension connects to.
 // Accepts upgrade requests and wires up message/close/error handlers.
-let startWebSocketServer = (): unit => {
+fn startWebSocketServer() -> unit {
   log(["Starting WebSocket server on port", Int.toString(wsPort)])
 
   serve({port: wsPort}, req => {
     let headers = Fetch.Request.headers(req)
     let upgradeHeader = RequestHeaders.get(headers, "upgrade")
 
-    switch Js.Nullable.toOption(upgradeHeader) {
-    | Some("websocket") => {
+    match Js.Nullable.toOption(upgradeHeader) {
+  Some("websocket") => {
         let {socket, response} = upgradeWebSocket(req)
 
         WebSocket.setOnopen(socket, () => {
@@ -758,9 +754,9 @@ let startWebSocketServer = (): unit => {
 
         WebSocket.setOnclose(socket, () => {
           log(["Firefox extension disconnected"])
-          switch extensionSocket.contents {
-          | Some(current) if current === socket => extensionSocket := None
-          | _ => ()
+          match extensionSocket.contents {
+  Some(current) if current === socket => extensionSocket := None
+  _ => ()
           }
         })
 
@@ -770,7 +766,7 @@ let startWebSocketServer = (): unit => {
 
         response
       }
-    | _ => makeResponse("WebSocket required", {"status": 400})
+  _ => makeResponse("WebSocket required", {"status": 400})
     }
   })
 
@@ -795,8 +791,8 @@ let readStdin = async (): unit => {
       log(["Stdin closed"])
       continue_ := false
     } else {
-      switch Js.Nullable.toOption(readResult.value) {
-      | Some(value) => {
+      match Js.Nullable.toOption(readResult.value) {
+  Some(value) => {
           buffer :=
             buffer.contents ++
             TextDecoder.decodeWithOptions(decoder, value, {stream: true})
@@ -817,7 +813,7 @@ let readStdin = async (): unit => {
                   log(["Received:", request.method])
                   await handleMcpRequest(request)
                 } catch {
-                | _ => {
+  _ => {
                     log(["Parse error"])
                     writeStdout({
                       "jsonrpc": "2.0",
@@ -830,7 +826,7 @@ let readStdin = async (): unit => {
             }
           }
         }
-      | None => ()
+  None => ()
       }
     }
   }

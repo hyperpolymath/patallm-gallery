@@ -5,8 +5,8 @@
  * Tests for webhook validation functions.
  */
 
-open Vitest
-open Webhooks
+use Vitest;
+use Webhooks;
 
 // Helper to convert Dict.t<string> to Dict.t<WebhookValidator.headerValue>
 external toHeaderDict: Dict.t<string> => Dict.t<WebhookValidator.headerValue> = "%identity"
@@ -160,9 +160,9 @@ describe("webhook-validator", () => {
         webhookSecret,
       )
       expect(result.valid)->toBe(false)
-      switch result.reason {
-      | Some(reason) => expect(reason)->toMatchString("Invalid webhook token")
-      | None => Expect.fail("Expected reason")
+      match result.reason {
+  Some(reason) => expect(reason)->toMatchString("Invalid webhook token")
+  None => Expect.fail("Expected reason")
       }
     })
 
@@ -176,9 +176,9 @@ describe("webhook-validator", () => {
         webhookSecret,
       )
       expect(result.valid)->toBe(false)
-      switch result.reason {
-      | Some(reason) => expect(reason)->toMatchString("Missing webhook token")
-      | None => Expect.fail("Expected reason")
+      match result.reason {
+  Some(reason) => expect(reason)->toMatchString("Missing webhook token")
+  None => Expect.fail("Expected reason")
       }
     })
 
@@ -188,9 +188,9 @@ describe("webhook-validator", () => {
 
       let result = WebhookValidator.validateWebhookRequest(headers, body, "")
       expect(result.valid)->toBe(false)
-      switch result.reason {
-      | Some(reason) => expect(reason)->toMatchString("not configured")
-      | None => Expect.fail("Expected reason")
+      match result.reason {
+  Some(reason) => expect(reason)->toMatchString("not configured")
+  None => Expect.fail("Expected reason")
       }
     })
 
@@ -208,9 +208,9 @@ describe("webhook-validator", () => {
         webhookSecret,
       )
       expect(result.valid)->toBe(false)
-      switch result.reason {
-      | Some(reason) => expect(reason)->toMatchString("Unknown webhook event")
-      | None => Expect.fail("Expected reason")
+      match result.reason {
+  Some(reason) => expect(reason)->toMatchString("Unknown webhook event")
+  None => Expect.fail("Expected reason")
       }
     })
 
@@ -257,9 +257,9 @@ describe("webhook-validator", () => {
 
       expect(metadata.event)->toEqual(Some("Push Hook"))
       expect(metadata.instance)->toEqual(Some("https://gitlab.com"))
-      switch metadata.requestId {
-      | Some(id) => expect(id)->toMatchString("test-request-")
-      | None => Expect.fail("Expected requestId")
+      match metadata.requestId {
+  Some(id) => expect(id)->toMatchString("test-request-")
+  None => Expect.fail("Expected requestId")
       }
     })
 

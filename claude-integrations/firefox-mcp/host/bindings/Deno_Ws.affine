@@ -15,7 +15,7 @@ module TextEncoder = {
 
 module TextDecoder = {
   type t
-  type decodeOptions = {stream: bool}
+  struct decodeOptions {stream: bool}
 
   @new external make: unit => t = "TextDecoder"
   @send external decode: (t, Js.TypedArray2.Uint8Array.t) => string = "decode"
@@ -68,12 +68,12 @@ module WebSocket = {
 
 // --- Deno.serve ---
 
-type upgradeResult = {
+struct upgradeResult {
   socket: WebSocket.t,
   response: Fetch.Response.t,
 }
 
-type serveOptions = {port: int}
+struct serveOptions {port: int}
 
 @scope("Deno") @val
 external serve: (serveOptions, Fetch.Request.t => Fetch.Response.t) => unit = "serve"
@@ -86,7 +86,7 @@ external upgradeWebSocket: Fetch.Request.t => upgradeResult = "upgradeWebSocket"
 module ReadableStreamReader = {
   type t
 
-  type readResult = {
+  struct readResult {
     done: bool,
     value: Js.Nullable.t<Js.TypedArray2.Uint8Array.t>,
   }
@@ -102,7 +102,7 @@ module WritableStreamWriter = {
 
 module Stdin = {
   type readable
-  type t = {readable: readable}
+  struct t {readable: readable}
 
   @scope("Deno") @val external stdin: t = "stdin"
   @send external getReader: readable => ReadableStreamReader.t = "getReader"
@@ -110,7 +110,7 @@ module Stdin = {
 
 module Stdout = {
   type writable
-  type t = {writable: writable}
+  struct t {writable: writable}
 
   @scope("Deno") @val external stdout: t = "stdout"
   @send external getWriter: writable => WritableStreamWriter.t = "getWriter"

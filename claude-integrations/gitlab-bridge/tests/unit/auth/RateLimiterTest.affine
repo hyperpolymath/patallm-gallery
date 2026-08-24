@@ -5,8 +5,8 @@
  * Tests for the rate limiter module.
  */
 
-open Vitest
-open RateLimitFixtures
+use Vitest;
+use RateLimitFixtures;
 
 describe("rate-limiter", () => {
   describe("RateLimiter", () => {
@@ -17,15 +17,15 @@ describe("rate-limiter", () => {
     })
 
     afterEach(() => {
-      switch limiterRef.contents {
-      | Some(l) => RateLimiter.stop(l)
-      | None => ()
+      match limiterRef.contents {
+  Some(l) => RateLimiter.stop(l)
+  None => ()
       }
     })
 
     it("should allow requests within limit", () => {
-      switch limiterRef.contents {
-      | Some(limiter) => {
+      match limiterRef.contents {
+  Some(limiter) => {
           let info1 = RateLimiter.hit(limiter, testIps.client1)
           expect(info1.isLimited)->toBe(false)
           expect(info1.remaining)->toBe(1)
@@ -34,26 +34,26 @@ describe("rate-limiter", () => {
           expect(info2.isLimited)->toBe(false)
           expect(info2.remaining)->toBe(0)
         }
-      | None => Expect.fail("Limiter not initialized")
+  None => Expect.fail("Limiter not initialized")
       }
     })
 
     it("should block requests over limit", () => {
-      switch limiterRef.contents {
-      | Some(limiter) => {
+      match limiterRef.contents {
+  Some(limiter) => {
           let _ = RateLimiter.hit(limiter, testIps.client1)
           let _ = RateLimiter.hit(limiter, testIps.client1)
           let info = RateLimiter.hit(limiter, testIps.client1)
           expect(info.isLimited)->toBe(true)
           expect(info.remaining)->toBe(0)
         }
-      | None => Expect.fail("Limiter not initialized")
+  None => Expect.fail("Limiter not initialized")
       }
     })
 
     it("should track different keys separately", () => {
-      switch limiterRef.contents {
-      | Some(limiter) => {
+      match limiterRef.contents {
+  Some(limiter) => {
           let _ = RateLimiter.hit(limiter, testIps.client1)
           let _ = RateLimiter.hit(limiter, testIps.client1)
 
@@ -64,13 +64,13 @@ describe("rate-limiter", () => {
           expect(info2.isLimited)->toBe(false)
           expect(info2.remaining)->toBe(1)
         }
-      | None => Expect.fail("Limiter not initialized")
+  None => Expect.fail("Limiter not initialized")
       }
     })
 
     itAsync("should reset limit after window expires", async () => {
-      switch limiterRef.contents {
-      | Some(limiter) => {
+      match limiterRef.contents {
+  Some(limiter) => {
           let _ = RateLimiter.hit(limiter, testIps.client1)
           let _ = RateLimiter.hit(limiter, testIps.client1)
 
@@ -84,25 +84,25 @@ describe("rate-limiter", () => {
           expect(info2.isLimited)->toBe(false)
           expect(info2.remaining)->toBe(1)
         }
-      | None => Expect.fail("Limiter not initialized")
+  None => Expect.fail("Limiter not initialized")
       }
     })
 
     it("should return correct limit info", () => {
-      switch limiterRef.contents {
-      | Some(limiter) => {
+      match limiterRef.contents {
+  Some(limiter) => {
           let info = RateLimiter.getInfo(limiter, testIps.client1)
           expect(info.limit)->toBe(2)
           expect(info.remaining)->toBe(2)
           expect(info.isLimited)->toBe(false)
         }
-      | None => Expect.fail("Limiter not initialized")
+  None => Expect.fail("Limiter not initialized")
       }
     })
 
     it("should reset specific key", () => {
-      switch limiterRef.contents {
-      | Some(limiter) => {
+      match limiterRef.contents {
+  Some(limiter) => {
           let _ = RateLimiter.hit(limiter, testIps.client1)
           let _ = RateLimiter.hit(limiter, testIps.client1)
           RateLimiter.reset(limiter, testIps.client1)
@@ -111,13 +111,13 @@ describe("rate-limiter", () => {
           expect(info.isLimited)->toBe(false)
           expect(info.remaining)->toBe(1)
         }
-      | None => Expect.fail("Limiter not initialized")
+  None => Expect.fail("Limiter not initialized")
       }
     })
 
     it("should reset all keys", () => {
-      switch limiterRef.contents {
-      | Some(limiter) => {
+      match limiterRef.contents {
+  Some(limiter) => {
           let _ = RateLimiter.hit(limiter, testIps.client1)
           let _ = RateLimiter.hit(limiter, testIps.client2)
           RateLimiter.resetAll(limiter)
@@ -129,13 +129,13 @@ describe("rate-limiter", () => {
           expect(info1.remaining)->toBe(2)
           expect(info2.remaining)->toBe(2)
         }
-      | None => Expect.fail("Limiter not initialized")
+  None => Expect.fail("Limiter not initialized")
       }
     })
 
     it("should track store size", () => {
-      switch limiterRef.contents {
-      | Some(limiter) => {
+      match limiterRef.contents {
+  Some(limiter) => {
           expect(RateLimiter.size(limiter))->toBe(0)
 
           let _ = RateLimiter.hit(limiter, testIps.client1)
@@ -144,7 +144,7 @@ describe("rate-limiter", () => {
           let _ = RateLimiter.hit(limiter, testIps.client2)
           expect(RateLimiter.size(limiter))->toBe(2)
         }
-      | None => Expect.fail("Limiter not initialized")
+  None => Expect.fail("Limiter not initialized")
       }
     })
   })
@@ -157,30 +157,30 @@ describe("rate-limiter", () => {
     })
 
     afterEach(() => {
-      switch limiterRef.contents {
-      | Some(l) => RateLimiter.stop(l)
-      | None => ()
+      match limiterRef.contents {
+  Some(l) => RateLimiter.stop(l)
+  None => ()
       }
     })
 
     it("should not throw when within limit", () => {
-      switch limiterRef.contents {
-      | Some(limiter) => {
+      match limiterRef.contents {
+  Some(limiter) => {
           let fn = () => RateLimiter.requireRateLimit(limiter, "test")
           expect(fn)->(not_)->toThrow
         }
-      | None => Expect.fail("Limiter not initialized")
+  None => Expect.fail("Limiter not initialized")
       }
     })
 
     it("should throw when over limit", () => {
-      switch limiterRef.contents {
-      | Some(limiter) => {
+      match limiterRef.contents {
+  Some(limiter) => {
           RateLimiter.requireRateLimit(limiter, "test")
           let fn = () => RateLimiter.requireRateLimit(limiter, "test")
           expect(fn)->toThrow
         }
-      | None => Expect.fail("Limiter not initialized")
+  None => Expect.fail("Limiter not initialized")
       }
     })
   })

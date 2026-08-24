@@ -5,11 +5,11 @@
  * Permission checking and scope validation
  */
 
-open Types
-open Errors
+use Types;
+use Errors;
 
 // Operation to scope mappings
-type operationScopes = {
+struct operationScopes {
   // Repository operations
   repositoryRead: array<gitLabScope>,
   repositoryWrite: array<gitLabScope>,
@@ -74,7 +74,7 @@ let checkScopeSatisfaction = (
   ~requiredScopes: array<gitLabScope>,
 ): permissionResult => {
   // If no scopes required, always allowed
-  if requiredScopes->Array.length == 0 {
+  if requiredScopes.len() == 0 {
     {
       allowed: true,
       requiredScopes: [],
@@ -85,7 +85,7 @@ let checkScopeSatisfaction = (
   } else {
     // Check if any required scope is available (OR logic)
     let hasAnyRequiredScope = requiredScopes->Array.some(scope =>
-      availableScopes->Array.includes(scope)
+      availableScopes.contains(scope)
     )
 
     if hasAnyRequiredScope {
@@ -105,7 +105,7 @@ let checkScopeSatisfaction = (
         missingScopes: requiredScopes,
         reason: Some(
           `Missing required scope. Need one of: ${requiredScopes
-            ->Array.map(scopeToString)
+            .map(scopeToString)
             ->Array.joinWith(", ")}`,
         ),
       }
@@ -122,29 +122,29 @@ let checkOperationPermission = (
 ): permissionResult => {
   let scopes = operationScopes
 
-  let requiredScopes = switch operation {
-  | "repository:read" => scopes.repositoryRead
-  | "repository:write" => scopes.repositoryWrite
-  | "repository:clone" => scopes.repositoryClone
-  | "issue:read" => scopes.issueRead
-  | "issue:write" => scopes.issueWrite
-  | "issue:create" => scopes.issueCreate
-  | "issue:close" => scopes.issueClose
-  | "merge_request:read" => scopes.mergeRequestRead
-  | "merge_request:write" => scopes.mergeRequestWrite
-  | "merge_request:create" => scopes.mergeRequestCreate
-  | "merge_request:merge" => scopes.mergeRequestMerge
-  | "merge_request:approve" => scopes.mergeRequestApprove
-  | "user:read" => scopes.userRead
-  | "project:read" => scopes.projectRead
-  | "project:admin" => scopes.projectAdmin
-  | "pipeline:read" => scopes.pipelineRead
-  | "pipeline:trigger" => scopes.pipelineTrigger
-  | "branch:create" => scopes.branchCreate
-  | "branch:delete" => scopes.branchDelete
-  | "commit:read" => scopes.commitRead
-  | "commit:create" => scopes.commitCreate
-  | _ => []
+  let requiredScopes = match operation {
+  "repository:read" => scopes.repositoryRead
+  "repository:write" => scopes.repositoryWrite
+  "repository:clone" => scopes.repositoryClone
+  "issue:read" => scopes.issueRead
+  "issue:write" => scopes.issueWrite
+  "issue:create" => scopes.issueCreate
+  "issue:close" => scopes.issueClose
+  "merge_request:read" => scopes.mergeRequestRead
+  "merge_request:write" => scopes.mergeRequestWrite
+  "merge_request:create" => scopes.mergeRequestCreate
+  "merge_request:merge" => scopes.mergeRequestMerge
+  "merge_request:approve" => scopes.mergeRequestApprove
+  "user:read" => scopes.userRead
+  "project:read" => scopes.projectRead
+  "project:admin" => scopes.projectAdmin
+  "pipeline:read" => scopes.pipelineRead
+  "pipeline:trigger" => scopes.pipelineTrigger
+  "branch:create" => scopes.branchCreate
+  "branch:delete" => scopes.branchDelete
+  "commit:read" => scopes.commitRead
+  "commit:create" => scopes.commitCreate
+  _ => []
   }
 
   checkScopeSatisfaction(~availableScopes, ~requiredScopes)
@@ -163,8 +163,8 @@ let validateRequiredScopes = (
   } else {
     Error(
       insufficientScopeError(
-        ~requiredScopes=result.requiredScopes->Array.map(scopeToString),
-        ~availableScopes=result.availableScopes->Array.map(scopeToString),
+        ~requiredScopes=result.requiredScopes.map(scopeToString),
+        ~availableScopes=result.availableScopes.map(scopeToString),
       ),
     )
   }
@@ -173,11 +173,11 @@ let validateRequiredScopes = (
 /**
  * Validate no dangerous scopes are present
  */
-let validateNoDangerousScopes = (~scopes: array<gitLabScope>): result<unit, authError> => {
-  let dangerous = scopes->Array.filter(scope => dangerousScopes->Array.includes(scope))
+fn validateNoDangerousScopes(~scopes: array<gitLabScope>) -> result<unit, authError> {
+  let dangerous = scopes.filter(scope => dangerousScopes.contains(scope))
 
-  if dangerous->Array.length > 0 {
-    Error(dangerousScopeError(~dangerousScopes=dangerous->Array.map(scopeToString)))
+  if dangerous.len() > 0 {
+    Error(dangerousScopeError(~dangerousScopes=dangerous.map(scopeToString)))
   } else {
     Ok()
   }
@@ -186,14 +186,14 @@ let validateNoDangerousScopes = (~scopes: array<gitLabScope>): result<unit, auth
 /**
  * Require permission - throws exception if not satisfied
  */
-let requirePermission = (~operation: string, ~availableScopes: array<gitLabScope>): unit => {
+fn requirePermission(~operation: string, ~availableScopes: array<gitLabScope>) -> unit {
   let result = checkOperationPermission(~operation, ~availableScopes)
 
   if !result.allowed {
     raise(
       InsufficientScope(
-        result.requiredScopes->Array.map(scopeToString),
-        result.availableScopes->Array.map(scopeToString),
+        result.requiredScopes.map(scopeToString),
+        result.availableScopes.map(scopeToString),
       ),
     )
   }
@@ -202,16 +202,16 @@ let requirePermission = (~operation: string, ~availableScopes: array<gitLabScope
 /**
  * Check if scopes are sufficient for bridge operations
  */
-let checkBridgeScopes = (~availableScopes: array<gitLabScope>): permissionResult => {
+fn checkBridgeScopes(~availableScopes: array<gitLabScope>) -> permissionResult {
   checkScopeSatisfaction(~availableScopes, ~requiredScopes)
 }
 
 /**
  * Get required scopes for multiple operations
  */
-let getRequiredScopesForOperations = (operations: array<string>): array<gitLabScope> => {
+fn getRequiredScopesForOperations(operations: array<string>) -> array<gitLabScope> {
   operations
-  ->Array.map(op => {
+  .map(op => {
     let result = checkOperationPermission(~operation=op, ~availableScopes=[])
     result.requiredScopes
   })
@@ -227,5 +227,5 @@ let checkMultipleOperations = (
   ~operations: array<string>,
   ~availableScopes: array<gitLabScope>,
 ): array<(string, permissionResult)> => {
-  operations->Array.map(op => (op, checkOperationPermission(~operation=op, ~availableScopes)))
+  operations.map(op => (op, checkOperationPermission(~operation=op, ~availableScopes)))
 }
