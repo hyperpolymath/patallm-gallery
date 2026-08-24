@@ -5,8 +5,8 @@
  * Token validation functions
  */
 
-open Types
-open Errors
+use Types;
+use Errors;
 
 // Constants
 let minTokenLength = 20
@@ -20,14 +20,14 @@ let tokenCharPattern = makeTokenPattern("^[a-zA-Z0-9_-]+$")
  * Mask a token for safe logging
  * Shows only first 8 and last 4 characters
  */
-let maskToken = (token: string): string => {
-  let len = token->String.length
+fn maskToken(token: string) -> string {
+  let len = token.len()
   if len <= 12 {
     // For very short tokens, just show ***
     "***"
   } else {
-    let prefix = token->String.slice(~start=0, ~end=8)
-    let suffix = token->String.sliceToEnd(~start=len - 4)
+    let prefix = token.slice(~start=0, ~end=8)
+    let suffix = token.sliceToEnd(~start=len - 4)
     `${prefix}...${suffix}`
   }
 }
@@ -35,25 +35,25 @@ let maskToken = (token: string): string => {
 /**
  * Determine token type from prefix
  */
-let getTokenType = (token: string): option<tokenType> => {
+fn getTokenType(token: string) -> option<tokenType> {
   let prefixes = tokenPrefixes
-  if token->String.startsWith(prefixes.personal) || token->String.startsWith(prefixes.project) {
+  if token.starts_with(prefixes.personal) || token.starts_with(prefixes.project) {
     Some(Personal)
-  } else if token->String.startsWith(prefixes.deploy) {
+  } else if token.starts_with(prefixes.deploy) {
     Some(Deploy)
-  } else if token->String.startsWith(prefixes.runner) {
+  } else if token.starts_with(prefixes.runner) {
     Some(Runner)
-  } else if token->String.startsWith(prefixes.job) {
+  } else if token.starts_with(prefixes.job) {
     Some(Job)
-  } else if token->String.startsWith(prefixes.featureFlag) {
+  } else if token.starts_with(prefixes.featureFlag) {
     Some(FeatureFlag)
-  } else if token->String.startsWith(prefixes.email) {
+  } else if token.starts_with(prefixes.email) {
     Some(Email)
-  } else if token->String.startsWith(prefixes.agent) {
+  } else if token.starts_with(prefixes.agent) {
     Some(Agent)
-  } else if token->String.startsWith(prefixes.oauth) {
+  } else if token.starts_with(prefixes.oauth) {
     Some(OAuth)
-  } else if token->String.startsWith(prefixes.scim) {
+  } else if token.starts_with(prefixes.scim) {
     Some(Scim)
   } else {
     None
@@ -63,19 +63,19 @@ let getTokenType = (token: string): option<tokenType> => {
 /**
  * Get prefix string for a token type
  */
-let getPrefixForType = (tokenType: tokenType): string => {
+fn getPrefixForType(tokenType: tokenType) -> string {
   let prefixes = tokenPrefixes
-  switch tokenType {
-  | Personal | Project => prefixes.personal
-  | Group => prefixes.group
-  | Deploy => prefixes.deploy
-  | Runner => prefixes.runner
-  | Job => prefixes.job
-  | FeatureFlag => prefixes.featureFlag
-  | Email => prefixes.email
-  | Agent => prefixes.agent
-  | OAuth => prefixes.oauth
-  | Scim => prefixes.scim
+  match tokenType {
+  Personal | Project => prefixes.personal
+  Group => prefixes.group
+  Deploy => prefixes.deploy
+  Runner => prefixes.runner
+  Job => prefixes.job
+  FeatureFlag => prefixes.featureFlag
+  Email => prefixes.email
+  Agent => prefixes.agent
+  OAuth => prefixes.oauth
+  Scim => prefixes.scim
   }
 }
 
@@ -83,21 +83,21 @@ let getPrefixForType = (tokenType: tokenType): string => {
  * Validate token format
  * Returns tokenInfo or raises InvalidToken exception
  */
-let validateTokenFormat = (token: string): result<tokenInfo, authError> => {
+fn validateTokenFormat(token: string) -> result<tokenInfo, authError> {
   // Check for empty or whitespace-only tokens
-  if token->String.trim->String.length == 0 {
+  if token.trim().len() == 0 {
     Error(invalidTokenError(~message="Token cannot be empty"))
   } else {
-    let trimmedToken = token->String.trim
+    let trimmedToken = token.trim()
 
     // Length checks
-    if trimmedToken->String.length < minTokenLength {
+    if trimmedToken.len() < minTokenLength {
       Error(
         invalidTokenError(
           ~message=`Token too short (minimum ${minTokenLength->Int.toString} characters)`,
         ),
       )
-    } else if trimmedToken->String.length > maxTokenLength {
+    } else if trimmedToken.len() > maxTokenLength {
       Error(
         invalidTokenError(
           ~message=`Token too long (maximum ${maxTokenLength->Int.toString} characters)`,
@@ -105,16 +105,16 @@ let validateTokenFormat = (token: string): result<tokenInfo, authError> => {
       )
     } else {
       // Determine token type from prefix
-      switch getTokenType(trimmedToken) {
-      | None =>
+      match getTokenType(trimmedToken) {
+  None =>
         Error(
           invalidTokenError(
             ~message="Invalid token prefix. Expected glpat-, gldt-, glrt-, glcbt-, or similar GitLab token prefix.",
           ),
         )
-      | Some(tokenType) => {
+  Some(tokenType) => {
           let prefix = getPrefixForType(tokenType)
-          let tokenPart = trimmedToken->String.sliceToEnd(~start=prefix->String.length)
+          let tokenPart = trimmedToken.sliceToEnd(~start=prefix.len())
 
           // Validate token characters using regex test
           let isValidChars = tokenCharPattern->Js.Re.test_(tokenPart)
@@ -142,7 +142,7 @@ let validateTokenFormat = (token: string): result<tokenInfo, authError> => {
 /**
  * Parse token info from GitLab API response
  */
-let parseTokenInfo = (apiResponse: gitLabTokenInfo): tokenInfo => {
+fn parseTokenInfo(apiResponse: gitLabTokenInfo) -> tokenInfo {
   // For now, assume Personal type - in real implementation
   // this would be determined from the API response
   {
@@ -156,10 +156,10 @@ let parseTokenInfo = (apiResponse: gitLabTokenInfo): tokenInfo => {
 /**
  * Check if token has expired
  */
-let checkTokenExpiration = (expiresAt: option<string>): result<unit, authError> => {
-  switch expiresAt {
-  | None => Ok() // No expiration
-  | Some(expiryStr) => {
+fn checkTokenExpiration(expiresAt: option<string>) -> result<unit, authError> {
+  match expiresAt {
+  None => Ok() // No expiration
+  Some(expiryStr) => {
       let expiry = Date.fromString(expiryStr)
       let now = Date.make()
 
@@ -175,21 +175,21 @@ let checkTokenExpiration = (expiresAt: option<string>): result<unit, authError> 
 /**
  * Check if token is revoked
  */
-let checkTokenRevocation = (revoked: option<bool>): result<unit, authError> => {
-  switch revoked {
-  | Some(true) => Error(tokenRevokedError())
-  | _ => Ok()
+fn checkTokenRevocation(revoked: option<bool>) -> result<unit, authError> {
+  match revoked {
+  Some(true) => Error(tokenRevokedError())
+  _ => Ok()
   }
 }
 
 /**
  * Check for dangerous scopes
  */
-let checkDangerousScopes = (scopes: array<gitLabScope>): result<unit, authError> => {
-  let dangerous = scopes->Array.filter(scope => dangerousScopes->Array.includes(scope))
+fn checkDangerousScopes(scopes: array<gitLabScope>) -> result<unit, authError> {
+  let dangerous = scopes.filter(scope => dangerousScopes.contains(scope))
 
-  if dangerous->Array.length > 0 {
-    Error(dangerousScopeError(~dangerousScopes=dangerous->Array.map(scopeToString)))
+  if dangerous.len() > 0 {
+    Error(dangerousScopeError(~dangerousScopes=dangerous.map(scopeToString)))
   } else {
     Ok()
   }
@@ -198,10 +198,10 @@ let checkDangerousScopes = (scopes: array<gitLabScope>): result<unit, authError>
 /**
  * Check if token expiration warning should be shown
  */
-let checkExpirationWarning = (expiresAt: option<string>): bool => {
-  switch expiresAt {
-  | None => false
-  | Some(expiryStr) => {
+fn checkExpirationWarning(expiresAt: option<string>) -> bool {
+  match expiresAt {
+  None => false
+  Some(expiryStr) => {
       let expiry = Date.fromString(expiryStr)
       let now = Date.make()
       let sevenDaysMs = 7.0 *. 24.0 *. 60.0 *. 60.0 *. 1000.0

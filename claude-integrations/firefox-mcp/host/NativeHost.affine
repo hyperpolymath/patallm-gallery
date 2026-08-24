@@ -10,7 +10,7 @@
 //   "mcp"    - Claude Code calls this process as an MCP server
 //              (newline-delimited JSON-RPC on stdin/stdout, WebSocket to extension)
 
-open Deno_Ws
+use Deno_Ws;
 
 // --- Constants ---
 
@@ -27,14 +27,14 @@ type rec jsonSchema = {
   required: option<array<string>>,
 }
 
-type mcpTool = {
+struct mcpTool {
   name: string,
   description: string,
   inputSchema: jsonSchema,
 }
 
 // Helper to build a leaf schema property (no nested properties, items, enum, or required).
-let prop = (~type_: string, ~description: option<string>=None, ()): jsonSchema => {
+fn prop(~type_: string, ~description: option<string>=None, ()) -> jsonSchema {
   type_,
   properties: None,
   items: None,
@@ -44,7 +44,7 @@ let prop = (~type_: string, ~description: option<string>=None, ()): jsonSchema =
 }
 
 // Helper to build an array-typed schema property with a typed item.
-let arrayProp = (~description: option<string>=None, ~itemType: string, ()): jsonSchema => {
+fn arrayProp(~description: option<string>=None, ~itemType: string, ()) -> jsonSchema {
   type_: "array",
   properties: None,
   items: Some(prop(~type_=itemType, ())),
@@ -313,8 +313,8 @@ let readNativeMessage = async (reader: ReadableStreamReader.t): option<Js.Json.t
     if readResult.done {
       earlyEof := true
     } else {
-      switch Js.Nullable.toOption(readResult.value) {
-      | Some(value) => {
+      match Js.Nullable.toOption(readResult.value) {
+  Some(value) => {
           let copyLen = Math.Int.min(4 - offset.contents, Uint8Array.length(value))
           Uint8Array.set(lengthBuf, Uint8Array.subarray(value, 0, copyLen), offset.contents)
           offset := offset.contents + Uint8Array.length(value)
@@ -322,7 +322,7 @@ let readNativeMessage = async (reader: ReadableStreamReader.t): option<Js.Json.t
             headerDone := true
           }
         }
-      | None => earlyEof := true
+  None => earlyEof := true
       }
     }
   }
@@ -347,8 +347,8 @@ let readNativeMessage = async (reader: ReadableStreamReader.t): option<Js.Json.t
         if readResult.done {
           earlyEof := true
         } else {
-          switch Js.Nullable.toOption(readResult.value) {
-          | Some(value) => {
+          match Js.Nullable.toOption(readResult.value) {
+  Some(value) => {
               let copyLen = Math.Int.min(length - offset.contents, Uint8Array.length(value))
               Uint8Array.set(msgBuf, Uint8Array.subarray(value, 0, copyLen), offset.contents)
               offset := offset.contents + Uint8Array.length(value)
@@ -356,7 +356,7 @@ let readNativeMessage = async (reader: ReadableStreamReader.t): option<Js.Json.t
                 bodyDone := true
               }
             }
-          | None => earlyEof := true
+  None => earlyEof := true
           }
         }
       }
@@ -394,7 +394,7 @@ let writeNativeMessage = async (
 // --- Stdio MCP protocol helpers ---
 
 // Write a newline-delimited JSON message to stdout for Claude Code.
-let writeStdio = (message: 'a): unit => {
+fn writeStdio(message: 'a) -> unit {
   let json = jsonStringify(message)
   let encoder = TextEncoder.make()
   let _ = Stdout.writeSync(TextEncoder.encode(encoder, json ++ "\n"))
@@ -405,7 +405,7 @@ let writeStdio = (message: 'a): unit => {
 let _initialized = ref(false)
 let requestId = ref(0)
 
-type pendingRequest = {
+struct pendingRequest {
   resolve: Js.Json.t => unit,
   reject: exn => unit,
 }
@@ -428,12 +428,12 @@ let callExtension = async (
   let result = await Promise.make((resolve, reject) => {
     Dict.set(pendingExtensionRequests, idStr, {resolve, reject})
     let _ = setTimeout(() => {
-      switch Dict.get(pendingExtensionRequests, idStr) {
-      | Some(_) => {
+      match Dict.get(pendingExtensionRequests, idStr) {
+  Some(_) => {
           Dict.delete(pendingExtensionRequests, idStr)
           reject(Exn.anyToExnInternal("Extension request timed out"))
         }
-      | None => ()
+  None => ()
       }
     }, 30000)
   })
@@ -450,18 +450,18 @@ let callExtension = async (
 
 // --- MCP request handler ---
 
-type mcpRequest = {
+struct mcpRequest {
   id: option<int>,
   method: string,
   params: option<Js.Json.t>,
 }
 
-type toolCallParams = {
+struct toolCallParams {
   name: string,
   arguments: Js.Json.t,
 }
 
-type mcpResponse = {
+struct mcpResponse {
   id: option<int>,
   result: option<Js.Json.t>,
   error: option<{"code": int, "message": string}>,
@@ -476,8 +476,8 @@ let handleMcpRequest = async (
   let {id, method, params} = request
 
   try {
-    switch method {
-    | "initialize" => {
+    match method {
+  "initialize" => {
         _initialized := true
         {
           id,
@@ -491,44 +491,40 @@ let handleMcpRequest = async (
           error: None,
         }
       }
-
-    | "notifications/initialized" => {id, result: None, error: None}
-
-    | "tools/list" => {
+  "notifications/initialized" => {id, result: None, error: None}
+  "tools/list" => {
         id,
         result: Some(Obj.magic({"tools": mcpTools})),
         error: None,
       }
-
-    | "tools/call" =>
-      switch params {
-      | Some(p) => {
+  "tools/call" =>
+      match params {
+  Some(p) => {
           let toolParams: toolCallParams = Obj.magic(p)
           let result = await callExtension(extensionWriter, toolParams.name, toolParams.arguments)
           {id, result: Some(result), error: None}
         }
-      | None => {
+  None => {
           id,
           result: None,
           error: Some({"code": -32600, "message": "Missing params for tools/call"}),
         }
       }
-
-    | _ => {
+  _ => {
         id,
         result: None,
         error: Some({"code": -32601, "message": `Method not found: ${method}`}),
       }
     }
   } catch {
-  | Exn.Error(err) => {
-      let msg = switch Exn.message(err) {
-      | Some(m) => m
-      | None => "Unknown error"
+  Exn.Error(err) => {
+      let msg = match Exn.message(err) {
+  Some(m) => m
+  None => "Unknown error"
       }
       {id, result: None, error: Some({"code": -32000, "message": msg})}
     }
-  | err => {
+  err => {
       let msg = Obj.magic(err)->Js.String.make
       {id, result: None, error: Some({"code": -32000, "message": msg})}
     }
@@ -559,49 +555,49 @@ let runMcpMode = async (): unit => {
         resolve(None)
       })
     } catch {
-    | _ => resolve(None)
+  _ => resolve(None)
     }
   })
 
   ws := connectResult
 
   // Handle messages from the extension (resolve pending requests)
-  switch ws.contents {
-  | Some(socket) =>
+  match ws.contents {
+  Some(socket) =>
     WebSocket.setOnmessage(socket, event => {
       try {
         let msg = jsonParse(event["data"])
         let msgId: option<int> = Obj.magic(Js.Dict.get(Obj.magic(msg), "id"))
-        switch msgId {
-        | Some(id) => {
+        match msgId {
+  Some(id) => {
             let idStr = Int.toString(id)
-            switch Dict.get(pendingExtensionRequests, idStr) {
-            | Some({resolve, reject}) => {
+            match Dict.get(pendingExtensionRequests, idStr) {
+  Some({resolve, reject}) => {
                 Dict.delete(pendingExtensionRequests, idStr)
                 let error: option<{"message": string}> = Obj.magic(
                   Js.Dict.get(Obj.magic(msg), "error"),
                 )
-                switch error {
-                | Some(err) => reject(Exn.anyToExnInternal(err["message"]))
-                | None => {
+                match error {
+  Some(err) => reject(Exn.anyToExnInternal(err["message"]))
+  None => {
                     let result = Js.Dict.get(Obj.magic(msg), "result")
-                    switch result {
-                    | Some(r) => resolve(r)
-                    | None => resolve(Obj.magic(Js.null))
+                    match result {
+  Some(r) => resolve(r)
+  None => resolve(Obj.magic(Js.null))
                     }
                   }
                 }
               }
-            | None => ()
+  None => ()
             }
           }
-        | None => ()
+  None => ()
         }
       } catch {
-      | _ => Console.error("[MCP Host] Failed to parse extension message")
+  _ => Console.error("[MCP Host] Failed to parse extension message")
       }
     })
-  | None => {
+  None => {
       Console.error("[MCP Host] Extension not available, running in standalone mode")
       Console.error("[MCP Host] Start Firefox with the extension loaded, then restart this server")
     }
@@ -618,8 +614,8 @@ let runMcpMode = async (): unit => {
     if readResult.done {
       continue_ := false
     } else {
-      switch Js.Nullable.toOption(readResult.value) {
-      | Some(value) =>
+      match Js.Nullable.toOption(readResult.value) {
+  Some(value) =>
         buffer :=
           buffer.contents ++ TextDecoder.decodeWithOptions(decoder, value, {stream: true})
 
@@ -642,12 +638,12 @@ let runMcpMode = async (): unit => {
                 // (the real native message writer is only for native mode)
                 let mockWriter: WritableStreamWriter.t = Obj.magic({
                   "write": async (msg: Js.TypedArray2.Uint8Array.t) => {
-                    switch ws.contents {
-                    | Some(socket) if WebSocket.readyState(socket) === WebSocket._OPEN => {
+                    match ws.contents {
+  Some(socket) if WebSocket.readyState(socket) === WebSocket._OPEN => {
                         let dec = TextDecoder.make()
                         WebSocket.send(socket, TextDecoder.decode(dec, msg))
                       }
-                    | _ => ()
+  _ => ()
                     }
                   },
                 })
@@ -655,7 +651,7 @@ let runMcpMode = async (): unit => {
                 let response = await handleMcpRequest(request, mockWriter)
                 writeStdio(response)
               } catch {
-              | _ => {
+  _ => {
                   Console.error("[MCP Host] Error processing request")
                   writeStdio({"error": {"code": -32700, "message": "Parse error"}})
                 }
@@ -663,7 +659,7 @@ let runMcpMode = async (): unit => {
             }
           }
         }
-      | None => ()
+  None => ()
       }
     }
   }
@@ -680,9 +676,9 @@ let runNativeMode = async (): unit => {
   let continue_ = ref(true)
   while continue_.contents {
     let message = await readNativeMessage(stdinReader)
-    switch message {
-    | None => continue_ := false
-    | Some(msg) => {
+    match message {
+  None => continue_ := false
+  Some(msg) => {
         Console.error2("[MCP Host] Native message:", msg)
         await writeNativeMessage(stdoutWriter, {
           "received": true,
@@ -701,9 +697,9 @@ let runNativeMode = async (): unit => {
 let main = async (): unit => {
   Console.error("[MCP Host] Starting Claude Firefox MCP native host")
 
-  let mode = switch DenoProcess.args->Array.get(0) {
-  | Some(m) => m
-  | None => "mcp"
+  let mode = match DenoProcess.args->Array.get(0) {
+  Some(m) => m
+  None => "mcp"
   }
 
   if mode === "native" {

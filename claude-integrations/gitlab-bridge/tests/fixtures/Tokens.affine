@@ -7,7 +7,7 @@
  */
 
 // Valid token fixtures for testing
-type validTokens = {
+struct validTokens {
   personal: string,
   personalWithDashes: string,
   deploy: string,
@@ -32,7 +32,7 @@ let validTokens: validTokens = {
 }
 
 // Invalid token fixtures for testing
-type invalidTokens = {
+struct invalidTokens {
   empty: string,
   whitespace: string,
   tooShort: string,
@@ -61,7 +61,7 @@ let invalidTokens: invalidTokens = {
 }
 
 // Token information response fixtures
-type tokenInfoResponse = {
+struct tokenInfoResponse {
   scopes: array<string>,
   created_at: string,
   expires_at: Nullable.t<string>,
@@ -159,7 +159,7 @@ let scopeSets: Dict.t<array<string>> = Dict.fromArray([
 /**
  * Creates an expiration date a certain number of days from now.
  */
-let expiresInDays = (days: int): string => {
+fn expiresInDays(days: int) -> string {
   let ms = Date.now() +. Float.fromInt(days) *. 24.0 *. 60.0 *. 60.0 *. 1000.0
   Date.fromTime(ms)->Date.toISOString
 }
@@ -167,7 +167,7 @@ let expiresInDays = (days: int): string => {
 /**
  * Creates an expiration date a certain number of days ago.
  */
-let expiredDaysAgo = (days: int): string => {
+fn expiredDaysAgo(days: int) -> string {
   let ms = Date.now() -. Float.fromInt(days) *. 24.0 *. 60.0 *. 60.0 *. 1000.0
   Date.fromTime(ms)->Date.toISOString
 }

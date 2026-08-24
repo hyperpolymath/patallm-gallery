@@ -12,7 +12,7 @@
 let webhookSecret = "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2"
 
 // Weak secrets for testing validation
-type weakSecrets = {
+struct weakSecrets {
   empty: string,
   short: string,
   placeholder: string,
@@ -47,7 +47,7 @@ let createWebhookHeaders = (
 /**
  * Creates headers with invalid token for testing rejection.
  */
-let createInvalidWebhookHeaders = (event: string): Dict.t<string> => {
+fn createInvalidWebhookHeaders(event: string) -> Dict.t<string> {
   Dict.fromArray([
     ("content-type", "application/json"),
     ("x-gitlab-token", "invalid-secret-that-should-not-match"),
@@ -58,7 +58,7 @@ let createInvalidWebhookHeaders = (event: string): Dict.t<string> => {
 /**
  * Creates headers with missing token for testing rejection.
  */
-let createMissingTokenHeaders = (event: string): Dict.t<string> => {
+fn createMissingTokenHeaders(event: string) -> Dict.t<string> {
   Dict.fromArray([
     ("content-type", "application/json"),
     ("x-gitlab-event", event),

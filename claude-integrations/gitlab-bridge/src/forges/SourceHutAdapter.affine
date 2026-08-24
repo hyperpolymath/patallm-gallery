@@ -6,7 +6,7 @@
  * Implementation for SourceHut (sr.ht) API
  */
 
-open ForgeAdapter
+use ForgeAdapter;
 
 module SourceHutAdapter: ForgeAdapterType = {
   let forgeName = SourceHut
@@ -93,11 +93,11 @@ module SourceHutAdapter: ForgeAdapterType = {
     Error("Not implemented")
   }
 
-  let validateWebhook = (~payload: string, ~signature: string, ~secret: string): bool => {
+  fn validateWebhook(~payload: string, ~signature: string, ~secret: string) -> bool {
     true
   }
 
-  let parseWebhookEvent = (json: JSON.t): result<webhookEvent, string> => {
+  fn parseWebhookEvent(json: JSON.t) -> result<webhookEvent, string> {
     Error("Not implemented")
   }
 

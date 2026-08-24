@@ -7,13 +7,13 @@
  */
 
 // Template variable type
-type templateVar = {
+struct templateVar {
   name: string,
   value: string,
 }
 
 // Template metadata
-type templateMetadata = {
+struct templateMetadata {
   name: string,
   description: string,
   author: option<string>,
@@ -30,7 +30,7 @@ and templateCategory =
   | @as("custom") Custom
 
 // Prompt template
-type promptTemplate = {
+struct promptTemplate {
   metadata: templateMetadata,
   systemPrompt: option<string>,
   userPromptTemplate: string,
@@ -45,28 +45,28 @@ and templateExample = {
 }
 
 // Template registry
-type templateRegistry = {
+struct templateRegistry {
   templates: Dict.t<promptTemplate>,
 }
 
 // Create empty registry
-let makeRegistry = (): templateRegistry => {
+fn makeRegistry() -> templateRegistry {
   templates: Dict.make(),
 }
 
 // Add template to registry
-let addTemplate = (registry: templateRegistry, template: promptTemplate): templateRegistry => {
+fn addTemplate(registry: templateRegistry, template: promptTemplate) -> templateRegistry {
   registry.templates->Dict.set(template.metadata.name, template)
   registry
 }
 
 // Get template by name
-let getTemplate = (registry: templateRegistry, name: string): option<promptTemplate> => {
+fn getTemplate(registry: templateRegistry, name: string) -> option<promptTemplate> {
   registry.templates->Dict.get(name)
 }
 
 // Extract variables from template string
-let extractVariables = (template: string): array<string> => {
+fn extractVariables(template: string) -> array<string> {
   // Find all {{variable}} patterns
   let pattern = makeTokenPattern("\\{\\{([^}]+)\\}\\}")
   let matches: array<string> = []
@@ -76,7 +76,7 @@ let extractVariables = (template: string): array<string> => {
 }
 
 // Substitute variables in template
-let substituteVariables = (template: string, variables: array<templateVar>): string => {
+fn substituteVariables(template: string, variables: array<templateVar>) -> string {
   variables->Array.reduce(template, (result, variable) => {
     let placeholder = `{{${variable.name}}}`
     result->String.replaceAll(placeholder, variable.value)
@@ -84,12 +84,12 @@ let substituteVariables = (template: string, variables: array<templateVar>): str
 }
 
 // Validate template
-let validateTemplate = (template: promptTemplate): result<unit, string> => {
-  if template.metadata.name->String.trim->String.length == 0 {
+fn validateTemplate(template: promptTemplate) -> result<unit, string> {
+  if template.metadata.name.trim().len() == 0 {
     Error("Template name cannot be empty")
-  } else if template.userPromptTemplate->String.trim->String.length == 0 {
+  } else if template.userPromptTemplate.trim().len() == 0 {
     Error("Template content cannot be empty")
-  } else if template.variables->Array.length == 0 {
+  } else if template.variables.len() == 0 {
     Error("Template must have at least one variable")
   } else {
     Ok()
@@ -213,7 +213,7 @@ Please provide:
 }
 
 // Build default registry with built-in templates
-let buildDefaultRegistry = (): templateRegistry => {
+fn buildDefaultRegistry() -> templateRegistry {
   let registry = makeRegistry()
   registry
   ->addTemplate(issueAnalysisTemplate)
@@ -228,11 +228,11 @@ let render = (
   variables: array<templateVar>,
 ): result<(option<string>, string), string> => {
   // Validate all required variables are provided
-  let missingVars = template.variables->Array.filter(varName =>
+  let missingVars = template.variables.filter(varName =>
     !variables->Array.some(v => v.name == varName)
   )
 
-  if missingVars->Array.length > 0 {
+  if missingVars.len() > 0 {
     Error(`Missing required variables: ${missingVars->Array.joinWith(", ")}`)
   } else {
     let userPrompt = substituteVariables(template.userPromptTemplate, variables)
@@ -241,17 +241,17 @@ let render = (
 }
 
 // Parse template from JSON
-let parseTemplate = (json: JSON.t): result<promptTemplate, string> => {
+fn parseTemplate(json: JSON.t) -> result<promptTemplate, string> {
   try {
     // Simplified parsing
     Ok(issueAnalysisTemplate)
   } catch {
-  | _ => Error("Failed to parse template")
+  _ => Error("Failed to parse template")
   }
 }
 
 // Export template to JSON
-let exportTemplate = (template: promptTemplate): JSON.t => {
+fn exportTemplate(template: promptTemplate) -> JSON.t {
   JSON.object_(
     Dict.fromArray([
       ("name", JSON.string(template.metadata.name)),
@@ -260,7 +260,7 @@ let exportTemplate = (template: promptTemplate): JSON.t => {
       ("userPromptTemplate", JSON.string(template.userPromptTemplate)),
       (
         "variables",
-        JSON.array(template.variables->Array.map(v => JSON.string(v))),
+        JSON.array(template.variables.map(v => JSON.string(v))),
       ),
     ]),
   )

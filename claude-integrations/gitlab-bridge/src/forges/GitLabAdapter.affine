@@ -6,9 +6,9 @@
  * Implementation for GitLab API
  */
 
-open ForgeAdapter
+use ForgeAdapter;
 
-type config = {
+struct config {
   baseUrl: string,
   token: string,
 }
@@ -100,12 +100,12 @@ module GitLabAdapter: ForgeAdapterType = {
   }
 
   // Webhooks
-  let validateWebhook = (~payload: string, ~signature: string, ~secret: string): bool => {
+  fn validateWebhook(~payload: string, ~signature: string, ~secret: string) -> bool {
     // Implement GitLab webhook signature validation
     true
   }
 
-  let parseWebhookEvent = (json: JSON.t): result<webhookEvent, string> => {
+  fn parseWebhookEvent(json: JSON.t) -> result<webhookEvent, string> {
     Error("Not implemented")
   }
 

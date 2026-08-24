@@ -5,8 +5,8 @@
  * Tests for permission checking and scope validation.
  */
 
-open Vitest
-open Types
+use Vitest;
+use Types;
 
 describe("permission-checker", () => {
   describe("checkScopeSatisfaction", () => {
@@ -50,9 +50,9 @@ describe("permission-checker", () => {
         ~requiredScopes=[Api],
       )
       expect(result.allowed)->toBe(false)
-      switch result.reason {
-      | Some(reason) => expect(reason)->toMatchString("Missing required scope")
-      | None => Expect.fail("Expected reason to be present")
+      match result.reason {
+  Some(reason) => expect(reason)->toMatchString("Missing required scope")
+  None => Expect.fail("Expected reason to be present")
       }
     })
   })
@@ -118,9 +118,9 @@ describe("permission-checker", () => {
       let result = PermissionChecker.validateRequiredScopes(
         ~availableScopes=[Api, ReadRepository, WriteRepository],
       )
-      switch result {
-      | Ok(_) => expect(true)->toBe(true)
-      | Error(_) => Expect.fail("Expected Ok result")
+      match result {
+  Ok(_) => expect(true)->toBe(true)
+  Error(_) => Expect.fail("Expected Ok result")
       }
     })
 
@@ -128,17 +128,17 @@ describe("permission-checker", () => {
       let result = PermissionChecker.validateRequiredScopes(
         ~availableScopes=[ReadApi, ReadRepository, ReadUser],
       )
-      switch result {
-      | Ok(_) => Expect.fail("Expected Error result")
-      | Error(err) => expect(err.code)->toBe("INSUFFICIENT_SCOPE")
+      match result {
+  Ok(_) => Expect.fail("Expected Error result")
+  Error(err) => expect(err.code)->toBe("INSUFFICIENT_SCOPE")
       }
     })
 
     it("should return error with empty scopes", () => {
       let result = PermissionChecker.validateRequiredScopes(~availableScopes=[])
-      switch result {
-      | Ok(_) => Expect.fail("Expected Error result")
-      | Error(err) => expect(err.code)->toBe("INSUFFICIENT_SCOPE")
+      match result {
+  Ok(_) => Expect.fail("Expected Error result")
+  Error(err) => expect(err.code)->toBe("INSUFFICIENT_SCOPE")
       }
     })
   })
@@ -148,9 +148,9 @@ describe("permission-checker", () => {
       let result = PermissionChecker.validateNoDangerousScopes(
         ~scopes=[Api, ReadRepository, WriteRepository],
       )
-      switch result {
-      | Ok(_) => expect(true)->toBe(true)
-      | Error(_) => Expect.fail("Expected Ok result")
+      match result {
+  Ok(_) => expect(true)->toBe(true)
+  Error(_) => Expect.fail("Expected Ok result")
       }
     })
 
@@ -158,16 +158,16 @@ describe("permission-checker", () => {
       let result = PermissionChecker.validateNoDangerousScopes(
         ~scopes=[Api, Sudo, AdminMode],
       )
-      switch result {
-      | Ok(_) => Expect.fail("Expected Error result")
-      | Error(err) => expect(err.code)->toBe("DANGEROUS_SCOPE")
+      match result {
+  Ok(_) => Expect.fail("Expected Error result")
+  Error(err) => expect(err.code)->toBe("DANGEROUS_SCOPE")
       }
     })
   })
 
   describe("requirePermission", () => {
     it("should not throw when permission is granted", () => {
-      let fn = () => {
+      fn fn() {
         PermissionChecker.requirePermission(
           ~operation="repository:read",
           ~availableScopes=[Api],
@@ -177,7 +177,7 @@ describe("permission-checker", () => {
     })
 
     it("should throw when permission denied", () => {
-      let fn = () => {
+      fn fn() {
         PermissionChecker.requirePermission(
           ~operation="repository:write",
           ~availableScopes=[ReadRepository],
@@ -204,7 +204,7 @@ describe("permission-checker", () => {
     it("should report incomplete with empty scopes", () => {
       let result = PermissionChecker.checkBridgeScopes(~availableScopes=[])
       expect(result.allowed)->toBe(false)
-      expect(result.missingScopes->Array.length)->toBeGreaterThan(0)
+      expect(result.missingScopes.len())->toBeGreaterThan(0)
     })
   })
 
@@ -214,7 +214,7 @@ describe("permission-checker", () => {
         "repository:read",
         "repository:write",
       ])
-      expect(scopes->Array.length)->toBeGreaterThan(0)
+      expect(scopes.len())->toBeGreaterThan(0)
     })
 
     it("should return empty for empty operations", () => {
@@ -229,7 +229,7 @@ describe("permission-checker", () => {
         ~operations=["repository:read", "repository:write"],
         ~availableScopes=[Api],
       )
-      expect(results->Array.length)->toBe(2)
+      expect(results.len())->toBe(2)
     })
 
     it("should handle mixed results", () => {
@@ -241,14 +241,14 @@ describe("permission-checker", () => {
       let readResult = results->Array.find(((op, _)) => op == "repository:read")
       let writeResult = results->Array.find(((op, _)) => op == "repository:write")
 
-      switch readResult {
-      | Some((_, r)) => expect(r.allowed)->toBe(true)
-      | None => Expect.fail("Expected read result")
+      match readResult {
+  Some((_, r)) => expect(r.allowed)->toBe(true)
+  None => Expect.fail("Expected read result")
       }
 
-      switch writeResult {
-      | Some((_, r)) => expect(r.allowed)->toBe(false)
-      | None => Expect.fail("Expected write result")
+      match writeResult {
+  Some((_, r)) => expect(r.allowed)->toBe(false)
+  None => Expect.fail("Expected write result")
       }
     })
   })

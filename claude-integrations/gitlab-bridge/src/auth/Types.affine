@@ -28,7 +28,7 @@ let dangerousScopes: array<gitLabScope> = [Sudo, AdminMode]
 let requiredScopes: array<gitLabScope> = [Api, ReadRepository, WriteRepository]
 
 // Token type prefixes
-type tokenPrefix = {
+struct tokenPrefix {
   personal: string,
   project: string,
   group: string,
@@ -71,7 +71,7 @@ type tokenType =
   | Scim
 
 // Validated token information
-type tokenInfo = {
+struct tokenInfo {
   maskedToken: string,
   tokenType: tokenType,
   isValid: bool,
@@ -79,7 +79,7 @@ type tokenInfo = {
 }
 
 // Permission check result
-type permissionResult = {
+struct permissionResult {
   allowed: bool,
   requiredScopes: array<gitLabScope>,
   availableScopes: array<gitLabScope>,
@@ -94,7 +94,7 @@ type userState =
   | @as("deactivated") Deactivated
 
 // GitLab user information
-type gitLabUser = {
+struct gitLabUser {
   id: int,
   username: string,
   name: string,
@@ -107,7 +107,7 @@ type gitLabUser = {
 }
 
 // Token validation response from GitLab API
-type gitLabTokenInfo = {
+struct gitLabTokenInfo {
   scopes: array<string>,
   createdAt: string,
   expiresAt: option<string>,
@@ -117,7 +117,7 @@ type gitLabTokenInfo = {
 }
 
 // Authentication context
-type authContext = {
+struct authContext {
   authenticated: bool,
   user: option<gitLabUser>,
   token: option<tokenInfo>,
@@ -127,14 +127,14 @@ type authContext = {
 }
 
 // Webhook validation result
-type webhookValidationResult = {
+struct webhookValidationResult {
   valid: bool,
   event: option<string>,
   reason: option<string>,
 }
 
 // Rate limit information
-type rateLimitInfo = {
+struct rateLimitInfo {
   limit: int,
   remaining: int,
   resetAt: Date.t,
@@ -142,7 +142,7 @@ type rateLimitInfo = {
 }
 
 // Audit log entry
-type auditEntry = {
+struct auditEntry {
   id: string,
   timestamp: Date.t,
   action: string,
@@ -155,53 +155,53 @@ type auditEntry = {
 
 // Helper to convert token type to string
 let tokenTypeToString = (tokenType: tokenType): string =>
-  switch tokenType {
-  | Personal => "personal"
-  | Project => "project"
-  | Group => "group"
-  | Deploy => "deploy"
-  | Runner => "runner"
-  | Job => "job"
-  | FeatureFlag => "featureFlag"
-  | Email => "email"
-  | Agent => "agent"
-  | OAuth => "oauth"
-  | Scim => "scim"
+  match tokenType {
+  Personal => "personal"
+  Project => "project"
+  Group => "group"
+  Deploy => "deploy"
+  Runner => "runner"
+  Job => "job"
+  FeatureFlag => "featureFlag"
+  Email => "email"
+  Agent => "agent"
+  OAuth => "oauth"
+  Scim => "scim"
   }
 
 // Helper to convert scope to string
 let scopeToString = (scope: gitLabScope): string =>
-  switch scope {
-  | Api => "api"
-  | ReadApi => "read_api"
-  | ReadUser => "read_user"
-  | ReadRepository => "read_repository"
-  | WriteRepository => "write_repository"
-  | ReadRegistry => "read_registry"
-  | WriteRegistry => "write_registry"
-  | Sudo => "sudo"
-  | AdminMode => "admin_mode"
-  | CreateRunner => "create_runner"
-  | ManageRunner => "manage_runner"
-  | AiFeatures => "ai_features"
-  | K8sProxy => "k8s_proxy"
+  match scope {
+  Api => "api"
+  ReadApi => "read_api"
+  ReadUser => "read_user"
+  ReadRepository => "read_repository"
+  WriteRepository => "write_repository"
+  ReadRegistry => "read_registry"
+  WriteRegistry => "write_registry"
+  Sudo => "sudo"
+  AdminMode => "admin_mode"
+  CreateRunner => "create_runner"
+  ManageRunner => "manage_runner"
+  AiFeatures => "ai_features"
+  K8sProxy => "k8s_proxy"
   }
 
 // Helper to parse scope from string
 let scopeFromString = (str: string): option<gitLabScope> =>
-  switch str {
-  | "api" => Some(Api)
-  | "read_api" => Some(ReadApi)
-  | "read_user" => Some(ReadUser)
-  | "read_repository" => Some(ReadRepository)
-  | "write_repository" => Some(WriteRepository)
-  | "read_registry" => Some(ReadRegistry)
-  | "write_registry" => Some(WriteRegistry)
-  | "sudo" => Some(Sudo)
-  | "admin_mode" => Some(AdminMode)
-  | "create_runner" => Some(CreateRunner)
-  | "manage_runner" => Some(ManageRunner)
-  | "ai_features" => Some(AiFeatures)
-  | "k8s_proxy" => Some(K8sProxy)
-  | _ => None
+  match str {
+  "api" => Some(Api)
+  "read_api" => Some(ReadApi)
+  "read_user" => Some(ReadUser)
+  "read_repository" => Some(ReadRepository)
+  "write_repository" => Some(WriteRepository)
+  "read_registry" => Some(ReadRegistry)
+  "write_registry" => Some(WriteRegistry)
+  "sudo" => Some(Sudo)
+  "admin_mode" => Some(AdminMode)
+  "create_runner" => Some(CreateRunner)
+  "manage_runner" => Some(ManageRunner)
+  "ai_features" => Some(AiFeatures)
+  "k8s_proxy" => Some(K8sProxy)
+  _ => None
   }

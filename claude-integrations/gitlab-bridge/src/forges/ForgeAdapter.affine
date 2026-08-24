@@ -18,7 +18,7 @@ type forgeType =
   | @as("forgejo") Forgejo
 
 // Common issue type
-type issue = {
+struct issue {
   id: int,
   iid: int, // Internal ID (per-project)
   title: string,
@@ -41,7 +41,7 @@ and user = {
 }
 
 // Common merge/pull request type
-type mergeRequest = {
+struct mergeRequest {
   id: int,
   iid: int,
   title: string,
@@ -59,7 +59,7 @@ type mergeRequest = {
 }
 
 // Common repository type
-type repository = {
+struct repository {
   id: int,
   name: string,
   fullName: string,
@@ -72,14 +72,14 @@ type repository = {
 }
 
 // Webhook event types
-type webhookEvent = {
+struct webhookEvent {
   eventType: string,
   projectId: string,
   payload: JSON.t,
 }
 
 // Forge adapter module type
-module type ForgeAdapterType = {
+module struct ForgeAdapterType {
   // Forge information
   let forgeName: forgeType
   let baseUrl: string
@@ -134,7 +134,7 @@ module type ForgeAdapterType = {
 }
 
 // Helper to detect forge type from URL
-let detectForgeType = (url: string): option<forgeType> => {
+fn detectForgeType(url: string) -> option<forgeType> {
   if url->String.includes("gitlab") {
     Some(GitLab)
   } else if url->String.includes("github") {
@@ -157,27 +157,27 @@ let detectForgeType = (url: string): option<forgeType> => {
 }
 
 // Helper to convert forge type to string
-let forgeTypeToString = (forgeType: forgeType): string => {
-  switch forgeType {
-  | GitLab => "gitlab"
-  | GitHub => "github"
-  | Bitbucket => "bitbucket"
-  | Gitea => "gitea"
-  | Disroot => "disroot"
-  | SourceHut => "sourcehut"
-  | Codeberg => "codeberg"
-  | Forgejo => "forgejo"
+fn forgeTypeToString(forgeType: forgeType) -> string {
+  match forgeType {
+  GitLab => "gitlab"
+  GitHub => "github"
+  Bitbucket => "bitbucket"
+  Gitea => "gitea"
+  Disroot => "disroot"
+  SourceHut => "sourcehut"
+  Codeberg => "codeberg"
+  Forgejo => "forgejo"
   }
 }
 
 // Common error type
-type forgeError = {
+struct forgeError {
   forge: forgeType,
   message: string,
   statusCode: option<int>,
   details: option<JSON.t>,
 }
 
-let makeError = (~forge: forgeType, ~message: string, ~statusCode: option<int>=?, ~details: option<JSON.t>=?, ()): forgeError => {
+fn makeError(~forge: forgeType, ~message: string, ~statusCode: option<int>=?, ~details: option<JSON.t>=?, ()) -> forgeError {
   {forge, message, statusCode, details}
 }

@@ -8,8 +8,8 @@
  * Provides composable middleware functions for the GitLab bridge.
  */
 
-open Types
-open Errors
+use Types;
+use Errors;
 
 // Express bindings (inline for middleware-specific needs)
 type request = Express.request
@@ -20,20 +20,20 @@ type nextFunction = Express.nextFunction
  * Extract the token from a request.
  * Checks: custom header, X-GitLab-Token, Authorization Bearer, PRIVATE-TOKEN.
  */
-let extractToken = (req: request, ~headerName: string="x-gitlab-token"): option<string> => {
+fn extractToken(req: request, ~headerName: string="x-gitlab-token") -> option<string> {
   // Check custom header first
   let customHeader = Express.getHeader(req, headerName)
   let gitlabHeader = Express.getHeader(req, "X-GitLab-Token")
 
-  switch customHeader->Option.orElse(gitlabHeader) {
-  | Some(_) as result => result
-  | None => {
+  match customHeader->Option.orElse(gitlabHeader) {
+  Some(_) as result => result
+  None => {
       // Check Authorization header (Bearer token)
       let authHeader = Express.getHeader(req, "authorization")
-      switch authHeader {
-      | Some(auth) if auth->String.startsWith("Bearer ") =>
-        Some(auth->String.sliceToEnd(~start=7))
-      | _ => {
+      match authHeader {
+  Some(auth) if auth.starts_with("Bearer ") =>
+        Some(auth.sliceToEnd(~start=7))
+  _ => {
           // Check PRIVATE-TOKEN header
           let privateToken = Express.getHeader(req, "private-token")
           let privateTokenUpper = Express.getHeader(req, "PRIVATE-TOKEN")
@@ -45,7 +45,7 @@ let extractToken = (req: request, ~headerName: string="x-gitlab-token"): option<
 }
 
 // Auth middleware configuration
-type authMiddlewareConfig = {
+struct authMiddlewareConfig {
   tokenHeader: string,
   allowAnonymous: bool,
   requiredScopes: array<gitLabScope>,
@@ -63,12 +63,12 @@ let defaultAuthConfig: authMiddlewareConfig = {
  * Create an authentication middleware.
  * Validates token format, checks required scopes, builds auth context.
  */
-let createAuthMiddleware = (~config: authMiddlewareConfig=defaultAuthConfig): Express.middleware => {
+fn createAuthMiddleware(~config: authMiddlewareConfig=defaultAuthConfig) -> Express.middleware {
   (req, res, next) => {
     let token = extractToken(req, ~headerName=config.tokenHeader)
 
-    switch token {
-    | None =>
+    match token {
+  None =>
       if config.allowAnonymous {
         next()
       } else {
@@ -85,9 +85,9 @@ let createAuthMiddleware = (~config: authMiddlewareConfig=defaultAuthConfig): Ex
             ),
           )
       }
-    | Some(tokenStr) =>
-      switch TokenValidator.validateTokenFormat(tokenStr) {
-      | Error(error) => {
+  Some(tokenStr) =>
+      match TokenValidator.validateTokenFormat(tokenStr) {
+  Error(error) => {
           let _ =
             res
             ->Express.status(error.statusCode)
@@ -100,7 +100,7 @@ let createAuthMiddleware = (~config: authMiddlewareConfig=defaultAuthConfig): Ex
               ),
             )
         }
-      | Ok(_tokenInfo) => next()
+  Ok(_tokenInfo) => next()
       }
     }
   }
@@ -110,7 +110,7 @@ let createAuthMiddleware = (~config: authMiddlewareConfig=defaultAuthConfig): Ex
  * Create a webhook validation middleware.
  * Validates the webhook token from headers against the expected secret.
  */
-let createWebhookMiddleware = (~secret: string): Express.middleware => {
+fn createWebhookMiddleware(~secret: string) -> Express.middleware {
   (req, res, next) => {
     try {
       // Build headers dict from request
@@ -118,13 +118,13 @@ let createWebhookMiddleware = (~secret: string): Express.middleware => {
       let headers = Dict.fromArray([])
 
       // Extract relevant headers
-      let addHeader = (name: string) => {
-        switch Express.getHeader(req, name) {
-        | Some(value) => {
+      fn addHeader(name: string) {
+        match Express.getHeader(req, name) {
+  Some(value) => {
             let headerValue: WebhookValidator.headerValue = Obj.magic(value)
             headers->Dict.set(name, headerValue)
           }
-        | None => ()
+  None => ()
         }
       }
 
@@ -137,15 +137,15 @@ let createWebhookMiddleware = (~secret: string): Express.middleware => {
       addHeader("x-request-id")
 
       // Get raw body as string
-      let rawBody = switch Express.getBody(req)->JSON.stringify {
-      | exception _ => "{}"
-      | str => str
+      let rawBody = match Express.getBody(req)->JSON.stringify {
+  exception _ => "{}"
+  str => str
       }
 
       WebhookValidator.requireValidWebhook(headers, rawBody, secret)
       next()
     } catch {
-    | WebhookSignatureError(msg) => {
+  WebhookSignatureError(msg) => {
         let error = webhookSignatureError(~message=msg)
         let _ =
           res
@@ -159,7 +159,7 @@ let createWebhookMiddleware = (~secret: string): Express.middleware => {
             ),
           )
       }
-    | exn => {
+  exn => {
         // Re-throw non-auth errors
         let _ = exn
         next()
@@ -172,7 +172,7 @@ let createWebhookMiddleware = (~secret: string): Express.middleware => {
  * Create a permission-checking middleware.
  * Verifies the request has an auth context with sufficient scopes.
  */
-let requirePermissionMiddleware = (~operation: string): Express.middleware => {
+fn requirePermissionMiddleware(~operation: string) -> Express.middleware {
   (req, res, next) => {
     try {
       // In a real implementation, auth context would be attached to req
@@ -186,8 +186,8 @@ let requirePermissionMiddleware = (~operation: string): Express.middleware => {
         next()
       } else {
         let error = insufficientScopeError(
-          ~requiredScopes=result.requiredScopes->Array.map(scopeToString),
-          ~availableScopes=result.availableScopes->Array.map(scopeToString),
+          ~requiredScopes=result.requiredScopes.map(scopeToString),
+          ~availableScopes=result.availableScopes.map(scopeToString),
         )
         let _ =
           res
@@ -202,7 +202,7 @@ let requirePermissionMiddleware = (~operation: string): Express.middleware => {
           )
       }
     } catch {
-    | InsufficientScope(required, available) => {
+  InsufficientScope(required, available) => {
         let error = insufficientScopeError(
           ~requiredScopes=required,
           ~availableScopes=available,
@@ -219,7 +219,7 @@ let requirePermissionMiddleware = (~operation: string): Express.middleware => {
             ),
           )
       }
-    | DangerousScope(scopes) => {
+  DangerousScope(scopes) => {
         let error = dangerousScopeError(~dangerousScopes=scopes)
         let _ =
           res
@@ -233,7 +233,7 @@ let requirePermissionMiddleware = (~operation: string): Express.middleware => {
             ),
           )
       }
-    | _ => next()
+  _ => next()
     }
   }
 }
@@ -244,8 +244,8 @@ let requirePermissionMiddleware = (~operation: string): Express.middleware => {
  */
 let authErrorHandler: Express.errorMiddleware = (error, _req, res, next) => {
   // Check if we can extract error info
-  switch error->Js.Exn.message {
-  | Some(msg) if msg->String.includes("AUTH") || msg->String.includes("TOKEN") => {
+  match error->Js.Exn.message {
+  Some(msg) if msg->String.includes("AUTH") || msg->String.includes("TOKEN") => {
       let _ =
         res
         ->Express.status(401)
@@ -258,6 +258,6 @@ let authErrorHandler: Express.errorMiddleware = (error, _req, res, next) => {
           ),
         )
     }
-  | _ => next()
+  _ => next()
   }
 }

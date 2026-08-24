@@ -5,8 +5,8 @@
  * Tests for authentication error types and their properties.
  */
 
-open Vitest
-open Errors
+use Vitest;
+use Errors;
 
 describe("auth errors", () => {
   describe("invalidTokenError", () => {

@@ -8,28 +8,28 @@
 // Message types
 type messageRole = [#user | #assistant]
 
-type textContent = {
+struct textContent {
   @as("type") type_: string,
   text: string,
 }
 
-type message = {
+struct message {
   role: messageRole,
   content: array<textContent>,
 }
 
 // API response types
-type usage = {
+struct usage {
   @as("input_tokens") inputTokens: int,
   @as("output_tokens") outputTokens: int,
 }
 
-type contentBlock = {
+struct contentBlock {
   @as("type") type_: string,
   text: string,
 }
 
-type messageResponse = {
+struct messageResponse {
   id: string,
   @as("type") type_: string,
   role: messageRole,
@@ -41,14 +41,14 @@ type messageResponse = {
 }
 
 // Client configuration
-type clientConfig = {
+struct clientConfig {
   apiKey: string,
   baseURL: option<string>,
   timeout: option<int>,
 }
 
 // Message creation parameters
-type messageParams = {
+struct messageParams {
   model: string,
   @as("max_tokens") maxTokens: int,
   messages: array<message>,
@@ -77,13 +77,13 @@ module Messages = {
 }
 
 // Helper to create a user message
-let makeUserMessage = (~text: string): message => {
+fn makeUserMessage(~text: string) -> message {
   role: #user,
   content: [{type_: "text", text}],
 }
 
 // Helper to create an assistant message
-let makeAssistantMessage = (~text: string): message => {
+fn makeAssistantMessage(~text: string) -> message {
   role: #assistant,
   content: [{type_: "text", text}],
 }
