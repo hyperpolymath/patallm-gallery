@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: CC-BY-SA-4.0
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-= Migration Guide: TypeScript to ReScript
+= Migration Guide:  to 
 :toc:
 :toclevels: 3
 
 == Overview
 
-Claude GitLab Bridge has been migrated from TypeScript to ReScript, following the hyperpolymath language policy. This document explains the changes and how to use the new codebase.
+Claude GitLab Bridge has been migrated from  to , following the hyperpolymath language policy. This document explains the changes and how to use the new codebase.
 
 == What Changed
 
@@ -17,20 +17,20 @@ Claude GitLab Bridge has been migrated from TypeScript to ReScript, following th
 |Component |Old |New
 
 |Language
-|TypeScript
-|ReScript
+|
+|
 
 |Runtime
 |Node.js
-|Deno
+|
 
 |Package Manager
 |npm
-|Deno imports
+| imports
 
 |Build Tool
-|tsc
-|rescript
+|
+|
 
 |Module System
 |CommonJS/ESM
@@ -55,16 +55,16 @@ src/
 
 === Configuration Files
 
-* `rescript.json` - ReScript compiler configuration
-* `deno.json` - Deno runtime and task configuration (replaces package.json scripts)
-* `package.json` - Still present for npm dependencies used by Deno
+* `.json` -  compiler configuration
+* `.json` -  runtime and task configuration (replaces package.json scripts)
+* `package.json` - Still present for npm dependencies used by 
 
 == Breaking Changes
 
 === 1. Module Syntax
 
-**Old (TypeScript):**
-[source,typescript]
+**Old ():**
+[source,]
 ----
 import { ClaudeGitLabBridge } from 'claude-gitlab-bridge'
 
@@ -74,8 +74,8 @@ const bridge = new ClaudeGitLabBridge({
 })
 ----
 
-**New (ReScript):**
-[source,rescript]
+**New ():**
+[source,]
 ----
 let bridge = Main.make(~config={
   gitlabToken: Env.gitlabToken,
@@ -88,8 +88,8 @@ let bridge = Main.make(~config={
 
 === 2. Error Handling
 
-**Old (TypeScript):**
-[source,typescript]
+**Old ():**
+[source,]
 ----
 try {
   const analysis = await bridge.analyzeIssue(params)
@@ -98,8 +98,8 @@ try {
 }
 ----
 
-**New (ReScript):**
-[source,rescript]
+**New ():**
+[source,]
 ----
 let result = await bridge->Main.analyzeIssue(~params)
 switch result {
@@ -110,8 +110,8 @@ switch result {
 
 === 3. Type Definitions
 
-**Old (TypeScript):**
-[source,typescript]
+**Old ():**
+[source,]
 ----
 interface IssueParams {
   projectId: string
@@ -119,8 +119,8 @@ interface IssueParams {
 }
 ----
 
-**New (ReScript):**
-[source,rescript]
+**New ():**
+[source,]
 ----
 type issueParams = {
   projectId: string,
@@ -132,16 +132,16 @@ type issueParams = {
 
 === Prerequisites
 
-1. Install Deno:
+1. Install :
 [source,bash]
 ----
-curl -fsSL https://deno.land/install.sh | sh
+curl -fsSL https:///install.sh | sh
 ----
 
-2. Install ReScript:
+2. Install :
 [source,bash]
 ----
-deno install npm:rescript@^12.0.2
+ install npm:@^12.0.2
 ----
 
 === Building the Project
@@ -149,13 +149,13 @@ deno install npm:rescript@^12.0.2
 [source,bash]
 ----
 # Clean build artifacts
-deno task clean
+ task clean
 
-# Build ReScript code
-deno task build
+# Build  code
+ task build
 
 # Run in development mode
-deno task dev
+ task dev
 ----
 
 === Running Tests
@@ -163,13 +163,13 @@ deno task dev
 [source,bash]
 ----
 # Run all tests
-deno task test
+ task test
 
 # Run with coverage
-deno task test:coverage
+ task test:coverage
 
 # Watch mode
-deno task test:watch
+ task test:watch
 ----
 
 == API Changes
@@ -178,7 +178,7 @@ deno task test:watch
 
 The auth module has been restructured:
 
-[source,rescript]
+[source,]
 ----
 // Import auth types
 open Auth.Types
@@ -202,7 +202,7 @@ if permResult.allowed {
 
 === Bridge API
 
-[source,rescript]
+[source,]
 ----
 // Create bridge instance
 let bridge = Main.make(~config)
@@ -227,26 +227,26 @@ let _ = await bridge->Main.handleWebhook(~event={
 })
 ----
 
-== Benefits of ReScript
+== Benefits of 
 
-1. **Type Safety**: Stronger type system than TypeScript
+1. **Type Safety**: Stronger type system than 
 2. **No Runtime Exceptions**: Pattern matching ensures exhaustive handling
-3. **Fast Compilation**: Much faster than TypeScript compiler
+3. **Fast Compilation**: Much faster than  compiler
 4. **Better Inference**: Less type annotations needed
 5. **Interop**: Easy integration with existing JavaScript libraries
 
 == Gradual Migration
 
-If you need to use both TypeScript and ReScript during transition:
+If you need to use both  and  during transition:
 
-1. ReScript compiles to clean JavaScript
-2. Compiled `.res.js` files can be imported from TypeScript
-3. Use `gentypeconfig` in `rescript.json` for TypeScript definitions
+1.  compiles to clean JavaScript
+2. Compiled `.res.js` files can be imported from 
+3. Use `gentypeconfig` in `.json` for  definitions
 
 == Resources
 
-* https://rescript-lang.org/docs/manual/latest/introduction[ReScript Documentation]
-* https://deno.com/manual[Deno Manual]
+* https://-lang.org/docs/manual/latest/introduction[ Documentation]
+* https://.com/manual[ Manual]
 * link:CLAUDE.md[Project-specific guidelines]
 
 == Support

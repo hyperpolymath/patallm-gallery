@@ -31,7 +31,7 @@ The Claude GitLab Bridge enables:
 
 ### Code Style
 
-- Use TypeScript for type safety
+- Use  for type safety
 - Follow functional programming principles where appropriate
 - Write comprehensive error handling
 - Include detailed logging for debugging
@@ -138,7 +138,7 @@ Integrates with Anthropic's Claude API for:
 
 ### Core Dependencies
 - Node.js runtime
-- TypeScript for type safety
+-  for type safety
 - Express.js for HTTP server (if web-based)
 - Anthropic SDK for Claude integration
 - GitLab SDK or axios for GitLab API
@@ -147,7 +147,7 @@ Integrates with Anthropic's Claude API for:
 - Jest or Vitest for testing
 - ESLint for linting
 - Prettier for code formatting
-- TypeScript compiler
+-  compiler
 
 ## Resources
 

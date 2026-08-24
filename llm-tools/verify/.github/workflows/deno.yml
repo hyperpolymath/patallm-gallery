@@ -4,10 +4,10 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-# This workflow will install Deno then run `deno lint` and `deno test`.
-# For more information see: https://github.com/denoland/setup-deno
+# This workflow will install  then run ` lint` and ` test`.
+# For more information see: https://github.com/denoland/setup-
 
-name: Deno
+name: 
 on:
   push:
     branches: ["master"]
@@ -22,15 +22,15 @@ jobs:
     steps:
       - name: Setup repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Setup Deno
-        # uses: denoland/setup-deno@909cc5acb0135c37a79510dd77767e217930de55
-        uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31 # v1.1.2
+      - name: Setup 
+        # uses: denoland/setup-@909cc5acb0135c37a79510dd77767e217930de55
+        uses: denoland/setup-@61fe2df320078202e33d7d5ad347e7dcfa0e8f31 # v1.1.2
         with:
-          deno-version: v1.x
-      # Uncomment this step to verify the use of 'deno fmt' on each commit.
+          -version: v1.x
+      # Uncomment this step to verify the use of ' fmt' on each commit.
       # - name: Verify formatting
-      #   run: deno fmt --check
+      #   run:  fmt --check
       - name: Run linter
-        run: deno lint
+        run:  lint
       - name: Run tests
-        run: deno test -A
+        run:  test -A

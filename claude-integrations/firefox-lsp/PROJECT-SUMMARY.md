@@ -26,7 +26,7 @@ Claude Firefox LSP is a Language Server Protocol implementation for Firefox brow
    - Command execution and response formatting
 
 3. **VS Code Extension** (vscode-extension/)
-   - TypeScript client with command palette integration
+   -  client with command palette integration
    - Base64 screenshot handling
    - Configuration for server path and trace levels
 
@@ -72,7 +72,7 @@ claude-firefox-lsp/
 │   ├── src/
 │   │   └── extension.ts         # VS Code client
 │   ├── package.json             # Extension manifest
-│   ├── tsconfig.json            # TypeScript config
+│   ├── onfig.json            #  config
 │   └── README.md
 ├── CHANGELOG.md                 # Version history
 ├── ECOSYSTEM.scm                # Ecosystem positioning
@@ -100,7 +100,7 @@ claude-firefox-lsp/
 - **Transport**: TCP socket (port 2828)
 - **Testing**: ExUnit, Mox
 - **Quality**: Credo, Dialyzer, ExCoveralls
-- **VS Code**: TypeScript, vscode-languageclient
+- **VS Code**: , vscode-languageclient
 
 ## Dependencies
 
@@ -117,11 +117,11 @@ claude-firefox-lsp/
 {:mox, "~> 1.1"}              # Mocking
 ```
 
-### TypeScript (package.json)
+###  (package.json)
 
 ```json
 "vscode-languageclient": "^9.0.0"
-"typescript": "^5.0.0"
+"": "^5.0.0"
 ```
 
 ## ADRs (Architecture Decision Records)

@@ -171,7 +171,7 @@ WEBHOOK_SECRET=your-webhook-secret-here
 
 Configure rate limits to prevent abuse:
 
-```typescript
+```
 {
   maxRequestsPerMinute: 60,
   maxRequestsPerHour: 1000

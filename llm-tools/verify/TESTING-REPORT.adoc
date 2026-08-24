@@ -288,7 +288,7 @@ The project integrates with 12 theorem provers via ECHIDNA:
 1. Add CI/CD workflow for automated testing
 2. Implement property-based testing with QuickCheck
 3. Add integration tests with actual ECHIDNA binary
-4. Consider adding language support for more languages (Python, TypeScript)
+4. Consider adding language support for more languages (Python, )
 
 == Conclusion
 

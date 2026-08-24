@@ -86,7 +86,7 @@ fn check_manifest(path: &str) -> (Verdict, Option<String>) {
 }
 
 fn check_manifest_contains(path: &str, substring: &str) -> (Verdict, Option<String>) {
-    match std::fs::read_to_string(path) {
+    match safe_read_to_string(path) {
         Ok(contents) => {
             if contents.contains(substring) {
                 (
@@ -109,7 +109,7 @@ fn check_manifest_contains(path: &str, substring: &str) -> (Verdict, Option<Stri
 
 /// Validate a Cargo.toml file: check it parses, has [package], and deps are well-formed.
 fn validate_cargo_toml(path: &str) -> (Verdict, Option<String>) {
-    let contents = match std::fs::read_to_string(path) {
+    let contents = match safe_read_to_string(path) {
         Ok(c) => c,
         Err(e) => return (Verdict::Refuted, Some(format!("Cannot read: {}", e))),
     };
@@ -178,7 +178,7 @@ fn validate_cargo_toml(path: &str) -> (Verdict, Option<String>) {
 
 /// Validate a Julia Project.toml file.
 fn validate_project_toml(path: &str) -> (Verdict, Option<String>) {
-    let contents = match std::fs::read_to_string(path) {
+    let contents = match safe_read_to_string(path) {
         Ok(c) => c,
         Err(e) => return (Verdict::Refuted, Some(format!("Cannot read: {}", e))),
     };
@@ -223,7 +223,7 @@ fn validate_project_toml(path: &str) -> (Verdict, Option<String>) {
 
 /// Validate a package.json or deno.json file.
 fn validate_package_json(path: &str) -> (Verdict, Option<String>) {
-    let contents = match std::fs::read_to_string(path) {
+    let contents = match safe_read_to_string(path) {
         Ok(c) => c,
         Err(e) => return (Verdict::Refuted, Some(format!("Cannot read: {}", e))),
     };
@@ -265,7 +265,7 @@ fn validate_package_json(path: &str) -> (Verdict, Option<String>) {
 
 /// Validate a mix.exs file (basic check: file is readable Elixir).
 fn validate_mix_exs(path: &str) -> (Verdict, Option<String>) {
-    let contents = match std::fs::read_to_string(path) {
+    let contents = match safe_read_to_string(path) {
         Ok(c) => c,
         Err(e) => return (Verdict::Refuted, Some(format!("Cannot read: {}", e))),
     };
@@ -431,4 +431,13 @@ bad-dep = {}
         assert_eq!(result.verdict, Verdict::Refuted);
         assert!(result.details.unwrap().contains("no version"));
     }
+}
+
+
+fn safe_read_to_string<P: AsRef<std::path::Path>>(path: P) -> std::io::Result<String> {
+    use std::io::Read;
+    let mut file = std::fs::File::open(path)?;
+    let mut buffer = String::new();
+    file.take(10 * 1024 * 1024).read_to_string(&mut buffer)?; // 10MB limit
+    Ok(buffer)
 }

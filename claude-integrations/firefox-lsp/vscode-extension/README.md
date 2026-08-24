@@ -49,7 +49,7 @@ VS Code extension for Firefox browser automation via Language Server Protocol.
 # Install dependencies
 npm install
 
-# Compile TypeScript
+# Compile 
 npm run compile
 
 # Package extension

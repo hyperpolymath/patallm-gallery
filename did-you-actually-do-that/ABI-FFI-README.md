@@ -45,7 +45,7 @@ This library follows the **Hyperpolymath RSR Standard** for ABI and FFI design:
                   ▼
 ┌─────────────────────────────────────────────┐
 │  Any Language via C ABI                     │
-│  - Rust, Elixir (NIF), ReScript, Julia     │
+│  - Rust, Elixir (NIF), , Julia     │
 └─────────────────────────────────────────────┘
 ```
 

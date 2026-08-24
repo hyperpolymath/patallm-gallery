@@ -13,7 +13,7 @@ function showResponseOverlay(text, isError = false) {
 
   const overlay = document.createElement("div");
   overlay.id = "claude-gecko-overlay";
-  overlay.innerHTML = `
+  overlay.insertAdjacentHTML('beforeend', `
     <div class="claude-gecko-response ${isError ? 'error' : ''}">
       <div class="claude-gecko-header">
         <span class="claude-gecko-title">Claude</span>
@@ -24,7 +24,7 @@ function showResponseOverlay(text, isError = false) {
         <button class="claude-gecko-copy" title="Copy to clipboard">Copy</button>
       </div>
     </div>
-  `;
+  `);
 
   // Set content safely
   const contentDiv = overlay.querySelector(".claude-gecko-content");

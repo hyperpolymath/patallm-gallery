@@ -41,7 +41,7 @@ The following files in `.machine_readable/` contain structured project metadata:
 
 | Banned | Replacement |
 |--------|-------------|
-| TypeScript | AffineScript |
+|  | AffineScript |
 | Node.js | Deno |
 | npm | Deno |
 | Bun | Deno |
@@ -64,7 +64,7 @@ Both are FOSS with independent governance (no Big Tech).
 
 ### Enforcement Rules
 
-1. **No new TypeScript files** - Convert existing TS to AffineScript
+1. **No new  files** - Convert existing TS to AffineScript
 2. **No package.json - use deno.json deps** - Use deno.json imports
 3. **No node_modules in production** - Deno caches deps automatically
 4. **No Go code** - Use Rust instead

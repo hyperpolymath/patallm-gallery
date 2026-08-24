@@ -78,7 +78,7 @@ EXIT CODES:
 }
 
 fn verify_claim_file(path: &str) -> ExitCode {
-    let contents = match fs::read_to_string(path) {
+    let contents = match safe_read_to_string(path) {
         Ok(c) => c,
         Err(e) => {
             eprintln!("Error reading {}: {}", path, e);
@@ -212,7 +212,7 @@ fn verdict_to_exit_code(verdict: Verdict) -> ExitCode {
 
 /// Verify multiple claims with configurable output format
 fn verify_multiple_with_format(path: &str, format: OutputFormat) -> ExitCode {
-    let contents = match fs::read_to_string(path) {
+    let contents = match safe_read_to_string(path) {
         Ok(c) => c,
         Err(e) => {
             eprintln!("Error reading {}: {}", path, e);
@@ -528,7 +528,7 @@ fn format_evidence_name(spec: &EvidenceSpec) -> String {
 fn watch_claims(path: &str) -> ExitCode {
     use did_you_actually_do_that::watch::watch_and_verify;
 
-    let contents = match fs::read_to_string(path) {
+    let contents = match safe_read_to_string(path) {
         Ok(c) => c,
         Err(e) => {
             eprintln!("Error reading {}: {}", path, e);
@@ -703,4 +703,13 @@ fn main() -> ExitCode {
             ExitCode::from(3)
         }
     }
+}
+
+
+fn safe_read_to_string<P: AsRef<std::path::Path>>(path: P) -> std::io::Result<String> {
+    use std::io::Read;
+    let mut file = std::fs::File::open(path)?;
+    let mut buffer = String::new();
+    file.take(10 * 1024 * 1024).read_to_string(&mut buffer)?; // 10MB limit
+    Ok(buffer)
 }

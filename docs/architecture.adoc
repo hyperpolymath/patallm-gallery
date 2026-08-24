@@ -64,8 +64,8 @@ Example:
 == Dependencies
 
 * **Internal**: list other hyperpolymath repos this depends on.
-* **External**: SHA-pinned (see `Cargo.lock` / `deno.lock` / etc.).
-* **Build-time**: tools required to build (just, deno, cargo, …).
+* **External**: SHA-pinned (see `Cargo.lock` / `.lock` / etc.).
+* **Build-time**: tools required to build (just, , cargo, …).
 
 == Out of scope
 

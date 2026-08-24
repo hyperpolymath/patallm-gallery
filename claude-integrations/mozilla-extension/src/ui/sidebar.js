@@ -144,7 +144,7 @@ function startNewConversation() {
 
 function renderMessages() {
   const container = document.getElementById('messages');
-  container.innerHTML = '';
+  container.replaceChildren();
 
   for (const msg of messages) {
     const div = document.createElement('div');
@@ -173,7 +173,7 @@ function showTypingIndicator() {
   const indicator = document.createElement('div');
   indicator.className = 'message assistant typing-indicator';
   indicator.id = 'typing';
-  indicator.innerHTML = '<span></span><span></span><span></span>';
+  indicator.replaceChildren(document.createElement('span'), document.createElement('span'), document.createElement('span'));
   container.appendChild(indicator);
   container.scrollTop = container.scrollHeight;
 }

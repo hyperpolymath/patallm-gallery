@@ -25,7 +25,7 @@ Thank you for your interest in contributing to Claude GitLab Bridge! This guide 
 * Git
 * Code editor (VS Code recommended)
 * GitLab account for testing
-* Basic knowledge of TypeScript
+* Basic knowledge of 
 
 === Setup
 
@@ -116,9 +116,9 @@ git checkout -b feature/your-feature-name
 
 === 3. Make Changes
 
-==== TypeScript Code Style
+====  Code Style
 
-[source,typescript]
+[source,]
 ----
 // ✅ Good: Clear names, type annotations
 function parseGitLabUrl(url: string): Result<RepoContext, ParseError> {

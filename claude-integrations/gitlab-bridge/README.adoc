@@ -81,7 +81,7 @@ Required scopes:
 
 === Basic Example
 
-```typescript
+```
 import { ClaudeGitLabBridge } from 'claude-gitlab-bridge'
 
 const bridge = new ClaudeGitLabBridge({
@@ -258,7 +258,7 @@ See [SECURITY.md](SECURITY.md) for full policy.
 
 Main class for interacting with the bridge.
 
-```typescript
+```
 class ClaudeGitLabBridge {
   constructor(config: BridgeConfig)
 

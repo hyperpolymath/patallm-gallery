@@ -39,7 +39,7 @@ function addMessage(text, role, isLoading = false) {
 
   if (isLoading) {
     messageDiv.classList.add("loading");
-    messageDiv.innerHTML = "<p>Thinking</p>";
+    messageDiv.textContent = "<p>Thinking</p>";
   } else {
     const paragraph = document.createElement("p");
     paragraph.textContent = text;
@@ -59,7 +59,7 @@ function addMessage(text, role, isLoading = false) {
  */
 function updateMessage(element, text) {
   element.classList.remove("loading");
-  element.innerHTML = "";
+  element.textContent = "";
   const paragraph = document.createElement("p");
   paragraph.textContent = text;
   element.appendChild(paragraph);

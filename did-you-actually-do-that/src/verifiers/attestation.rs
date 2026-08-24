@@ -130,7 +130,7 @@ pub fn check(evidence: &EvidenceSpec) -> EvidenceResult {
     };
 
     // Read attestation envelope
-    let envelope_json = match fs::read_to_string(attestation_path) {
+    let envelope_json = match safe_read_to_string(attestation_path) {
         Ok(s) => s,
         Err(e) => {
             return EvidenceResult {
@@ -414,4 +414,13 @@ mod tests {
         assert_eq!(result.verdict, Verdict::Refuted);
         assert!(!result.report_hash_valid);
     }
+}
+
+
+fn safe_read_to_string<P: AsRef<std::path::Path>>(path: P) -> std::io::Result<String> {
+    use std::io::Read;
+    let mut file = std::fs::File::open(path)?;
+    let mut buffer = String::new();
+    file.take(10 * 1024 * 1024).read_to_string(&mut buffer)?; // 10MB limit
+    Ok(buffer)
 }

@@ -136,7 +136,7 @@ pub fn validate_backup(backup_path: &Path) -> Result<BackupMetadata> {
     // Load metadata
     let meta_path = BackupMetadata::metadata_path(backup_path);
     let metadata = if meta_path.exists() {
-        let meta_json = fs::read_to_string(&meta_path)
+        let meta_json = safe_read_to_string(&meta_path)
             .map_err(|e| Error::Other(format!("Failed to read metadata: {}", e)))?;
         serde_json::from_str::<BackupMetadata>(&meta_json)
             .map_err(|e| Error::Other(format!("Invalid metadata format: {}", e)))?
@@ -306,4 +306,13 @@ impl DatabaseStats {
 
         issues
     }
+}
+
+
+fn safe_read_to_string<P: AsRef<std::path::Path>>(path: P) -> std::io::Result<String> {
+    use std::io::Read;
+    let mut file = std::fs::File::open(path)?;
+    let mut buffer = String::new();
+    file.take(10 * 1024 * 1024).read_to_string(&mut buffer)?; // 10MB limit
+    Ok(buffer)
 }

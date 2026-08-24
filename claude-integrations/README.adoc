@@ -30,7 +30,7 @@ coherent workspace for developing Claude AI integrations across browsers and ser
 
 | firefox-mcp/
 | Model Context Protocol server for Firefox browser control
-| Deno / JavaScript
+|  / JavaScript
 
 | gecko-browser-extension/
 | Browser extension for Gecko-based browsers (Firefox, Thunderbird, SeaMonkey)
@@ -38,7 +38,7 @@ coherent workspace for developing Claude AI integrations across browsers and ser
 
 | gitlab-bridge/
 | Bridge between Claude AI and GitLab for developer productivity
-| ReScript / Deno
+|  / 
 
 | mozilla-extension/
 | Claude AI assistant extension for Mozilla products

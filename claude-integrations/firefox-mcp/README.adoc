@@ -35,13 +35,13 @@ This project bridges Claude Code and Firefox, allowing Claude to:
 ----
 ┌─────────────┐     stdio      ┌──────────────────┐   WebSocket   ┌─────────────────┐
 │ Claude Code │ ◄────────────► │  MCP Server      │ ◄───────────► │ Firefox         │
-│    CLI      │     (MCP)      │  (Deno)          │   (localhost) │ Extension       │
+│    CLI      │     (MCP)      │  ()          │   (localhost) │ Extension       │
 └─────────────┘                └──────────────────┘               └─────────────────┘
 ----
 
 == Requirements
 
-* https://deno.land[Deno] runtime
+* https://[] runtime
 * Firefox 78+
 * Claude Code CLI
 
@@ -132,7 +132,7 @@ Once configured, Claude Code can control Firefox:
 
 [source]
 ----
-User: Open Firefox and search for "Deno runtime"
+User: Open Firefox and search for " runtime"
 
 Claude: I'll navigate to Google and search for that.
 [uses navigate tool to go to google.com]
@@ -146,7 +146,7 @@ Claude: I'll navigate to Google and search for that.
 
 [source,bash]
 ----
-deno run --allow-net --allow-read --allow-env host/server.ts
+ run --allow-net --allow-read --allow-env host/server.ts
 ----
 
 === Extension Development

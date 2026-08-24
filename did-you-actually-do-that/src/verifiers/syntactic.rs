@@ -59,7 +59,7 @@ fn check_syntax(path: &str) -> (Verdict, Option<String>) {
 
 /// Validate JSON syntax.
 fn validate_json(path: &str) -> (Verdict, Option<String>) {
-    match std::fs::read_to_string(path) {
+    match safe_read_to_string(path) {
         Ok(contents) => {
             if contents.trim().is_empty() {
                 return (
@@ -87,7 +87,7 @@ fn validate_json(path: &str) -> (Verdict, Option<String>) {
 
 /// Validate TOML syntax.
 fn validate_toml(path: &str) -> (Verdict, Option<String>) {
-    match std::fs::read_to_string(path) {
+    match safe_read_to_string(path) {
         Ok(contents) => {
             if contents.trim().is_empty() {
                 return (
@@ -116,7 +116,7 @@ fn validate_toml(path: &str) -> (Verdict, Option<String>) {
 /// Basic text readability check for source code files.
 /// Confirms the file is valid UTF-8 and non-empty.
 fn validate_text_readable(path: &str, ext: &str) -> (Verdict, Option<String>) {
-    match std::fs::read_to_string(path) {
+    match safe_read_to_string(path) {
         Ok(contents) => {
             if contents.is_empty() {
                 (
@@ -236,4 +236,13 @@ mod tests {
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Inconclusive);
     }
+}
+
+
+fn safe_read_to_string<P: AsRef<std::path::Path>>(path: P) -> std::io::Result<String> {
+    use std::io::Read;
+    let mut file = std::fs::File::open(path)?;
+    let mut buffer = String::new();
+    file.take(10 * 1024 * 1024).read_to_string(&mut buffer)?; // 10MB limit
+    Ok(buffer)
 }

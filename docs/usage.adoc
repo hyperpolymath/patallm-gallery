@@ -17,7 +17,7 @@ The shortest path from zero to a working call:
 [source,bash]
 ----
 # 1. Install
-just install                # or: cargo install --path . / deno task install
+just install                # or: cargo install --path . /  task install
 
 # 2. Configure
 cp examples/config.example.toml ./config.toml
