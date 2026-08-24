@@ -72,7 +72,7 @@ The foundational library defining shared abstractions.
 ==== Technology
 
 * **Language**: Rust (core library)
-* **ReScript bindings**: Generated via wasm-bindgen or FFI
+* ** bindings**: Generated via wasm-bindgen or FFI
 * **Testing**: Rust unit tests + integration test harness
 
 == Phase 2: Provider Unification
@@ -115,8 +115,8 @@ Provider adapters building on llm-unify-core.
 
 ==== Technology
 
-* **Language**: Rust + ReScript (API layer)
-* **Runtime**: Deno for HTTP client and async I/O
+* **Language**: Rust +  (API layer)
+* **Runtime**:  for HTTP client and async I/O
 * **Config**: Environment variables + config files (Nickel)
 
 == Phase 3: Verification Engine
@@ -159,7 +159,7 @@ Output verification against source material.
 
 ==== Technology
 
-* **Language**: Rust (core) + ReScript (API)
+* **Language**: Rust (core) +  (API)
 * **Embeddings**: Via llm-unify (OpenAI, local models)
 * **Vector Store**: SQLite with vector extension or dedicated store
 
@@ -203,7 +203,7 @@ Detection and mitigation of LLM hallucinations.
 
 ==== Technology
 
-* **Language**: Rust (core) + ReScript (orchestration)
+* **Language**: Rust (core) +  (orchestration)
 * **Integration**: Wraps llm-unify and llm-verify
 
 == Phase 5: Integration & Tooling
@@ -231,13 +231,13 @@ Detection and mitigation of LLM hallucinations.
 === API Server
 
 * REST/GraphQL API wrapping all components
-* Deno-based server (Hono or Oak framework)
+* -based server (Hono or Oak framework)
 * OpenAPI specification
 
 === Editor Integration
 
 * LSP server for real-time verification
-* VS Code extension (via Deno)
+* VS Code extension (via )
 
 == Milestones
 

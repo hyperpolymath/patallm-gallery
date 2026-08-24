@@ -1,0 +1,8 @@
+<assail-classifications>
+  <finding>
+    <rule>HardcodedSecret</rule>
+    <file>claude-integrations/mozilla-extension/src/core/storage.js</file>
+    <status>false-positive</status>
+    <justification>The string 'claude_api_key' is just a storage key identifier, not a real API key or secret.</justification>
+  </finding>
+</assail-classifications>

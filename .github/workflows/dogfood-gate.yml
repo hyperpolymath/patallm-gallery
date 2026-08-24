@@ -70,8 +70,8 @@ jobs:
         run: |
           COUNT=$(find . \( -name '*.k9' -o -name '*.k9.ncl' \) -not -path './.git/*' | wc -l)
           CONFIG_COUNT=$(find . \( -name '*.toml' -o -name '*.yaml' -o -name '*.yml' -o -name '*.json' \) \
-            -not -path './.git/*' -not -path './node_modules/*' -not -path './.deno/*' \
-            -not -name 'package-lock.json' -not -name 'Cargo.lock' -not -name 'deno.lock' | wc -l)
+            -not -path './.git/*' -not -path './node_modules/*' -not -path '././*' \
+            -not -name 'package-lock.json' -not -name 'Cargo.lock' -not -name '.lock' | wc -l)
           echo "k9_count=$COUNT" >> "$GITHUB_OUTPUT"
           echo "config_count=$CONFIG_COUNT" >> "$GITHUB_OUTPUT"
           if [ "$COUNT" -eq 0 ] && [ "$CONFIG_COUNT" -gt 0 ]; then
@@ -120,7 +120,7 @@ jobs:
           PATTERNS='\xc2\xa0|\xe2\x80\x8b|\xe2\x80\x8c|\xe2\x80\x8d|\xef\xbb\xbf|\xc2\xad|\xe2\x80\x8e|\xe2\x80\x8f|\xe2\x80\xaa|\xe2\x80\xab|\xe2\x80\xac|\xe2\x80\xad|\xe2\x80\xae|\x00'
           find "$GITHUB_WORKSPACE" \
             -not -path '*/.git/*' -not -path '*/node_modules/*' \
-            -not -path '*/.deno/*' -not -path '*/target/*' \
+            -not -path '*/./*' -not -path '*/target/*' \
             -not -path '*/_build/*' -not -path '*/deps/*' \
             -not -path '*/external_corpora/*' -not -path '*/.lake/*' \
             -type f \( -name '*.rs' -o -name '*.ex' -o -name '*.exs' -o -name '*.res' \

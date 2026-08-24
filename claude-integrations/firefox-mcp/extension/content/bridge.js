@@ -9,13 +9,39 @@
 // Listen for messages from background script
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'EXECUTE_IN_PAGE') {
-    try {
-      // Execute the code in page context
-      const result = eval(message.code);
-      sendResponse({ success: true, result });
-    } catch (error) {
-      sendResponse({ success: false, error: error.message });
-    }
+    const script = document.createElement('script');
+    const id = 'mcp-exec-' + Math.random().toString(36).substr(2, 9);
+    script.id = id;
+    
+    const listener = (event) => {
+      if (event.detail.id === id) {
+        document.removeEventListener('mcp-exec-result', listener);
+        script.remove();
+        if (event.detail.error) sendResponse({ success: false, error: event.detail.error });
+        else sendResponse({ success: true, result: event.detail.result });
+      }
+    };
+    document.addEventListener('mcp-exec-result', listener);
+    
+    // Inject the code into the script tag
+    // We wrap it to catch errors and send the result back via CustomEvent
+    script.textContent = `
+      (async () => {
+        try {
+          const result = await (async () => {
+            ${message.code}
+          })();
+          document.dispatchEvent(new CustomEvent('mcp-exec-result', {
+            detail: { id: '${id}', result }
+          }));
+        } catch (error) {
+          document.dispatchEvent(new CustomEvent('mcp-exec-result', {
+            detail: { id: '${id}', error: error.message }
+          }));
+        }
+      })();
+    `;
+    document.documentElement.appendChild(script);
     return true; // Async response
   }
 

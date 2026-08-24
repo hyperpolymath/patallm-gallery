@@ -47,7 +47,7 @@ This library follows the **Hyperpolymath RSR Standard** for ABI and FFI design:
                   ▼
 ┌─────────────────────────────────────────────┐
 │  Any Language via C ABI                     │
-│  - Rust, ReScript, Julia, Python, etc.     │
+│  - Rust, , Julia, Python, etc.     │
 └─────────────────────────────────────────────┘
 ```
 
@@ -79,7 +79,7 @@ This library follows the **Hyperpolymath RSR Standard** for ABI and FFI design:
 │
 └── bindings/                   # Language-specific wrappers (optional)
     ├── rust/
-    ├── rescript/
+    ├── /
     └── julia/
 ```
 
@@ -343,8 +343,8 @@ zig build test-integration
 -- Runtime checks
 main : IO ()
 main = do
-  verifyLayoutsCorrect
-  verifyAlignmentsCorrect
+  verifyLayouorrect
+  verifyAlignmenorrect
   putStrLn "ABI verification passed"
 ```
 

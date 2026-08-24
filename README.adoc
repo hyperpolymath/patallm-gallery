@@ -96,11 +96,11 @@ This project follows the **Hyperpolymath Standard** language policy.
 |===
 | Technology | Use Case | Notes
 
-| ReScript
+| 
 | Primary application code
 | Compiles to JS, type-safe
 
-| Deno
+| 
 | Runtime & package management
 | Replaces Node/npm/bun
 
@@ -120,7 +120,7 @@ This project follows the **Hyperpolymath Standard** language policy.
 
 === Explicitly Banned
 
-TypeScript, Node.js, npm, Go, Python (except SaltStack), Kotlin, Swift, React Native, Flutter
+, Node.js, npm, Go, Python (except SaltStack), Kotlin, Swift, React Native, Flutter
 
 See link:.claude/CLAUDE.md[CLAUDE.md] for the complete policy.
 
@@ -172,7 +172,7 @@ See link:CODE_OF_CONDUCT.md[Code of Conduct] and link:SECURITY.md[Security Polic
 
 === Development Prerequisites
 
-* Deno >= 2.0
+*  >= 2.0
 * Rust >= 1.75 (for core components)
 * Git with submodule support
 
@@ -184,11 +184,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 == Funding
 
-Support this project:
-
-* https://github.com/sponsors/hyperpolymath[GitHub Sponsors]
-* https://ko-fi.com/hyperpolymath[Ko-fi]
-* https://liberapay.com/hyperpolymath[Liberapay]
+Support this project: See link:FUNDING[Funding] for all support options.
 
 
 == Architecture

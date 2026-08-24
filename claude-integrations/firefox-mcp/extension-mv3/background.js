@@ -389,7 +389,38 @@ async function executeJs(args) {
   const tab = await getTab(args.tabId);
   const results = await browser.scripting.executeScript({
     target: { tabId: tab.id },
-    func: (code) => eval(code),
+    func: (code) => {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        const id = 'mcp-exec-' + Math.random().toString(36).substr(2, 9);
+        const listener = (event) => {
+          if (event.detail.id === id) {
+            document.removeEventListener('mcp-exec-result', listener);
+            script.remove();
+            if (event.detail.error) reject(event.detail.error);
+            else resolve(event.detail.result);
+          }
+        };
+        document.addEventListener('mcp-exec-result', listener);
+        script.textContent = `
+          (async () => {
+            try {
+              const result = await (async () => {
+                ${code}
+              })();
+              document.dispatchEvent(new CustomEvent('mcp-exec-result', {
+                detail: { id: '${id}', result }
+              }));
+            } catch (error) {
+              document.dispatchEvent(new CustomEvent('mcp-exec-result', {
+                detail: { id: '${id}', error: error.message }
+              }));
+            }
+          })();
+        `;
+        document.documentElement.appendChild(script);
+      });
+    },
     args: [args.code]
   });
 

@@ -48,9 +48,9 @@ This repository is in its initial foundation stage. Detailed specifications, arc
 
 Per the link:.claude/CLAUDE.md[Hyperpolymath Language Policy]:
 
-* **ReScript** — Primary application code
+* **** — Primary application code
 * **Rust** — Performance-critical components, WASM, CLI tools
-* **Deno** — Runtime and package management
+* **** — Runtime and package management
 * **Gleam** — Backend services (BEAM/JS target)
 
 == Roadmap

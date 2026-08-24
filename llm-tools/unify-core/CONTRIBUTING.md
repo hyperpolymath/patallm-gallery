@@ -109,8 +109,8 @@ See [.claude/CLAUDE.md](.claude/CLAUDE.md) for the complete language policy.
 
 **Key points:**
 - Primary language: **Rust**
-- No TypeScript, Node.js, or Go
-- Use Deno for any JavaScript tooling needs
+- No , Node.js, or Go
+- Use  for any JavaScript tooling needs
 
 ### Rust Guidelines
 

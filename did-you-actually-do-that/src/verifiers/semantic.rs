@@ -14,7 +14,7 @@ use std::process::Command;
 /// Check semantic integrity evidence.
 pub fn check(evidence: &EvidenceSpec) -> EvidenceResult {
     let (verdict, details) = match evidence {
-        EvidenceSpec::FileContains { path, substring } => match std::fs::read_to_string(path) {
+        EvidenceSpec::FileContains { path, substring } => match safe_read_to_string(path) {
             Ok(contents) => {
                 if contents.contains(substring) {
                     (Verdict::Confirmed, Some("Substring found".to_string()))
@@ -26,7 +26,7 @@ pub fn check(evidence: &EvidenceSpec) -> EvidenceResult {
         },
 
         EvidenceSpec::FileMatchesRegex { path, pattern } => match Regex::new(pattern) {
-            Ok(re) => match std::fs::read_to_string(path) {
+            Ok(re) => match safe_read_to_string(path) {
                 Ok(contents) => {
                     if re.is_match(&contents) {
                         (Verdict::Confirmed, Some("Pattern matched".to_string()))
@@ -46,7 +46,7 @@ pub fn check(evidence: &EvidenceSpec) -> EvidenceResult {
             path,
             json_path,
             expected,
-        } => match std::fs::read_to_string(path) {
+        } => match safe_read_to_string(path) {
             Ok(contents) => match serde_json::from_str::<serde_json::Value>(&contents) {
                 Ok(json) => match extract_json_path(&json, json_path) {
                     Some(actual) => {
@@ -235,4 +235,13 @@ mod tests {
         let result = check(&evidence);
         assert_eq!(result.verdict, Verdict::Refuted);
     }
+}
+
+
+fn safe_read_to_string<P: AsRef<std::path::Path>>(path: P) -> std::io::Result<String> {
+    use std::io::Read;
+    let mut file = std::fs::File::open(path)?;
+    let mut buffer = String::new();
+    file.take(10 * 1024 * 1024).read_to_string(&mut buffer)?; // 10MB limit
+    Ok(buffer)
 }

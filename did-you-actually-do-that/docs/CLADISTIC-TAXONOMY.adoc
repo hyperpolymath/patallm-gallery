@@ -148,7 +148,7 @@ that don't cause type errors.
 
 **Description**: Code refers to APIs, libraries, or patterns that existed
 in the training data but have been deprecated or changed. `React.createClass`
-in 2026. `Node.js` patterns in a Deno project.
+in 2026. `Node.js` patterns in a  project.
 
 **Detection**: Dependency version checking (Layer 8), ecosystem-specific
 pattern matching. Antifile catalogs for known deprecated patterns. ~60%.
@@ -313,7 +313,7 @@ Layer 1 (parts hash). ~70% detection rate when blueprint exists.
 
 **Description**: The LLM adopts patterns from the conversation context that
 are inappropriate for the target codebase. Using Python idioms in Rust.
-Adding TypeScript when the project bans it.
+Adding  when the project bans it.
 
 **Detection**: Language policy enforcement (banned language checks).
 K9 Kennel can validate against project conventions. ~85% for banned

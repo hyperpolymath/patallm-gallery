@@ -454,5 +454,5 @@ See link:LICENSE.txt[LICENSE.txt] for details.
 This project adheres to the **Hyperpolymath Standard** for language and tooling policy. See link:.claude/CLAUDE.md[CLAUDE.md] for details.
 
 * **Rust** — all core functionality
-* **No TypeScript/Node.js/Go** — use Rust or ReScript alternatives
-* **Deno** — for any JavaScript tooling needs
+* **No /Node.js/Go** — use Rust or  alternatives
+* **** — for any JavaScript tooling needs

@@ -75,8 +75,8 @@ claude-gitlab-bridge/
 
 ### Dependencies
 
-- Runtime: Node.js 18+ / Deno 1.40+
-- Languages: ReScript (primary), TypeScript (legacy)
+- Runtime: Node.js 18+ /  1.40+
+- Languages:  (primary),  (legacy)
 - Packages: anthropic-sdk, gitlab-api client
 - Optional: Redis (for caching)
 
@@ -101,7 +101,7 @@ The project integrates with:
 - **Claude**: Command generation target (JSON commands, bidirectional)
 
 ### APIs
-- **CLI**: Deno-based CLI with interactive, execute, and batch modes
+- **CLI**: -based CLI with interactive, execute, and batch modes
 - **Internal API**: Optional HTTP endpoint on port 8888
 
 ## Commands Reference
@@ -142,8 +142,8 @@ The project integrates with:
 
 ### Language Policy (per RSR)
 
-- **Primary**: ReScript for new code
-- **Fallback**: TypeScript for legacy compatibility
+- **Primary**:  for new code
+- **Fallback**:  for legacy compatibility
 - **Banned**: Python, Ruby, Perl (per RSR language policy)
 
 ### Code Style
@@ -163,13 +163,13 @@ The project integrates with:
 
 ## Deployment Options
 
-1. **Standalone**: `deno run --allow-net --allow-env src/main.ts`
+1. **Standalone**: ` run --allow-net --allow-env src/main.ts`
 2. **Docker**: `docker run claude-gitlab-bridge`
 3. **Systemd Service**: Available for production deployments
 
 ## Next Steps
 
-1. Define TypeScript/ReScript interfaces for core types
+1. Define / interfaces for core types
 2. Implement GitLab API client wrapper
 3. Set up test infrastructure with mocking
 4. Implement command generation logic

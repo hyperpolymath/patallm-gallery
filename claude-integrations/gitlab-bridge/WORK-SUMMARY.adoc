@@ -18,13 +18,13 @@ Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 - Lines 349-351: Converted status badges to AsciiDoc format
 - Added new badges:
   * MPL-2.0 license badge
-  * ReScript language badge
-  * Deno runtime badge
+  *  language badge
+  *  runtime badge
   * Idris-ready badge
 
-=== ✓ Task 2: Converted TypeScript to ReScript
+=== ✓ Task 2: Converted  to 
 
-**Scope:** Complete codebase conversion from TypeScript to ReScript
+**Scope:** Complete codebase conversion from  to 
 
 **New Files Created:**
 
@@ -39,7 +39,7 @@ Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 |Auth type definitions with variants and records
 
 |`src/auth/Errors.res`
-|Error types using ReScript exception system
+|Error types using  exception system
 
 |`src/auth/TokenValidator.res`
 |Token validation logic with Result types
@@ -51,16 +51,16 @@ Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 |Auth module index with re-exports
 
 |`src/bindings/Anthropic.res`
-|Anthropic SDK bindings for ReScript
+|Anthropic SDK bindings for 
 
 |`src/bindings/Express.res`
-|Express.js bindings for ReScript
+|Express.js bindings for 
 
-|`rescript.json`
-|ReScript compiler configuration
+|`.json`
+| compiler configuration
 
-|`deno.json`
-|Deno runtime configuration
+|`.json`
+| runtime configuration
 
 |`MIGRATION.adoc`
 |Migration guide for users
@@ -71,15 +71,15 @@ Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 1. *Type Safety:* Stronger type system with variants and pattern matching
 2. *Error Handling:* Result types instead of exceptions
 3. *No Runtime Exceptions:* Exhaustive pattern matching enforced
-4. *Fast Compilation:* ReScript compiler is much faster than TypeScript
-5. *Deno Runtime:* Modern runtime with built-in TypeScript support
+4. *Fast Compilation:*  compiler is much faster than 
+5. * Runtime:* Modern runtime with built-in  support
 
 **Language Policy Compliance:**
 
-- ✅ No TypeScript (converted to ReScript)
-- ✅ No Node.js (using Deno)
-- ✅ No npm (using Deno imports)
-- ✅ ReScript as primary language
+- ✅ No  (converted to )
+- ✅ No Node.js (using )
+- ✅ No npm (using  imports)
+- ✅  as primary language
 - ✅ Proper SPDX headers on all files
 
 === ✓ Task 7: Fixed README Formatting
@@ -90,9 +90,9 @@ Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 **Changes:**
 - Replaced all ``` blocks with `[source,lang]` + `----` delimiters
-- Updated bash examples to use `deno task` instead of `npm`
-- Changed code examples to ReScript syntax
-- Updated project structure to show ReScript files
+- Updated bash examples to use ` task` instead of `npm`
+- Changed code examples to  syntax
+- Updated project structure to show  files
 - Updated directory tree to show `bindings/` instead of `middleware/`
 
 === License Updates
@@ -193,24 +193,24 @@ src/forges/
 **Commands:**
 [source,bash]
 ----
-deno task build          # Compile ReScript
-deno task dev            # Development mode
-deno task test           # Run tests
-deno task lint           # Lint code
-deno task fmt            # Format code
+ task build          # Compile 
+ task dev            # Development mode
+ task test           # Run tests
+ task lint           # Lint code
+ task fmt            # Format code
 ----
 
 === Dependencies
 
-**Runtime (via Deno):**
+**Runtime (via ):**
 - `@anthropic-ai/sdk@^0.30.0` - Claude API client
 - `express@^5.0.1` - HTTP server
 - `zod@^3.22.4` - Schema validation
 - `dotenv@^16.3.1` - Environment variables
 
 **Build:**
-- `rescript@^12.0.2` - ReScript compiler
-- `@rescript/core@^1.0.0` - ReScript standard library
+- `@^12.0.2` -  compiler
+- `@/core@^1.0.0` -  standard library
 
 === File Structure
 
@@ -229,8 +229,8 @@ claude-gitlab-bridge/
 │       └── Express.res
 ├── tests/                    # Test files (to be added)
 ├── docs/                     # Documentation
-├── rescript.json             # ReScript config
-├── deno.json                 # Deno config
+├── .json             #  config
+├── .json                 #  config
 ├── package.json              # npm dependencies
 ├── README.adoc               # Main documentation
 ├── MIGRATION.adoc            # Migration guide
@@ -272,8 +272,8 @@ claude-gitlab-bridge/
 == Notes
 
 * All code follows hyperpolymath language policy
-* ReScript provides superior type safety over TypeScript
-* Deno eliminates need for node_modules and npm
+*  provides superior type safety over 
+*  eliminates need for node_modules and npm
 * Palimpsest License (MPL-2.0) applied throughout
 * Ready for Idris integration when needed
 

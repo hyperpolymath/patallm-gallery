@@ -188,7 +188,7 @@ impl CompletenessAudit {
                     checked.insert(file_path.clone());
 
                     let full_path = self.resolve_path(file_path);
-                    if let Ok(contents) = std::fs::read_to_string(&full_path) {
+                    if let Ok(contents) = safe_read_to_string(&full_path) {
                         let stub_count = self.count_stubs(&contents);
                         if stub_count > 0 {
                             gaps.push(CompletenessGap {
@@ -248,7 +248,7 @@ impl CompletenessAudit {
                 .and_then(|e| e.to_str())
                 .map(|ext| ext == "rs")
                 .unwrap_or(false)
-                && std::fs::read_to_string(source)
+                && safe_read_to_string(source)
                     .map(|c| c.contains("#[cfg(test)]") || c.contains("#[test]"))
                     .unwrap_or(false);
 
@@ -538,4 +538,13 @@ mod tests {
         assert_eq!(truncate("hello", 10), "hello");
         assert_eq!(truncate("hello world this is long", 10), "hello worl...");
     }
+}
+
+
+fn safe_read_to_string<P: AsRef<std::path::Path>>(path: P) -> std::io::Result<String> {
+    use std::io::Read;
+    let mut file = std::fs::File::open(path)?;
+    let mut buffer = String::new();
+    file.take(10 * 1024 * 1024).read_to_string(&mut buffer)?; // 10MB limit
+    Ok(buffer)
 }

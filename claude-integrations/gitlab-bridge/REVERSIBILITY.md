@@ -273,7 +273,7 @@ npm run start
 ### Example: Adding a New Integration
 
 **Without Reversibility Thinking**:
-```typescript
+```
 // ❌ Direct modification, no undo
 function addWebhook(repoId: string, url: string) {
   gitlab.createWebhook(repoId, url)
@@ -282,7 +282,7 @@ function addWebhook(repoId: string, url: string) {
 ```
 
 **With Reversibility Thinking**:
-```typescript
+```
 // ✅ Returns webhook ID, enables removal
 function addWebhook(repoId: string, url: string): Result<WebhookId, Error> {
   const result = gitlab.createWebhook(repoId, url)

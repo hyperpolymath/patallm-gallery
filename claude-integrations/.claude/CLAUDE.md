@@ -15,7 +15,7 @@ Monorepo for all Claude AI browser and service integrations, plus AI workflow to
 | firefox-lsp/ | LSP for Firefox via Marionette protocol | Elixir |
 | firefox-mcp/ | MCP server for Firefox browser control | Deno/JS |
 | gecko-browser-extension/ | Extension for Gecko browsers | JS/WebExtensions |
-| gitlab-bridge/ | Claude ↔ GitLab integration | ReScript/Deno |
+| gitlab-bridge/ | Claude ↔ GitLab integration | /Deno |
 | mozilla-extension/ | Claude extension for Mozilla products | JS/WebExtensions |
 | **model-router/** | **Auto-select Opus/Sonnet/Haiku by task** | **Rust (planned)** |
 
