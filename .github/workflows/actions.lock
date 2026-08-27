@@ -3,6 +3,11 @@
 # Docs: https://gh.io/actions-lockfile
 version: 'v0.0.2'
 workflows:
+    '.github/workflows/governance.yml': []
+    '.github/workflows/hypatia-scan.yml': []
+    '.github/workflows/mirror.yml': []
+    '.github/workflows/scorecard.yml': []
+    '.github/workflows/secret-scanner.yml': []
     '.github/workflows/boj-build.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/casket-pages.yml':
@@ -11,16 +16,19 @@ workflows:
         - 'actions/configure-pages@v6.0.0'
         - 'actions/deploy-pages@v5.0.0'
         - 'actions/upload-pages-artifact@v5.0.0'
-        - 'haskell-actions/setup@v2.11.0'
+        - 'haskell-actions/setup@v2.12.0'
     '.github/workflows/codeql.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@v4.37.3'
+        - 'github/codeql-action@v4.37.8'
     '.github/workflows/dogfood-gate.yml':
         - 'actions/checkout@v7.0.1'
         - 'hyperpolymath/a2ml-ecosystem@main'
         - 'hyperpolymath/k9-ecosystem@main'
     '.github/workflows/instant-sync.yml':
         - 'peter-evans/repository-dispatch@v4.0.1'
+    '.github/workflows/main-estate-audit.yml':
+        - 'actions/checkout@v7.0.1'
+        - 'hyperpolymath/cicd-suite@main'
     '.github/workflows/pages.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/deploy-pages@v5.0.0'
@@ -29,7 +37,7 @@ workflows:
         - 'dawidd6/action-send-mail@v3.12.0'
     '.github/workflows/semgrep.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@v4.37.3'
+        - 'github/codeql-action@v4.37.8'
 dependencies:
     'actions/cache@v6.1.0':
         ref: 'v6.1.0'
@@ -65,17 +73,17 @@ dependencies:
             - 'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f'
     'dawidd6/action-send-mail@v3.12.0':
         ref: 'v3.12.0'
-        commit: 'sha1-2e600f3776677e493bf0da7aaec39a586d19a5ed'
+        commit: 'sha1-94de994a9f6fffee200243214e17002e2920bb59'
         owner_id: 9713907
         repo_id: 222439721
-    'github/codeql-action@v4.37.3':
-        ref: 'v4.37.3'
-        commit: 'sha1-e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81'
+    'github/codeql-action@v4.37.8':
+        ref: 'v4.37.8'
+        commit: 'sha1-db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28'
         owner_id: 9919
         repo_id: 259445878
-    'haskell-actions/setup@v2.11.0':
-        ref: 'v2.11.0'
-        commit: 'sha1-cd0d9bdd65b20557f41bea4dbe43d0b5fbbfe553'
+    'haskell-actions/setup@v2.12.0':
+        ref: 'v2.12.0'
+        commit: 'sha1-6037f33647c3f17758a2356c80fc4a53d7e0685d'
         owner_id: 75048950
         repo_id: 623796603
     'hyperpolymath/a2ml-ecosystem@main':
@@ -83,6 +91,11 @@ dependencies:
         commit: 'sha1-aa4b836bd969df2bc58128cb8e3d20bbc88d5e79'
         owner_id: 6759885
         repo_id: 1275649586
+    'hyperpolymath/cicd-suite@main':
+        ref: 'main'
+        commit: 'sha1-a3cd79fba541444c619902330d0b618eb1612634'
+        owner_id: 6759885
+        repo_id: 1326697643
     'hyperpolymath/k9-ecosystem@main':
         ref: 'main'
         commit: 'sha1-89f3c2702f4f650a92aa7411502f38da06abd562'
