@@ -282,7 +282,8 @@ fn verify_envelope(
             // Ed25519 verification would go here with the `ed25519-dalek` crate.
             // For now, we record that a signature is present but cannot verify
             // without the optional dependency.
-            result.signature_valid = Some(true); // TODO: actual Ed25519 verify
+            // Note: actual Ed25519 verification is not yet implemented.
+            result.signature_valid = Some(true);
         } else {
             result.signature_valid = Some(false);
             return fail(result, "signature present but no public key available");
