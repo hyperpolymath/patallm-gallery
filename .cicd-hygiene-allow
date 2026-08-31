@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MPL-2.0
+#
+# Pre-existing debt-marker allowlist for the Code Hygiene Gate.
+# Each entry is a git pathspec glob excluded from the TODO/FIXME/XXX/HACK/STUB
+# scan. Only add files where the marker is a template placeholder or a
+# detector's own literal pattern string, never to hide genuine unresolved work.
+
+# K9 contract scaffolds: TODO is an intentional instructional placeholder
+# for the person copying the template, not unresolved work.
+.machine_readable/self-validating/template-hunt.k9.ncl
+.machine_readable/self-validating/template-kennel.k9.ncl
+.machine_readable/self-validating/template-yard.k9.ncl
+
+# elegant-state scaffold Justfile: placeholder recipes for a new project.
+elegant-state/Justfile
+
+# did-you-actually-do-that: these files detect stub/debt markers in OTHER
+# code, so the marker strings below are literal pattern data, not debt.
+did-you-actually-do-that/dyadt_brain/lib/dyadt_brain/surveillance_supervisor.ex
+did-you-actually-do-that/src/slm/mixture_of_experts.rs
+did-you-actually-do-that/src/slm/policy_oracle.rs
+did-you-actually-do-that/src/verifiers/completeness.rs
+
+# lsm quality workflow: TODO/FIXME here are grep pattern literals used by
+# the workflow's own debt scan step, not source debt.
+lsm/.github/workflows/comprehensive-quality.yml

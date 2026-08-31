@@ -21,7 +21,7 @@ struct validTokens {
 
 let validTokens: validTokens = {
   personal: "glpat-xxxxxxxxxxxxxxxxxxxx",
-  personalWithDashes: "glpat-abc123-def456-ghi789",
+  personalWithDashes: "glpat-abc123-def456-ghi789", // gitleaks:allow
   deploy: "gldt-xxxxxxxxxxxxxxxxxxxx",
   runner: "glrt-xxxxxxxxxxxxxxxxxxxx",
   job: "glcbt-xxxxxxxxxxxxxxxxxxxx",
