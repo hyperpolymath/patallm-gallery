@@ -135,7 +135,7 @@ type issueParams = {
 1. Install :
 [source,bash]
 ----
-curl -fsSL https:///install.sh | sh
+curl -fsSL https://deno.land/install.sh | sh
 ----
 
 2. Install :
