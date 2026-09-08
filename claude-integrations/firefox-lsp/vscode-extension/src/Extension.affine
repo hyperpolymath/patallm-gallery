@@ -159,7 +159,8 @@ fn activate(context: ExtensionContext.t) -> unit {
         match Dict.get(d, "screenshot") {
   Some(_screenshot) =>
           let _ = await Window.showInformationMessage("Screenshot captured")
-        // TODO: Display or save screenshot
+        // Note: screenshot is only surfaced via the notification above;
+        // displaying or saving it to disk is not yet implemented.
   None => ()
         }
   None => ()

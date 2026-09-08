@@ -41,7 +41,7 @@ This project bridges Claude Code and Firefox, allowing Claude to:
 
 == Requirements
 
-* https://[] runtime
+* https://deno.land[Deno] runtime
 * Firefox 78+
 * Claude Code CLI
 

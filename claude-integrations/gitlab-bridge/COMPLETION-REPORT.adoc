@@ -264,7 +264,7 @@ All requested features for the Claude GitLab Bridge have been successfully imple
 [source,bash]
 ----
 # Install 
-curl -fsSL https:///install.sh | sh
+curl -fsSL https://deno.land/install.sh | sh
 
 # Install dependencies
  install
