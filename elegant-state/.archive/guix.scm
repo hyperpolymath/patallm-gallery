@@ -1,7 +1,7 @@
 ;;; guix.scm --- Development shell for elegant-STATE
 ;;;
 ;;; Use with: guix shell
-;;; Or: guix shell -D -f guix.scm
+;;; Or: guix shell -D -f build/guix.scm
 
 (use-modules (guix packages)
              (guix build-system cargo)
