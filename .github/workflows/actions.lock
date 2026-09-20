@@ -9,12 +9,12 @@ workflows:
         - 'actions/cache@v6.1.0'
         - 'actions/checkout@v7.0.1'
         - 'actions/configure-pages@v6.0.0'
-        - 'actions/deploy-pages@v5.0.0'
+        - 'actions/deploy-pages@v5.0.1'
         - 'actions/upload-pages-artifact@v5.0.0'
         - 'haskell-actions/setup@v2.12.0'
     '.github/workflows/codeql.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@v4.37.8'
+        - 'github/codeql-action@v4.38.0'
     '.github/workflows/dogfood-gate.yml':
         - 'actions/checkout@v7.0.1'
         - 'hyperpolymath/a2ml-ecosystem@main'
@@ -31,15 +31,15 @@ workflows:
     '.github/workflows/mirror.yml': []
     '.github/workflows/pages.yml':
         - 'actions/checkout@v7.0.1'
-        - 'actions/deploy-pages@v5.0.0'
+        - 'actions/deploy-pages@v5.0.1'
         - 'actions/upload-pages-artifact@v5.0.0'
     '.github/workflows/push-email-notify.yml':
-        - 'hyperpolymath/smtp-notify-action@v0.2.0'
+        - 'hyperpolymath/smtp-notify-action@v0.3.0'
     '.github/workflows/scorecard.yml': []
     '.github/workflows/secret-scanner.yml': []
     '.github/workflows/semgrep.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@v4.37.8'
+        - 'github/codeql-action@v4.38.0'
 dependencies:
     'actions/cache@v6.1.0':
         ref: 'v6.1.0'
@@ -56,9 +56,9 @@ dependencies:
         commit: 'sha1-45bfe0192ca1faeb007ade9deae92b16b8254a0d'
         owner_id: 44036562
         repo_id: 513659658
-    'actions/deploy-pages@v5.0.0':
-        ref: 'v5.0.0'
-        commit: 'sha1-cd2ce8fcbc39b97be8ca5fce6e763baed58fa128'
+    'actions/deploy-pages@v5.0.1':
+        ref: 'v5.0.1'
+        commit: 'sha1-368f82528645a54fb793d4d04e342629a3f51346'
         owner_id: 44036562
         repo_id: 438112499
     'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f':
@@ -73,9 +73,9 @@ dependencies:
         repo_id: 496012378
         uses:
             - 'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f'
-    'github/codeql-action@v4.37.8':
-        ref: 'v4.37.8'
-        commit: 'sha1-db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28'
+    'github/codeql-action@v4.38.0':
+        ref: 'v4.38.0'
+        commit: 'sha1-b96794f015dfd88f77b49b1c93e0fa7110f94c63'
         owner_id: 9919
         repo_id: 259445878
     'haskell-actions/setup@v2.12.0':
@@ -85,22 +85,35 @@ dependencies:
         repo_id: 623796603
     'hyperpolymath/a2ml-ecosystem@main':
         ref: 'main'
-        commit: 'sha1-aa4b836bd969df2bc58128cb8e3d20bbc88d5e79'
+        commit: 'sha1-ed83d6927e8fb21431e403dbf6d7a4af96772746'
         owner_id: 6759885
         repo_id: 1275649586
     'hyperpolymath/cicd-suite@main':
         ref: 'main'
-        commit: 'sha1-a3cd79fba541444c619902330d0b618eb1612634'
+        commit: 'sha1-180b419825d238f8b606584c970a81dfa7cb6f81'
         owner_id: 6759885
         repo_id: 1326697643
-    'hyperpolymath/k9-ecosystem@main':
+        uses:
+            - 'hyperpolymath/deed-ecosystem@f9d999b60cb5f383679ea19912bcdc49c944973a'
+            - 'hyperpolymath/k9-ecosystem@2155aa26a21758f2ba119f61bc7e0e1981c106fb'
+    'hyperpolymath/deed-ecosystem@f9d999b60cb5f383679ea19912bcdc49c944973a':
         ref: 'main'
-        commit: 'sha1-89f3c2702f4f650a92aa7411502f38da06abd562'
+        commit: 'sha1-f9d999b60cb5f383679ea19912bcdc49c944973a'
+        owner_id: 6759885
+        repo_id: 1275649586
+    'hyperpolymath/k9-ecosystem@2155aa26a21758f2ba119f61bc7e0e1981c106fb':
+        ref: 'main'
+        commit: 'sha1-2155aa26a21758f2ba119f61bc7e0e1981c106fb'
         owner_id: 6759885
         repo_id: 1275650185
-    'hyperpolymath/smtp-notify-action@v0.2.0':
-        ref: 'v0.2.0'
-        commit: 'sha1-ede1191ef6ff3ac02c4f4d9efdf837ee517e11d7'
+    'hyperpolymath/k9-ecosystem@main':
+        ref: 'main'
+        commit: 'sha1-c1a34884054fabf0e9de81dbf68f4ba7874e85f1'
+        owner_id: 6759885
+        repo_id: 1275650185
+    'hyperpolymath/smtp-notify-action@v0.3.0':
+        ref: 'v0.3.0'
+        commit: 'sha1-22e7bdb322c430c1d0dac6b3bb307f4bb139d0be'
         owner_id: 6759885
         repo_id: 1352485172
     'peter-evans/repository-dispatch@v4.0.1':
