@@ -37,9 +37,6 @@ workflows:
         - 'hyperpolymath/smtp-notify-action@v0.3.0'
     '.github/workflows/scorecard.yml': []
     '.github/workflows/secret-scanner.yml': []
-    '.github/workflows/semgrep.yml':
-        - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@v4.38.0'
 dependencies:
     'actions/cache@v6.1.0':
         ref: 'v6.1.0'
