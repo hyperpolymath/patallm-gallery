@@ -11,7 +11,7 @@ workflows:
         - 'actions/configure-pages@v6.0.0'
         - 'actions/deploy-pages@v5.0.1'
         - 'actions/upload-pages-artifact@v5.0.0'
-        - 'haskell-actions/setup@v2.12.0'
+        - 'haskell-actions/setup@v2.12.1'
     '.github/workflows/codeql.yml':
         - 'actions/checkout@v7.0.1'
         - 'github/codeql-action@v4.39.3'
@@ -27,7 +27,7 @@ workflows:
     '.github/workflows/labels.yml': []
     '.github/workflows/main-estate-audit.yml':
         - 'actions/checkout@v7.0.1'
-        - 'hyperpolymath/cicd-suite@main'
+        - 'hyperpolymath/proven-cicd-and-workflows@main'
     '.github/workflows/mirror.yml': []
     '.github/workflows/pages.yml':
         - 'actions/checkout@v7.0.1'
@@ -75,21 +75,13 @@ dependencies:
         commit: 'sha1-33d7b85da1a04171e211befe2c739303b9a4c066'
         owner_id: 9919
         repo_id: 259445878
-    'haskell-actions/setup@v2.12.0':
-        ref: 'v2.12.0'
-        commit: 'sha1-6037f33647c3f17758a2356c80fc4a53d7e0685d'
+    'haskell-actions/setup@v2.12.1':
+        ref: 'v2.12.1'
+        commit: 'sha1-0f8e8c99d88aeb3fbfd523f1ef2c6f762d10d64d'
         owner_id: 75048950
         repo_id: 623796603
-    'hyperpolymath/cicd-suite@main':
-        ref: 'main'
-        commit: 'sha1-5a10b72e574ef63855fafd4568a4c178657f3294'
-        owner_id: 6759885
-        repo_id: 1326697643
-        uses:
-            - 'hyperpolymath/deed-ecosystem@f9d999b60cb5f383679ea19912bcdc49c944973a'
-            - 'hyperpolymath/k9-ecosystem@2155aa26a21758f2ba119f61bc7e0e1981c106fb'
     'hyperpolymath/deed-ecosystem@f9d999b60cb5f383679ea19912bcdc49c944973a':
-        ref: 'main'
+        ref: 'v0.1.0'
         commit: 'sha1-f9d999b60cb5f383679ea19912bcdc49c944973a'
         owner_id: 6759885
         repo_id: 1275649586
@@ -99,7 +91,7 @@ dependencies:
         owner_id: 6759885
         repo_id: 1275649586
     'hyperpolymath/k9-ecosystem@2155aa26a21758f2ba119f61bc7e0e1981c106fb':
-        ref: 'main'
+        ref: 'v0.1.0'
         commit: 'sha1-2155aa26a21758f2ba119f61bc7e0e1981c106fb'
         owner_id: 6759885
         repo_id: 1275650185
@@ -108,6 +100,14 @@ dependencies:
         commit: 'sha1-c1a34884054fabf0e9de81dbf68f4ba7874e85f1'
         owner_id: 6759885
         repo_id: 1275650185
+    'hyperpolymath/proven-cicd-and-workflows@main':
+        ref: 'main'
+        commit: 'sha1-6a35e510a41037adfd422b7f449c3503c5e26a98'
+        owner_id: 6759885
+        repo_id: 1326697643
+        uses:
+            - 'hyperpolymath/deed-ecosystem@f9d999b60cb5f383679ea19912bcdc49c944973a'
+            - 'hyperpolymath/k9-ecosystem@2155aa26a21758f2ba119f61bc7e0e1981c106fb'
     'hyperpolymath/smtp-notify-action@v0.5.1':
         ref: 'v0.5.1'
         commit: 'sha1-e384daf6167a7a7567642d6a62060106244d2413'
