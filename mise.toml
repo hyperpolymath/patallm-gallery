@@ -34,13 +34,13 @@ gnu-grep = "latest"
 task = "go-task"
 
 [tasks.build]
-run = "$1"
+run = "cargo build --release"
 
 [tasks.test]
-run = "$2"
+run = "cargo test"
 
 [tasks.lint]
-run = "$3"
+run = "bun install --frozen-lockfile && bunx --no-install --bun prettier --check ."
 
 [tasks.fmt]
-run = "$4"
+run = "bun install --frozen-lockfile && bunx --no-install --bun prettier --write ."
