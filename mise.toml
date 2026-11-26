@@ -6,7 +6,6 @@ bun = "latest"
 denojs = "latest"
 
 # Package managers
-pnpm = "latest"
 cargo = "latest"
 go-task = "latest"
 
