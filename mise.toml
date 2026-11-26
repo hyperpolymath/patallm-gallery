@@ -29,10 +29,18 @@ gnu-grep = "latest"
 [env]
 # Common environment variables
 
-# Task runner alias
+# Task runner alias (tool-name alias only; runnable commands live under [tasks])
 [alias]
 task = "go-task"
-build = "cargo build --release"
-test = "cargo test"
-lint = "bun install --frozen-lockfile && bunx --no-install --bun prettier --check ."
-fmt = "bun install --frozen-lockfile && bunx --no-install --bun prettier --write ."
+
+[tasks.build]
+run = "$1"
+
+[tasks.test]
+run = "$2"
+
+[tasks.lint]
+run = "$3"
+
+[tasks.fmt]
+run = "$4"
